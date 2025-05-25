@@ -7,7 +7,7 @@
   <title>FA Taxi - Taxi Boeken</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="./styles.css">
   <!-- Externe scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -1299,6 +1299,38 @@ button {
 </head>
 
 <body>
+<script>
+// Functie om de huidige locatie te gebruiken
+function gebruikLocatie() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        // Reverse geocoding om het adres op te halen
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=nl`)
+          .then(response => response.json())
+          .then(data => {
+            const adres = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            document.getElementById('ophaaladres').value = adres;
+            // Activeer eventuele validatie of berekeningen
+            if (typeof autoBereken === 'function') autoBereken();
+          })
+          .catch(error => {
+            console.error('Fout bij ophalen adres:', error);
+            alert('Kon locatie niet omzetten naar adres. Probeer het handmatig in te vullen.');
+          });
+      },
+      function(error) {
+        console.error('Geolocatie fout:', error);
+        alert('Kon uw locatie niet ophalen. Controleer of u toestemming heeft gegeven voor locatie-toegang.');
+      }
+    );
+  } else {
+    alert('Geolocatie wordt niet ondersteund door uw browser.');
+  }
+}
+</script>
 
 <div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
   <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
@@ -2428,36 +2460,7 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-// Functie om de huidige locatie te gebruiken
-function gebruikLocatie() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        // Reverse geocoding om het adres op te halen
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=nl`)
-          .then(response => response.json())
-          .then(data => {
-            const adres = data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-            document.getElementById('ophaaladres').value = adres;
-            // Activeer eventuele validatie of berekeningen
-            if (typeof autoBereken === 'function') autoBereken();
-          })
-          .catch(error => {
-            console.error('Fout bij ophalen adres:', error);
-            alert('Kon locatie niet omzetten naar adres. Probeer het handmatig in te vullen.');
-          });
-      },
-      function(error) {
-        console.error('Geolocatie fout:', error);
-        alert('Kon uw locatie niet ophalen. Controleer of u toestemming heeft gegeven voor locatie-toegang.');
-      }
-    );
-  } else {
-    alert('Geolocatie wordt niet ondersteund door uw browser.');
-  }
-}
+// Functie is verplaatst naar het begin van het body element
 
 // --- Automatische prijsberekening bij wijzigen invoervelden ---
 (function() {
