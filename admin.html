@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Taxi Boeking</title>
+  <!-- Link tag above removed because styles are inline -->
+  <style>
+    body { margin:0; font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#232526 0%,#191919 50%,#232526 100%); color:#fff; padding:0.5rem; }
+    .container { max-width:95vw; margin:1rem auto; background:#232526; border-radius:12px; box-shadow:0 2px 18px #ffd70044; padding:1rem; }
+    .container#adminContent { max-width: none; width: 100%; margin:2rem 0; padding:2rem 1rem; }
+    h2 { color:gold; text-align:center; margin-bottom:1rem; }
+    .info, .admin-info { color:#ffd700; margin-bottom:1rem; text-align:center; }
+    label, input, button { font-family:inherit; font-size:1rem; width:100%; margin-bottom:0.5rem; }
+    input { background:linear-gradient(120deg,#232526 70%,#191919 100%); color:#ffd700; border:1.5px solid #ffd70088; padding:0.5rem; border-radius:7px; transition:all 0.2s; }
+    input:focus { border:2px solid #ffd700; box-shadow:0 0 10px #ffd70099; background:linear-gradient(120deg,#232526 40%,#ffd70022); color:#fff; }
+    button { background:linear-gradient(90deg,#fffbe6 0%,#ffd700 70%,#bfa100 100%); color:#222; font-weight:bold; border:none; border-radius:8px; padding:0.7rem; cursor:pointer; transition:all 0.2s; }
+    button:hover { filter:brightness(1.1); }
+    table { width: 100%; border-collapse:collapse; margin:1.5rem 0; background:linear-gradient(120deg,#232526 60%,#191919 100%); color:#ffd700; border-radius:8px; }
+    th, td { border:1px solid #ffd70055; padding:0.5rem; text-align:left; }
+    th { background:linear-gradient(90deg,#fffbe6 0%,#ffd700 100%); color:#191919; }
+    tr:nth-child(even) { background:#232526; }
+    tr:hover { background:#ffd70022; }
+    @media (max-width: 600px) {
+      label, input, button, th, td { font-size: 0.9rem; }
+      button { padding: 0.8rem; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js" integrity="sha512-0ZmXuTW+YCylrUeQQT9lbbGAGzH813C+/2SfiTXy+ABe9F33hy0H5u5N50Cm9y6F4+GFAUyMXTEbMq9hhlRU+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <div class="container" id="loginContainer">
+    <h2>Admin inloggen</h2>
+    <form id="loginForm">
+      <div class="info">Voer alleen het admin-wachtwoord in om toegang te krijgen.</div>
+      <label for="wachtwoord">Wachtwoord</label>
+      <input type="password" id="wachtwoord" autocomplete="current-password" required autofocus>
+      <button type="submit">Inloggen</button>
+      <div id="loginFout" class="error" style="display:none;">Onjuist wachtwoord</div>
+    </form>
+  </div>
+
+  <div class="container" id="adminContent" style="display:none;">
+    <h2>Admin Overzicht</h2>
+    <p>Je bent ingelogd als <b>admin</b>. <button type="button" onclick="window.location.href='klant.html'">← Terug naar boekingspagina</button></p>
+    <div class="admin-info"><button type="button" id="logoutBtn">Uitloggen</button></div>
+    <div style="overflow-x:auto;">
+    <table id="rittenTable">
+      <thead>
+        <tr>
+          <th>Datum/Tijd</th>
+          <th>Rit-ID</th>
+          <th>Ophaaladres</th>
+          <th>Afzetadres</th>
+          <th>Tijdstip</th>
+          <th>Betaalmethode</th>
+          <th>Pin-kosten</th>
+          <th>Kortingscode</th>
+          <th>Huisdieren</th>
+          <th>Spoedrit</th>
+          <th>Geplande rit</th>
+          <th>Opmerkingen</th>
+        </tr>
+      </thead>
+      <tbody id="rittenBody">
+        <!-- Ritten worden hier getoond -->
+      </tbody>
+    </table>
+    </div>
+
+  <script>
+    // Maak de gebruikLocatie functie direct beschikbaar
+    window.gebruikLocatie = async function() {
+      const dichtstbijzijndeInput = document.activeElement.closest('tr')?.querySelector('input[type="text"]');
+      
+      if (!dichtstbijzijndeInput) {
+        console.warn('Geen invoerveld gevonden om locatie in te vullen');
+        return;
+      }
+
+      // Toon bezig-bericht
+      const oorspronkelijkeWaarde = dichtstbijzijndeInput.value;
+      dichtstbijzijndeInput.value = 'Locatie ophalen...';
+      dichtstbijzijndeInput.disabled = true;
+
+      try {
+        // Controleer of geolocatie beschikbaar is
+        if (!navigator.geolocation) {
+          throw new Error('Geolocatie wordt niet ondersteund door deze browser');
+        }
+
+        // Vraag locatie aan gebruiker
+        const positie = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            resolve, 
+            (error) => {
+              let foutmelding = 'Locatie kan niet worden bepaald';
+              
+              switch(error.code) {
+                case error.PERMISSION_DENIED:
+                  foutmelding = 'Locatietoegang is geweigerd. Controleer je browserinstellingen.';
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  foutmelding = 'Locatie-informatie is niet beschikbaar';
+                  break;
+                case error.TIMEOUT:
+                  foutmelding = 'Het ophalen van de locatie duurde te lang';
+                  break;
+                default:
+                  foutmelding = `Fout bij ophalen locatie: ${error.message}`;
+              }
+              reject(new Error(foutmelding));
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            }
+          );
+        });
+
+        // Haal adres op basis van coördinaten op
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?` +
+          `format=json&` +
+          `lat=${positie.coords.latitude}&` +
+          `lon=${positie.coords.longitude}&` +
+          `accept-language=nl&` +
+          `zoom=18&` +
+          `addressdetails=1`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Fout bij ophalen adres: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.display_name) {
+          throw new Error('Geen adresgegevens beschikbaar voor deze locatie');
+        }
+
+        // Vul het adres in
+        dichtstbijzijndeInput.value = data.display_name;
+        // Activeer input event voor validatie
+        dichtstbijzijndeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        
+      } catch (error) {
+        console.error('Fout bij ophalen locatie:', error);
+        dichtstbijzijndeInput.value = oorspronkelijkeWaarde;
+        
+        // Toon foutmelding in een duidelijke melding
+        const foutmelding = document.createElement('div');
+        foutmelding.style.cssText = 'color: #ff6b6b; margin-top: 5px; font-size: 0.9em;';
+        foutmelding.textContent = error.message;
+        foutmelding.className = 'locatie-fout';
+        
+        // Verwijder eventuele eerdere foutmeldingen
+        const bestaandeFout = dichtstbijzijndeInput.nextElementSibling;
+        if (bestaandeFout && bestaandeFout.className === 'locatie-fout') {
+          bestaandeFout.remove();
+        }
+        
+        dichtstbijzijndeInput.parentNode.insertBefore(foutmelding, dichtstbijzijndeInput.nextSibling);
+        
+        // Verwijder de foutmelding na 5 seconden
+        setTimeout(() => {
+          if (foutmelding.parentNode) {
+            foutmelding.remove();
+          }
+        }, 5000);
+      } finally {
+        dichtstbijzijndeInput.disabled = false;
+        dichtstbijzijndeInput.focus();
+      }
+    };
+
+    // Admin login logic
+    const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
+
+    // Persistent login: if flag set, show admin
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContent').style.display = 'block';
+      laadRitten();
+    }
+
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      // Bypass password check: direct login
+      localStorage.setItem('adminLoggedIn', 'true');
+      document.getElementById('loginFout').style.display = 'none';
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContent').style.display = 'block';
+      laadRitten();
+    };
+
+    function laadRitten() {
+      const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
+      const draft = JSON.parse(localStorage.getItem('draftRit') || 'null');
+      if (draft && draft.timestamp) {
+        // Prepend draft entry with identifier
+        ritten.unshift(Object.assign({ ritId: 'DRAFT' }, draft));
+      }
+      const tb = document.getElementById('rittenBody');
+      tb.innerHTML = '';
+      if (!ritten.length) {
+        tb.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
+        return;
+      }
+      ritten.slice().reverse().forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.timestamp||''}</td>
+          <td>${r.ritId||r.ritID||''}</td>
+          <td>${r.ophaaladres||''}</td>
+          <td>${r.afzetadres||''}</td>
+          <td>${r.tijdstip||''}</td>
+          <td>${r.betaalmethode||''}</td>
+          <td>${r.pinProcent? r.pinProcent+'% (€'+r.pinEuro+')':''}</td>
+          <td>${r.kortingscode||''}</td>
+          <td>${r.huisdieren||''}</td>
+          <td>${r.spoedrit||r.spoed||''}</td>
+          <td>${r.geplandeRit||''}</td>
+          <td><button type="button" class="detail-btn">Details</button></td>
+        `;
+        tb.appendChild(tr);
+        // Create hidden detail row
+        const detailTr = document.createElement('tr');
+        detailTr.classList.add('details-row');
+        detailTr.style.display = 'none';
+        const detailTd = document.createElement('td');
+        detailTd.colSpan = 12;
+        detailTd.style.background = '#191919';
+        detailTd.style.color = '#fff';
+        detailTd.style.fontFamily = 'monospace';
+        detailTd.style.padding = '0.5rem';
+        detailTd.innerText = JSON.stringify(r, null, 2) + '\n';
+        // Download PDF
+        const pdfBtn = document.createElement('button');
+        pdfBtn.textContent = 'Download PDF';
+        pdfBtn.style.margin = '0.5rem 0.5rem 0 0';
+        pdfBtn.addEventListener('click', () => {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.text(JSON.stringify(r, null, 2), 10, 10);
+          doc.save(`rit-${r.ritId}.pdf`);
+        });
+        detailTd.appendChild(pdfBtn);
+        // Email PDF via server
+        const emailBtn = document.createElement('button');
+        emailBtn.textContent = 'Email PDF';
+        emailBtn.addEventListener('click', async () => {
+          await fetch('/email-rit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(r) });
+          alert('E-mail verzonden');
+        });
+        detailTd.appendChild(emailBtn);
+        detailTr.appendChild(detailTd);
+        tb.appendChild(detailTr);
+        // Toggle detail row
+        tr.querySelector('.detail-btn').addEventListener('click', () => {
+          detailTr.style.display = detailTr.style.display === 'none' ? 'table-row' : 'none';
+        });
+      });
+    }
+
+    // Verwijzing naar de globale gebruikLocatie functie
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('adminLoggedIn');
+      location.reload();
+    });
+  </script>
+</body>
+</html>
