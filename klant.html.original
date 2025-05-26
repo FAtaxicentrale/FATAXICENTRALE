@@ -4,6 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>FA Taxi Boeking</title>
+  <!-- Voeg hier je CSS-bestanden toe -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- De applicatie wordt hier ingeladen -->
+  </div>
+
+  <!-- Laad de configuratie eerst -->
+  <script src="js/config.js"></script>
+  
+  <!-- Laad de benodigde modules -->
+  <script src="js/translations.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/location.js"></script>
+  <script src="js/addressSuggestions.js"></script>
+  <script src="js/priceCalculator.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/idealPayment.js"></script>
+  <script src="js/languageSettings.js"></script>
+  <script src="js/formHandler.js"></script>
+  <script src="js/draft-manager.js"></script>
+  
+  <!-- Laad de hoofdapplicatie als laatste -->
+  <script src="js/main.js"></script>
+  
+  <!-- Initialiseer de applicatie -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // Initialiseer de applicatie
+        if (window.App) {
+          const app = new window.App();
+          window.app = app; // Maak beschikbaar in de globale scope
+          
+          // Initialiseer eventuele andere componenten
+          if (window.FormHandler) {
+            window.formHandler = new window.FormHandler(app);
+          }
+          
+          if (window.idealPayment && typeof window.idealPayment.initialize === 'function') {
+            window.idealPayment.initialize();
+          }
+          
+          console.log('Applicatie succesvol geïnitialiseerd');
+        } else {
+          console.error('App klasse niet gevonden');
+        }
+      } catch (error) {
+        console.error('Fout bij het initialiseren van de applicatie:', error);
+      }
+    });
+  </script>
+</body>
+</html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>FA Taxi Boeking</title>
   <style>
     /* Laadspinner stijlen */
     @keyframes spin {

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FA Taxi - Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .test-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            background-color: #fde8e8;
+            border-left: 4px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>FA Taxi - Testpagina</h1>
+    
+    <div class="test-container">
+        <h2>Test JavaScript-bestanden</h2>
+        <p>Controleren of alle benodigde bestanden correct worden geladen...</p>
+        
+        <div id="testResults">
+            <!-- Hier komen de testresultaten -->
+        </div>
+    </div>
+
+    <!-- Test het laden van de benodigde bestanden -->
+    <script>
+        const testResults = document.getElementById('testResults');
+        
+        // Lijst van te controleren bestanden (relatief pad vanaf de root van de webserver)
+        const requiredFiles = [
+            '/static/js/config.js',
+            '/static/js/utils.js',
+            '/static/js/location.js',
+            '/static/js/addressSuggestions.js',
+            '/static/js/priceCalculator.js',
+            '/static/js/map.js',
+            '/static/js/idealPayment.js',
+            '/static/js/languageSettings.js',
+            '/static/js/formHandler.js'
+        ];
+        
+        // Functie om een bestand te testen
+        async function testFile(file) {
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = file;
+                script.onload = () => resolve({ file, status: 'success' });
+                script.onerror = () => resolve({ file, status: 'error' });
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Voer de tests uit
+        async function runTests() {
+            const results = [];
+            
+            for (const file of requiredFiles) {
+                const result = await testFile(file);
+                results.push(result);
+                
+                const resultDiv = document.createElement('div');
+                resultDiv.className = `result ${result.status === 'error' ? 'error' : ''}`;
+                resultDiv.textContent = `${result.file}: ${result.status === 'success' ? '✅ Geladen' : '❌ Fout bij laden'}`;
+                testResults.appendChild(resultDiv);
+            }
+            
+            // Controleer of alle bestanden correct zijn geladen
+            const allLoaded = results.every(r => r.status === 'success');
+            if (allLoaded) {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'result';
+                successDiv.textContent = '✅ Alle bestanden zijn succesvol geladen!';
+                testResults.appendChild(successDiv);
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'result error';
+                errorDiv.textContent = '⚠️ Sommige bestanden konden niet worden geladen. Controleer of alle bestanden aanwezig zijn.';
+                testResults.appendChild(errorDiv);
+            }
+        }
+        
+        // Start de tests
+        runTests().catch(console.error);
+    </script>
+</body>
+</html>

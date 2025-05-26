@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .module {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .module h3 {
+            margin-top: 0;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Modules</h1>
+    
+    <div class="module">
+        <h3>1. Configuratie</h3>
+        <div id="config-status">Niet getest</div>
+        <button onclick="testConfig()">Test Configuratie</button>
+        <pre id="config-output"></pre>
+    </div>
+
+    <div class="module">
+        <h3>2. Utils</h3>
+        <div id="utils-status">Niet getest</div>
+        <button onclick="testUtils()">Test Utils</button>
+        <div id="utils-output"></div>
+    </div>
+
+    <div class="module">
+        <h3>3. Locatie Service</h3>
+        <div id="location-status">Niet getest</div>
+        <button onclick="testLocation()">Test Locatie</button>
+        <div id="location-output"></div>
+    </div>
+
+    <div class="module">
+        <h3>4. Adres Suggesties</h3>
+        <div id="suggestions-status">Niet getest</div>
+        <input type="text" id="test-address" placeholder="Voer een adres in">
+        <button onclick="testAddressSuggestions()">Test Adres Suggesties</button>
+        <div id="suggestions-output"></div>
+    </div>
+
+    <div class="module">
+        <h3>5. Prijsberekening</h3>
+        <div id="price-status">Niet getest</div>
+        <button onclick="testPriceCalculation()">Test Prijsberekening</button>
+        <div id="price-output"></div>
+    </div>
+
+    <div class="module">
+        <h3>6. Formulier Handler</h3>
+        <div id="form-status">Niet getest</div>
+        <button onclick="testFormHandler()">Test Formulier Handler</button>
+        <div id="form-output"></div>
+    </div>
+
+    <script type="module">
+        // Importeer alle benodigde modules
+        import { config } from './static/js/config.js';
+        import { formatPrice, debounce, validateEmail, validatePhone } from './static/js/utils.js';
+        import { LocationService } from './static/js/location.js';
+        import { AddressSuggestions } from './static/js/addressSuggestions.js';
+        import { PriceCalculator } from './static/js/priceCalculator.js';
+        import { FormHandler } from './static/js/formHandler.js';
+
+        // Maak beschikbaar in het globale bereik voor de testknoppen
+        window.testConfig = async function() {
+            const output = document.getElementById('config-output');
+            const status = document.getElementById('config-status');
+            
+            try {
+                output.textContent = JSON.stringify(config, null, 2);
+                status.innerHTML = '<span class="success">✅ Configuratie succesvol geladen</span>';
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Fout: ${error.message}</span>`;
+                console.error(error);
+            }
+        };
+
+        window.testUtils = function() {
+            const output = document.getElementById('utils-output');
+            const status = document.getElementById('utils-status');
+            
+            try {
+                let html = `
+                    <h4>Testresultaten:</h4>
+                    <ul>
+                        <li>Prijs opmaken (1000): ${formatPrice(1000)}</li>
+                        <li>E-mail validatie (test@example.com): ${validateEmail('test@example.com') ? '✅' : '❌'}</li>
+                        <li>Telefoon validatie (0612345678): ${validatePhone('0612345678') ? '✅' : '❌'}</li>
+                    </ul>
+                `;
+                
+                output.innerHTML = html;
+                status.innerHTML = '<span class="success">✅ Utils succesvol getest</span>';
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Fout: ${error.message}</span>`;
+                console.error(error);
+            }
+        };
+
+        window.testLocation = async function() {
+            const output = document.getElementById('location-output');
+            const status = document.getElementById('location-status');
+            
+            try {
+                const locationService = new LocationService();
+                const position = await locationService.getCurrentPosition();
+                
+                output.innerHTML = `
+                    <h4>Huidige locatie:</h4>
+                    <ul>
+                        <li>Breedtegraad: ${position.coords.latitude}</li>
+                        <li>Lengtegraad: ${position.coords.longitude}</li>
+                        <li>Nauwkeurigheid: ${position.coords.accuracy} meter</li>
+                    </ul>
+                `;
+                
+                status.innerHTML = '<span class="success">✅ Locatie succesvol opgehaald</span>';
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Fout: ${error.message}</span>`;
+                console.error(error);
+            }
+        };
+
+        window.testAddressSuggestions = debounce(async function() {
+            const input = document.getElementById('test-address');
+            const output = document.getElementById('suggestions-output');
+            const status = document.getElementById('suggestions-status');
+            
+            try {
+                const addressSuggestions = new AddressSuggestions();
+                const suggestions = await addressSuggestions.getSuggestions(input, 'suggestions-output');
+                
+                output.innerHTML = `
+                    <h4>Suggesties voor: ${input.value}</h4>
+                    <pre>${JSON.stringify(suggestions, null, 2)}</pre>
+                `;
+                
+                status.innerHTML = '<span class="success">✅ Adressuggesties succesvol opgehaald</span>';
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Fout: ${error.message}</span>`;
+                console.error(error);
+            }
+        }, 500);
+
+        window.testPriceCalculation = function() {
+            const output = document.getElementById('price-output');
+            const status = document.getElementById('price-status');
+            
+            try {
+                const calculator = new PriceCalculator();
+                const price = calculator.calculatePrice(
+                    'Amsterdam Centraal', 
+                    'Schiphol Airport',
+                    new Date(),
+                    2,
+                    0
+                );
+                
+                output.innerHTML = `
+                    <h4>Prijsberekening:</h4>
+                    <ul>
+                        <li>Van: Amsterdam Centraal</li>
+                        <li>Naar: Schiphol Airport</li>
+                        <li>Datum: ${new Date().toLocaleString('nl-NL')}</li>
+                        <li>Aantal passagiers: 2</li>
+                        <li>Extra's: Geen</li>
+                        <li><strong>Totaalprijs: ${formatPrice(price)}</strong></li>
+                    </ul>
+                `;
+                
+                status.innerHTML = '<span class="success">✅ Prijsberekening succesvol uitgevoerd</span>';
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Fout: ${error.message}</span>`;
+                console.error(error);
+            }
+        };
+
+        window.testFormHandler = function() {
+            const output = document.getElementById('form-output');
+            const status = document.getElementById('form-status');
+            
+            try {
+                const formHandler = new FormHandler({
+                    // Mock modules voor testen
+                    languageSettings: { getCurrentLanguage: () => 'nl' },
+                    mapManager: { /* mock methods */ },
+                    priceCalculator: { calculatePrice: () => 50 },
+                    addressSuggestions: { /* mock methods */ },
+                    idealPayment: { /* mock methods */ },
+                    locationService: { /* mock methods */ }
+                });
+                
+                output.innerHTML = `
+                    <h4>Formulier Handler:</h4>
+                    <p>Formulier handler succesvol geïnitialiseerd</p>
+                    <p>Test formulier validatie:</p>
+                    <ul>
+                        <li>Leeg formulier: ${formHandler.validateForm({}) ? '✅' : '❌'}</li>
+                    </ul>
+                `;
+                
+                status.innerHTML = '<span class="success">✅ Formulier handler succesvol getest</span>';
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Fout: ${error.message}</span>`;
+                console.error(error);
+            }
+        };
+
+        // Voeg event listener toe voor adres input
+        document.getElementById('test-address').addEventListener('input', window.testAddressSuggestions);
+
+        // Log dat de modules zijn geladen
+        console.log('Test modules geladen en klaar voor gebruik');
+    </script>
+</body>
+</html>

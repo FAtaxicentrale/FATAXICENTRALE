@@ -4,6 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>FA Taxi Boeking</title>
+  <!-- Voeg hier je CSS-bestanden toe -->
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- De applicatie wordt hier ingeladen -->
+  </div>
+
+  <!-- Laad de benodigde scripts in de juiste volgorde -->
+  <script src="static/js/config.js"></script>
+  <script src="static/js/translations.js"></script>
+  <script src="static/js/utils.js"></script>
+  <script src="static/js/location.js"></script>
+  <script src="static/js/addressSuggestions.js"></script>
+  <script src="static/js/priceCalculator.js"></script>
+  <script src="static/js/map.js"></script>
+  <script src="static/js/idealPayment.js"></script>
+  <script src="static/js/languageSettings.js"></script>
+  <script src="static/js/formHandler.js"></script>
+  <script src="static/js/draft-manager.js"></script>
+  <script src="static/js/main.js"></script>
+  
+  <!-- Initialiseer de applicatie -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM fully loaded, initializing application...');
+      if (typeof App !== 'undefined') {
+        App.initialize();
+      } else {
+        console.error('App is not defined. Check console for script loading errors.');
+          
+          if (window.idealPayment && typeof window.idealPayment.initialize === 'function') {
+            window.idealPayment.initialize();
+          }
+          
+          console.log('Applicatie succesvol geïnitialiseerd');
+        } else {
+          console.error('App klasse niet gevonden');
+        }
+      } catch (error) {
+        console.error('Fout bij het initialiseren van de applicatie:', error);
+      }
+    });
+  </script>
+</body>
+</html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>FA Taxi Boeking</title>
   <style>
     /* Laadspinner stijlen */
     @keyframes spin {
@@ -1327,7 +1378,7 @@ button {
 }
 </style>
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="static/css/leaflet.css" crossorigin=""/>
+  <!-- Leaflet CSS wordt geladen via CDN hieronder -->
 </head>
 
 <body>
@@ -3145,7 +3196,7 @@ window.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
   <!-- Main application script -->
-  <script type="module" src="/static/js/main.js"></script>
+  <!-- Main.js is al eerder geladen -->
   
   <!-- Initialize the application -->
   <script type="module">

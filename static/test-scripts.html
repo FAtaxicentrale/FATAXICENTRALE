@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FA Taxi - Test Scripts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .test-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .module-test {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background: white;
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .module-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pending { background-color: #e0e0e0; color: #333; }
+        .success { background-color: #4CAF50; color: white; }
+        .error { background-color: #f44336; color: white; }
+        .module-content {
+            margin-top: 10px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .global-vars {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>FA Taxi - Test Scripts</h1>
+    
+    <div class="test-container">
+        <h2>Test JavaScript Bestanden</h2>
+        <p>Deze pagina laadt en test alle JavaScript bestanden in de applicatie.</p>
+        
+        <div>
+            <button id="loadScripts">Laad Alle Scripts</button>
+            <button id="checkGlobals" disabled>Controleer Globale Variabelen</button>
+        </div>
+        
+        <div id="testResults">
+            <!-- Hier komen de testresultaten -->
+        </div>
+        
+        <div id="globalVars" class="global-vars" style="display: none;">
+            <h3>Beschikbare Globale Variabelen:</h3>
+            <pre id="globalVarsList">Geen globale variabelen gevonden</pre>
+        </div>
+    </div>
+
+    <script>
+        // DOM elementen
+        const testResults = document.getElementById('testResults');
+        const loadScriptsBtn = document.getElementById('loadScripts');
+        const checkGlobalsBtn = document.getElementById('checkGlobals');
+        const globalVarsDiv = document.getElementById('globalVars');
+        const globalVarsList = document.getElementById('globalVarsList');
+
+        // Lijst van te laden scripts
+        const scripts = [
+            { name: 'config', path: './js/config.js' },
+            { name: 'utils', path: './js/utils.js' },
+            { name: 'location', path: './js/location.js' },
+            { name: 'addressSuggestions', path: './js/addressSuggestions.js' },
+            { name: 'priceCalculator', path: './js/priceCalculator.js' },
+            { name: 'map', path: './js/map.js' },
+            { name: 'idealPayment', path: './js/idealPayment.js' },
+            { name: 'languageSettings', path: './js/languageSettings.js' },
+            { name: 'formHandler', path: './js/formHandler.js' },
+            { name: 'main', path: './js/main.js' }
+        ];
+        
+        // Laad een enkel script
+        function loadScript(script) {
+            return new Promise((resolve, reject) => {
+                const element = document.createElement('script');
+                element.src = script.path;
+                element.onload = () => {
+                    console.log(`Script geladen: ${script.name}`);
+                    resolve(script);
+                };
+                element.onerror = (error) => {
+                    console.error(`Fout bij laden van ${script.path}:`, error);
+                    reject(new Error(`Kon ${script.name} niet laden`));
+                };
+                document.head.appendChild(element);
+            });
+        }
+        
+        // Laad alle scripts opeenvolgend
+        async function loadAllScripts() {
+            loadScriptsBtn.disabled = true;
+            testResults.innerHTML = '';
+            
+            for (const script of scripts) {
+                const testElement = document.createElement('div');
+                testElement.className = 'module-test';
+                testElement.id = `test-${script.name}`;
+                
+                const header = document.createElement('div');
+                header.className = 'module-header';
+                
+                const title = document.createElement('h3');
+                title.textContent = script.name;
+                
+                const status = document.createElement('span');
+                status.className = 'module-status pending';
+                status.textContent = 'Laden...';
+                
+                header.appendChild(title);
+                header.appendChild(status);
+                testElement.appendChild(header);
+                
+                const content = document.createElement('div');
+                content.className = 'module-content';
+                content.style.display = 'none';
+                
+                const output = document.createElement('pre');
+                output.textContent = 'Bezig met laden...';
+                content.appendChild(output);
+                
+                testElement.appendChild(content);
+                testResults.appendChild(testElement);
+                
+                try {
+                    await loadScript(script);
+                    status.textContent = 'Geladen';
+                    status.className = 'module-status success';
+                    output.textContent = 'Script succesvol geladen';
+                } catch (error) {
+                    status.textContent = 'Fout';
+                    status.className = 'module-status error';
+                    output.textContent = `Fout bij laden: ${error.message}`;
+                }
+                
+                // Toon/verberg details bij klikken
+                header.addEventListener('click', () => {
+                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                });
+                
+                // Kleine vertraging tussen het laden van scripts
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            checkGlobalsBtn.disabled = false;
+            loadScriptsBtn.disabled = false;
+        }
+        
+        // Toon alle globale variabelen
+        function showGlobalVariables() {
+            const globalVars = Object.keys(window).filter(key => 
+                !key.startsWith('_') && 
+                !['window', 'document', 'navigator', 'location', 'localStorage', 'sessionStorage', 'testResults', 'loadScripts', 'checkGlobals', 'globalVars', 'globalVarsList'].includes(key)
+            );
+            
+            globalVarsList.textContent = globalVars.join('\n');
+            globalVarsDiv.style.display = 'block';
+            
+            // Controleer of verwachte globale variabelen aanwezig zijn
+            const expectedGlobals = ['config', 'utils', 'LocationService', 'AddressSuggestions', 
+                                   'PriceCalculator', 'MapManager', 'IdealPayment', 'LanguageSettings', 
+                                   'FormHandler', 'app'];
+            
+            const missingGlobals = expectedGlobals.filter(g => !globalVars.includes(g));
+            
+            if (missingGlobals.length > 0) {
+                const warning = document.createElement('div');
+                warning.className = 'module-test';
+                warning.style.backgroundColor = '#fff3e0';
+                warning.innerHTML = `
+                    <h3>Waarschuwing: Ontbrekende globale variabelen</h3>
+                    <p>De volgende verwachte globale variabelen zijn niet gevonden:</p>
+                    <pre>${missingGlobals.join('\n')}</pre>
+                    <p>Controleer of deze variabelen correct zijn geëxporteerd in de bijbehorende bestanden.</p>
+                `;
+                testResults.appendChild(warning);
+            }
+        }
+        
+        // Voeg event listeners toe
+        document.addEventListener('DOMContentLoaded', () => {
+            loadScriptsBtn.addEventListener('click', loadAllScripts);
+            checkGlobalsBtn.addEventListener('click', showGlobalVariables);
+        });
+    </script>
+</body>
+</html>

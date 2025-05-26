@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>FA Taxi Boeking</title>
+  
+  <!-- Stijlen -->
+  <style>
+    /* Basisstijlen */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Voeg hier eventuele andere basisstijlen toe */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hier komt de hoofdinhoud van je applicatie -->
+    <h1>FA Taxi Boeking</h1>
+    <div id="app">
+      <!-- De applicatie wordt hier ingeladen -->
+    </div>
+  </div>
+
+  <!-- Laad de configuratie eerst -->
+  <script src="js/config.js"></script>
+  
+  <!-- Laad de benodigde modules -->
+  <script src="js/translations.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/location.js"></script>
+  <script src="js/addressSuggestions.js"></script>
+  <script src="js/priceCalculator.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/idealPayment.js"></script>
+  <script src="js/languageSettings.js"></script>
+  <script src="js/formHandler.js"></script>
+  <script src="js/draft-manager.js"></script>
+  
+  <!-- Laad de hoofdapplicatie als laatste -->
+  <script src="js/main.js"></script>
+  
+  <!-- Initialiseer de applicatie -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        console.log('Initialiseren van de applicatie...');
+        
+        // Controleer of de App klasse beschikbaar is
+        if (typeof window.App === 'function') {
+          console.log('App klasse gevonden, initialiseren...');
+          
+          // Maak een nieuwe instantie van de App
+          const app = new window.App();
+          
+          // Maak de app beschikbaar in de globale scope voor debugging
+          window.app = app;
+          
+          console.log('Applicatie succesvol geïnitialiseerd', app);
+          
+        } else {
+          console.error('Fout: App klasse niet gevonden in window object');
+        }
+      } catch (error) {
+        console.error('Er is een fout opgetreden bij het initialiseren van de applicatie:', error);
+      }
+    });
+  </script>
+</body>
+</html>

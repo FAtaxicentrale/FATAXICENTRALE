@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FA Taxi - Test ES Modules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .test-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .module-test {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background: white;
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .module-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pending { background-color: #e0e0e0; color: #333; }
+        .success { background-color: #4CAF50; color: white; }
+        .error { background-color: #f44336; color: white; }
+        .module-content {
+            margin-top: 10px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+        .module-content pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>FA Taxi - Test ES Modules</h1>
+    
+    <div class="test-container">
+        <h2>Test JavaScript Modules</h2>
+        <p>Klik op een module om deze te testen of klik op "Test Alles" om alle modules te testen.</p>
+        
+        <div>
+            <button id="testAll">Test Alles</button>
+            <button id="clearResults">Wis Resultaten</button>
+        </div>
+        
+        <div id="testResults">
+            <!-- Hier komen de testresultaten -->
+        </div>
+        
+        <div id="moduleOutput" class="result" style="display: none;">
+            <h3>Module Uitvoer:</h3>
+            <pre id="moduleOutputText">Geen uitvoer</pre>
+        </div>
+    </div>
+
+    <script>
+        // DOM elementen
+        const testResults = document.getElementById('testResults');
+        const testAllBtn = document.getElementById('testAll');
+        const clearResultsBtn = document.getElementById('clearResults');
+        const moduleOutput = document.getElementById('moduleOutput');
+        const moduleOutputText = document.getElementById('moduleOutputText');
+
+        // Test modules
+        const modules = [
+            { name: 'config', path: './js/config.js' },
+            { name: 'utils', path: './js/utils.js' },
+            { name: 'location', path: './js/location.js' },
+            { name: 'addressSuggestions', path: './js/addressSuggestions.js' },
+            { name: 'priceCalculator', path: './js/priceCalculator.js' },
+            { name: 'map', path: './js/map.js' },
+            { name: 'idealPayment', path: './js/idealPayment.js' },
+            { name: 'languageSettings', path: './js/languageSettings.js' },
+            { name: 'formHandler', path: './js/formHandler.js' },
+            { name: 'main', path: './js/main.js' }
+        ];
+        
+        // Laad alle scripts opeenvolgend
+        async function loadScripts() {
+            for (const module of modules) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const script = document.createElement('script');
+                        script.src = module.path;
+                        script.onload = () => resolve();
+                        script.onerror = () => reject(new Error(`Fout bij laden van ${module.path}`));
+                        document.head.appendChild(script);
+                    });
+                } catch (error) {
+                    console.error(`Fout bij laden van ${module.path}:`, error);
+                }
+            }
+        }
+        
+        // Lijst van te testen modules met hun globale namen
+        const modulesToTest = [
+            { 
+                name: 'config', 
+                path: './js/config.js',
+                globalName: 'config',
+                exports: ['config']
+            },
+            { 
+                name: 'utils', 
+                path: './js/utils.js',
+                globalName: 'utils',
+                exports: ['formatPrice', 'debounce', 'validateEmail', 'formatDate']
+            },
+            { 
+                name: 'location', 
+                path: './js/location.js',
+                globalName: 'LocationService',
+                exports: ['LocationService']
+            },
+            { 
+                name: 'addressSuggestions', 
+                path: './js/addressSuggestions.js',
+                globalName: 'AddressSuggestions',
+                exports: ['AddressSuggestions']
+            },
+            { 
+                name: 'priceCalculator', 
+                path: './js/priceCalculator.js',
+                globalName: 'PriceCalculator',
+                exports: ['PriceCalculator']
+            },
+            { 
+                name: 'map', 
+                path: './js/map.js',
+                globalName: 'MapManager',
+                exports: ['MapManager']
+            },
+            { 
+                name: 'idealPayment', 
+                path: './js/idealPayment.js',
+                globalName: 'IdealPayment',
+                exports: ['IdealPayment']
+            },
+            { 
+                name: 'languageSettings', 
+                path: './js/languageSettings.js',
+                globalName: 'LanguageSettings',
+                exports: ['LanguageSettings']
+            },
+            { 
+                name: 'formHandler', 
+                path: './js/formHandler.js',
+                globalName: 'FormHandler',
+                exports: ['FormHandler']
+            }
+        ];
+        
+        // Functie om een module te testen
+        function testModule(module) {
+            const testElement = document.createElement('div');
+            testElement.className = 'module-test';
+            testElement.id = `test-${module.name}`;
+            
+            const header = document.createElement('div');
+            header.className = 'module-header';
+            
+            const title = document.createElement('h3');
+            title.textContent = module.name;
+            
+            const status = document.createElement('span');
+            status.className = 'module-status';
+            
+            header.appendChild(title);
+            header.appendChild(status);
+            testElement.appendChild(header);
+            
+            const content = document.createElement('div');
+            content.className = 'module-content';
+            content.style.display = 'none';
+            
+            const output = document.createElement('pre');
+            output.textContent = 'Bezig met testen...';
+            content.appendChild(output);
+            
+            testElement.appendChild(content);
+            
+            // Voeg toe aan de DOM
+            testResults.appendChild(testElement);
+            
+            // Voer de test uit
+            try {
+                // Controleer of de module beschikbaar is in het globale bereik
+                const moduleObj = window[module.name] || 
+                                 window[module.name.charAt(0).toUpperCase() + module.name.slice(1)] ||
+                                 window[module.name + 'Service'] ||
+                                 window[module.name + 'Manager'];
+                
+                if (moduleObj) {
+                    status.textContent = 'Geslaagd';
+                    status.className = 'module-status success';
+                    
+                    // Probeer de module te inspecteren
+                    let moduleInfo = 'Module succesvol geladen:\n';
+                    
+                    // Als het een klasse is
+                    if (typeof moduleObj === 'function' && moduleObj.toString().startsWith('class ')) {
+                        moduleInfo += `Type: Klasse\n`;
+                        moduleInfo += `Naam: ${moduleObj.name || 'Anoniem'}\n`;
+                        moduleInfo += `Aantal methodes: ${Object.getOwnPropertyNames(moduleObj.prototype).length - 1}\n`;
+                    } 
+                    // Als het een object is
+                    else if (typeof moduleObj === 'object' && moduleObj !== null) {
+                        moduleInfo += `Type: Object\n`;
+                        moduleInfo += `Aantal eigenschappen: ${Object.keys(moduleObj).length}\n`;
+                    }
+                    
+                    output.textContent = moduleInfo;
+                } else {
+                    throw new Error('Module niet gevonden in het globale bereik');
+                }
+            } catch (error) {
+                status.textContent = 'Mislukt';
+                status.className = 'module-status error';
+                output.textContent = `Fout bij het testen van de module: ${error.message}\n\n${error.stack || ''}`;
+                
+                // Toon extra informatie over beschikbare globale variabelen
+                const globalVars = Object.keys(window).filter(key => 
+                    !key.startsWith('_') && 
+                    !['window', 'document', 'navigator', 'location', 'localStorage', 'sessionStorage'].includes(key)
+                );
+                output.textContent += '\n\nBeschikbare globale variabelen:\n' + globalVars.join(', ');
+            }
+            
+            // Toon/verberg details bij klikken
+            header.addEventListener('click', () => {
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            return testElement;
+        }
+                }
+                .module-header {
+                    padding: 10px 15px;
+                    background-color: #f5f5f5;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .module-header:hover {
+                    background-color: #eee;
+                }
+                .module-header h3 {
+                    margin: 0;
+                    font-size: 1.1em;
+                }
+                .module-status {
+                    padding: 3px 8px;
+                    border-radius: 3px;
+                    font-size: 0.9em;
+                    font-weight: bold;
+                }
+                .module-status.success {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+                .module-status.error {
+                    background-color: #f44336;
+                    color: white;
+                }
+                .module-content {
+                    padding: 15px;
+                    background-color: white;
+                    border-top: 1px solid #eee;
+                }
+                .test-summary {
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    border-radius: 5px;
+                }
+                .test-summary.success {
+                    background-color: #e8f5e9;
+                    border-left: 4px solid #4CAF50;
+                }
+                .test-summary.error {
+                    background-color: #ffebee;
+                    border-left: 4px solid #f44336;
+                }
+                ul {
+                    margin: 5px 0;
+                    padding-left: 20px;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Toon initieel bericht
+            clearResults();
+        });
+        ];
+        
+        // Maak een testresultaat element aan
+        function createTestResult(module) {
+            const testElement = document.createElement('div');
+            testElement.className = 'module-test';
+            testElement.id = `test-${module.name}`;
+            testElement.innerHTML = `
+                <div class="module-header">
+                    <h3>${module.name}</h3>
+                    <span class="module-status pending" id="status-${module.name}">Niet getest</span>
+                </div>
+                <div class="module-content" id="content-${module.name}">
+                    <pre id="output-${module.name}">Testen...</pre>
+                </div>
+            `;
+            
+            // Voeg klik-event toe om details te tonen/verbergen
+            const header = testElement.querySelector('.module-header');
+            const content = testElement.querySelector(`#content-${module.name}`);
+            
+            header.addEventListener('click', () => {
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            return testElement;
+        }
+        
+        // Update de status van een test
+        function updateTestStatus(moduleName, status, message) {
+            const statusElement = document.getElementById(`status-${moduleName}`);
+            const outputElement = document.getElementById(`output-${moduleName}`);
+            
+            if (status === 'success') {
+                statusElement.textContent = 'Succes';
+                statusElement.className = 'module-status success';
+            } else if (status === 'error') {
+                statusElement.textContent = 'Fout';
+                statusElement.className = 'module-status error';
+            } else {
+                statusElement.textContent = 'Bezig...';
+                statusElement.className = 'module-status pending';
+            }
+            
+            if (outputElement) {
+                outputElement.textContent = message || '';
+            }
+        }
+        
+        // Test een enkele module
+        async function testModule(module) {
+            const testElement = document.getElementById(`test-${module.name}`) || createTestResult(module);
+            if (!document.getElementById(`test-${module.name}`)) {
+                testResults.appendChild(testElement);
+            }
+            
+            updateTestStatus(module.name, 'pending', 'Bezig met testen...');
+            
+            try {
+                // Importeer de module
+                const moduleObj = await import(module.path);
+                console.log(`${module.name} module succesvol geladen:`, moduleObj);
+                
+                // Voer de testfunctie uit als deze bestaat
+                if (module.test) {
+                    const testResult = await module.test(moduleObj);
+                    if (testResult) {
+                        updateTestStatus(module.name, 'success', 'Module succesvol geladen en getest.');
+                        return true;
+                    } else {
+                        throw new Error('Module geladen, maar test mislukt');
+                    }
+                } else {
+                    updateTestStatus(module.name, 'success', 'Module succesvol geladen (geen tests beschikbaar)');
+                    return true;
+                }
+            } catch (error) {
+                console.error(`Fout bij het laden van ${module.name}:`, error);
+                updateTestStatus(
+                    module.name, 
+                    'error', 
+                    `Fout: ${error.message}\n\nStack trace:\n${error.stack || 'Geen stack trace beschikbaar'}`
+                );
+                return false;
+            }
+        }
+        
+        // Voer alle tests uit
+        async function runAllTests() {
+            testAllBtn.disabled = true;
+            clearResultsBtn.disabled = true;
+            
+            let allSuccess = true;
+            
+            for (const module of modules) {
+                const success = await testModule(module);
+                if (!success) allSuccess = false;
+                
+                // Kleine vertraging tussen tests voor betere gebruikerservaring
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // Toon een samenvatting van de tests
+            const successCount = document.querySelectorAll('.module-status.success').length;
+            const totalCount = modules.length;
+            
+            const summary = document.createElement('div');
+            summary.className = `test-summary ${allSuccess ? 'success' : 'error'}`;
+            summary.innerHTML = `
+                <h3>Test samenvatting</h3>
+                <p>${successCount} van de ${totalCount} modules succesvol geladen.</p>
+                ${allSuccess ? 
+                    '<p>✅ Alle modules zijn succesvol geladen!</p>' : 
+                    '<p>⚠️ Sommige modules konden niet worden geladen. Controleer de foutmeldingen hierboven.</p>'
+                }
+            `;
+            
+            // Voeg de samenvatting toe aan het begin van de resultaten
+            const existingSummary = document.querySelector('.test-summary');
+            if (existingSummary) {
+                existingSummary.replaceWith(summary);
+            } else {
+                testResults.insertBefore(summary, testResults.firstChild);
+            }
+            
+            // Scroll naar de samenvatting
+            summary.scrollIntoView({ behavior: 'smooth' });
+            
+            // Log naar de console
+            if (allSuccess) {
+                console.log('✅ Alle modules zijn succesvol getest!');
+            } else {
+                console.warn(`⚠️ ${totalCount - successCount} van de ${totalCount} modules konden niet worden geladen.`);
+            }
+            
+            testAllBtn.disabled = false;
+            clearResultsBtn.disabled = false;
+            
+            return allSuccess;
+        }
+        
+        // Wis alle testresultaten
+        function clearResults() {
+            testResults.innerHTML = '';
+            
+            // Voeg een bericht toe dat er nog geen tests zijn uitgevoerd
+            const message = document.createElement('div');
+            message.className = 'no-tests-message';
+            message.textContent = 'Er zijn nog geen tests uitgevoerd. Klik op "Test Alles" om te beginnen.';
+            testResults.appendChild(message);
+            
+            // Zorg ervoor dat de knoppen weer klikbaar zijn
+            testAllBtn.disabled = false;
+            clearResultsBtn.disabled = true;
+        }
+        
+        // Initialisatie van de pagina
+        document.addEventListener('DOMContentLoaded', () => {
+            // Voeg CSS toe voor de samenvatting en berichten
+            const style = document.createElement('style');
+            style.textContent = `
+                .test-summary {
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    border-radius: 4px;
+                    background-color: #f8f9fa;
+                    border-left: 4px solid #6c757d;
+                }
+                .test-summary.success {
+                    background-color: #e8f5e9;
+                    border-left-color: #4caf50;
+                }
+                .test-summary.error {
+                    background-color: #ffebee;
+                    border-left-color: #f44336;
+                }
+                .test-summary h3 {
+                    margin-top: 0;
+                    margin-bottom: 10px;
+                }
+                .no-tests-message {
+                    padding: 20px;
+                    text-align: center;
+                    color: #6c757d;
+                    font-style: italic;
+                }
+                .module-header {
+                    cursor: pointer;
+                    padding: 10px;
+                    background-color: #f1f1f1;
+                    border-radius: 4px;
+                    margin-bottom: 5px;
+                }
+                .module-header:hover {
+                    background-color: #e9e9e9;
+                }
+                .module-content {
+                    padding: 10px;
+                    background-color: white;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    margin-bottom: 15px;
+                    display: none;
+                }
+                .module-status {
+                    float: right;
+                    padding: 2px 8px;
+                    border-radius: 10px;
+                    font-size: 0.8em;
+                    font-weight: bold;
+                }
+                .module-status.pending {
+                    background-color: #ffc107;
+                    color: #000;
+                }
+                .module-status.success {
+                    background-color: #4caf50;
+                    color: white;
+                }
+                .module-status.error {
+                    background-color: #f44336;
+                    color: white;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Maak testresultaten aan voor alle modules
+            modules.forEach(module => {
+                const testElement = createTestResult(module);
+                testResults.appendChild(testElement);
+            });
+            
+            // Event listeners voor knoppen
+            testAllBtn.addEventListener('click', () => {
+                runAllTests().catch(error => {
+                    console.error('Er is een fout opgetreden bij het uitvoeren van de tests:', error);
+                    updateTestStatus('global', 'error', `Er is een fout opgetreden: ${error.message}`);
+                });
+            });
+            
+            clearResultsBtn.addEventListener('click', clearResults);
+            
+            // Schakel de clear-knop uit aan het begin
+            clearResultsBtn.disabled = true;
+            
+            // Toon een welkomstbericht
+            console.log('Testomgeving is klaar. Klik op "Test Alles" om te beginnen.');
+            
+            // Voeg een initial state toe
+            clearResults();
+        });
+    </script>
+</body>
+</html>
