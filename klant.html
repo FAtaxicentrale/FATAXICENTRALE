@@ -1447,13 +1447,17 @@ button {
 </div>
 
 <!-- Load Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 
 <!-- Load Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <!-- Load application scripts -->
 <script type="module">
+    // Importeer alle benodigde modules
+    import { config } from './static/js/config.js';
+    import { formatPrice, debounce, showError, clearError } from './static/js/utils.js';
+    import { LocationService } from './static/js/location.js';
     import { AddressSuggestions } from './static/js/addressSuggestions.js';
     import { IdealPayment } from './static/js/idealPayment.js';
     import { LanguageSettings } from './static/js/languageSettings.js';
@@ -1463,9 +1467,12 @@ button {
     import { Validator } from './static/js/validator.js';
 
     // Wacht tot de DOM volledig is geladen
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
         try {
+            console.log('Initialiseren van modules...');
+            
             // Initialiseer modules
+            const locationService = new LocationService();
             const addressSuggestions = new AddressSuggestions();
             const idealPayment = new IdealPayment();
             const languageSettings = LanguageSettings.initialize();
@@ -1473,40 +1480,155 @@ button {
             const formHandler = new FormHandler();
             const ui = new UI();
             const validator = new Validator();
+            
+            // Maak modules beschikbaar in de globale scope indien nodig
+            window.locationService = locationService;
+            window.addressSuggestions = addressSuggestions;
+            window.idealPayment = idealPayment;
+            
+            console.log('Modules succesvol geïnitialiseerd');
 
-            // Voeg adresuggesties listeners toe
-            const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
-            adresInputs.forEach(input => {
-                input.addEventListener('input', (e) => {
-                    const suggestionBoxId = e.target.dataset.suggestie;
-                    if (addressSuggestions && typeof addressSuggestions.getSuggestions === 'function') {
-                        addressSuggestions.getSuggestions(e.target, suggestionBoxId);
+            // Initialiseer adres suggesties
+            try {
+                console.log('Initialiseren van adres suggesties...');
+                
+                // Voeg adresuggesties containers toe als ze nog niet bestaan
+                const addSuggestionBoxIfNotExists = (inputId, boxId) => {
+                    const input = document.getElementById(inputId);
+                    if (input && !document.getElementById(boxId)) {
+                        const box = document.createElement('div');
+                        box.id = boxId;
+                        box.className = 'suggesties-box';
+                        input.parentNode.insertBefore(box, input.nextSibling);
                     }
+                };
+                
+                // Voeg suggestie containers toe voor ophaal- en afzetadres
+                addSuggestionBoxIfNotExists('ophaaladres', 'ophaaladres-suggesties');
+                addSuggestionBoxIfNotExists('afzetadres', 'afzetadres-suggesties');
+                
+                // Voeg adresuggesties listeners toe
+                const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
+                adresInputs.forEach(input => {
+                    input.addEventListener('input', debounce(async (e) => {
+                        const suggestionBoxId = e.target.dataset.suggestie;
+                        const suggestionBox = document.getElementById(suggestionBoxId);
+                        
+                        if (!suggestionBox) return;
+                        
+                        const searchTerm = e.target.value.trim();
+                        
+                        if (searchTerm.length < 3) {
+                            suggestionBox.innerHTML = '';
+                            suggestionBox.classList.remove('active');
+                            return;
+                        }
+                        
+                        try {
+                            // Toon loading state
+                            suggestionBox.innerHTML = '<div class="loading-suggestions">Zoeken naar adressen...</div>';
+                            suggestionBox.classList.add('active');
+                            
+                            // Zoek adressen
+                            const results = await locationService.searchAddress(searchTerm);
+                            
+                            if (results.length === 0) {
+                                suggestionBox.innerHTML = '<div class="loading-suggestions">Geen adressen gevonden</div>';
+                                return;
+                            }
+                            
+                            // Toon resultaten
+                            suggestionBox.innerHTML = results.map(result => 
+                                `<div class="suggestie-item" onclick="document.getElementById('${e.target.id}').value = '${result.displayName.replace(/'/g, "\\'")}'; this.parentNode.classList.remove('active');">
+                                    ${result.displayName}
+                                </div>`
+                            ).join('');
+                            
+                        } catch (error) {
+                            console.error('Fout bij het ophalen van adressuggesties:', error);
+                            suggestionBox.innerHTML = '<div class="loading-suggestions">Fout bij het ophalen van adressen</div>';
+                        }
+                    }, 300)); // Debounce met 300ms
+                    
+                    // Sluit suggesties bij klik buiten het veld
+                    input.addEventListener('blur', () => {
+                        setTimeout(() => {
+                            const box = document.getElementById(input.dataset.suggestie);
+                            if (box) box.classList.remove('active');
+                        }, 200);
+                    });
                 });
-            });
+                
+                console.log('Adres suggesties succesvol geïnitialiseerd');
+                
+            } catch (error) {
+                console.error('Fout bij het initialiseren van adres suggesties:', error);
+            }
 
-            // Voeg iDEAL betaling listener toe
-            const idealButton = document.getElementById('ideal-button');
-            if (idealButton && idealPayment && typeof idealPayment.startPayment === 'function') {
-                idealButton.addEventListener('click', () => {
-                    idealPayment.startPayment();
-                });
+            // Initialiseer iDEAL betaling
+            try {
+                console.log('Initialiseren van iDEAL betaling...');
+                
+                const idealButton = document.getElementById('ideal-button');
+                if (idealButton && idealPayment && typeof idealPayment.startPayment === 'function') {
+                    idealButton.addEventListener('click', async () => {
+                        try {
+                            await idealPayment.startPayment();
+                        } catch (error) {
+                            console.error('Fout bij het starten van iDEAL betaling:', error);
+                            // Toon foutmelding aan gebruiker
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.textContent = 'Er is een fout opgetreden bij het starten van de betaling. Probeer het opnieuw.';
+                            idealButton.parentNode.insertBefore(errorDiv, idealButton.nextSibling);
+                        }
+                    });
+                    console.log('iDEAL betaling succesvol geïnitialiseerd');
+                } else {
+                    console.warn('iDEAL betaling knop niet gevonden of ongeldig');
+                }
+            } catch (error) {
+                console.error('Fout bij het initialiseren van iDEAL betaling:', error);
             }
 
             // Initialiseer modules indien beschikbaar
-            if (formHandler && typeof formHandler.initialize === 'function') {
-                formHandler.initialize();
+            try {
+                console.log('Initialiseren van formulier handler...');
+                if (formHandler && typeof formHandler.initialize === 'function') {
+                    await formHandler.initialize();
+                    console.log('Formulier handler succesvol geïnitialiseerd');
+                } else {
+                    console.warn('Formulier handler niet beschikbaar of ongeldig');
+                }
+            } catch (error) {
+                console.error('Fout bij het initialiseren van de formulier handler:', error);
             }
 
-            if (ui && typeof ui.initialize === 'function') {
-                ui.initialize();
+            try {
+                console.log('Initialiseren van UI...');
+                if (ui && typeof ui.initialize === 'function') {
+                    await ui.initialize();
+                    console.log('UI succesvol geïnitialiseerd');
+                } else {
+                    console.warn('UI niet beschikbaar of ongeldig');
+                }
+            } catch (error) {
+                console.error('Fout bij het initialiseren van de UI:', error);
             }
 
-            if (validator && typeof validator.initialize === 'function') {
-                validator.initialize();
+            try {
+                console.log('Initialiseren van validator...');
+                if (validator && typeof validator.initialize === 'function') {
+                    await validator.initialize();
+                    console.log('Validator succesvol geïnitialiseerd');
+                } else {
+                    console.warn('Validator niet beschikbaar of ongeldig');
+                }
+            } catch (error) {
+                console.error('Fout bij het initialiseren van de validator:', error);
             }
 
-            console.log('Modules succesvol geïnitialiseerd');
+            console.log('Alle modules zijn geïnitialiseerd');
         } catch (error) {
             console.error('Fout bij het initialiseren van modules:', error);
         }
