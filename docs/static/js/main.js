@@ -151,7 +151,30 @@ class App {
   setupEventListeners() {
     console.log('Setting up event listeners...');
     try {
-      // Voorbeeld: document.getElementById('someButton').addEventListener('click', ...)
+      // Taxi button click handler
+      const btnTaxi = document.getElementById('btnTaxi');
+      if (btnTaxi) {
+        btnTaxi.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('Taxi button clicked');
+          window.location.href = '/FATAXICENTRALE/klant.html';
+        });
+      } else {
+        console.warn('Taxi button not found');
+      }
+
+      // Bus button click handler
+      const btnBus = document.getElementById('btnBus');
+      if (btnBus) {
+        btnBus.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('Bus button clicked');
+          window.location.href = '/FATAXICENTRALE/klant.html?vehicle=bus';
+        });
+      } else {
+        console.warn('Bus button not found');
+      }
+      
       console.log('Event listeners set up');
     } catch (error) {
       console.error('Error setting up event listeners:', error);
