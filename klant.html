@@ -1288,7 +1288,7 @@ button {
 }
 </style>
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <link rel="stylesheet" href="static/css/styles.css"> crossorigin=""/>
 </head>
 
 <body>
@@ -1446,54 +1446,70 @@ button {
   </div>
 </div>
 
-<!-- Zet ALLE scripts vlak voor </body> -->
-<!-- Leaflet JS -->
+<!-- Load Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+<!-- Load Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<!-- Load application scripts -->
 <script type="module">
     import { AddressSuggestions } from './static/js/addressSuggestions.js';
     import { IdealPayment } from './static/js/idealPayment.js';
     import { LanguageSettings } from './static/js/languageSettings.js';
     import { PriceCalculator } from './static/js/priceCalculator.js';
     import { FormHandler } from './static/js/formHandler.js';
-    import { UIHandler } from './static/js/ui.js';
+    import { UI } from './static/js/ui.js';
     import { Validator } from './static/js/validator.js';
 
-    // Initialiseer alle modules
-    const addressSuggestions = new AddressSuggestions();
-    const idealPayment = new IdealPayment();
-    const languageSettings = LanguageSettings.initialize();
-    const priceCalculator = new PriceCalculator();
-    const formHandler = new FormHandler();
-    const uiHandler = new UIHandler();
-    const validator = new Validator();
-
-    // Voeg event listeners toe
+    // Wacht tot de DOM volledig is geladen
     document.addEventListener('DOMContentLoaded', () => {
-        // Voeg adresuggesties listeners toe
-        const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
-        adresInputs.forEach(input => {
-            input.addEventListener('input', (e) => {
-                const suggestionBoxId = e.target.dataset.suggestie;
-                addressSuggestions.getSuggestions(e.target, suggestionBoxId);
-            });
-        });
+        try {
+            // Initialiseer modules
+            const addressSuggestions = new AddressSuggestions();
+            const idealPayment = new IdealPayment();
+            const languageSettings = LanguageSettings.initialize();
+            const priceCalculator = new PriceCalculator();
+            const formHandler = new FormHandler();
+            const ui = new UI();
+            const validator = new Validator();
 
-        // Voeg iDEAL betaling listener toe
-        const idealButton = document.getElementById('ideal-button');
-        if (idealButton) {
-            idealButton.addEventListener('click', () => {
-                idealPayment.startPayment();
+            // Voeg adresuggesties listeners toe
+            const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
+            adresInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const suggestionBoxId = e.target.dataset.suggestie;
+                    if (addressSuggestions && typeof addressSuggestions.getSuggestions === 'function') {
+                        addressSuggestions.getSuggestions(e.target, suggestionBoxId);
+                    }
+                });
             });
+
+            // Voeg iDEAL betaling listener toe
+            const idealButton = document.getElementById('ideal-button');
+            if (idealButton && idealPayment && typeof idealPayment.startPayment === 'function') {
+                idealButton.addEventListener('click', () => {
+                    idealPayment.startPayment();
+                });
+            }
+
+            // Initialiseer modules indien beschikbaar
+            if (formHandler && typeof formHandler.initialize === 'function') {
+                formHandler.initialize();
+            }
+
+            if (ui && typeof ui.initialize === 'function') {
+                ui.initialize();
+            }
+
+            if (validator && typeof validator.initialize === 'function') {
+                validator.initialize();
+            }
+
+            console.log('Modules succesvol geïnitialiseerd');
+        } catch (error) {
+            console.error('Fout bij het initialiseren van modules:', error);
         }
-
-        // Initialiseer formulieropslag
-        formHandler.initialize();
-
-        // Initialiseer UI updates
-        uiHandler.initialize();
-
-        // Initialiseer validaties
-        validator.initialize();
     });
 
     // Maak globale functies beschikbaar
