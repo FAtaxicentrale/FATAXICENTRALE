@@ -24,13 +24,20 @@ jobs:
 
       - name: Build
         run: |
-          mkdir -p docs
-          cp -r static docs/
-          cp klant.html docs/index.html
+          # Maak een lege .nojekyll file om ervoor te zorgen dat GitHub Pages
+          # alle bestanden toont, inclusief die met een underscore
+          touch .nojekyll
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs
+          folder: .
           branch: gh-pages
+          clean-exclude: |
+            .github/
+            .gitignore
+            node_modules/
+            *.log
+            *.bak
+            *.backup*
           clean: true
