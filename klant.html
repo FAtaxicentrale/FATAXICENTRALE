@@ -4,7 +4,105 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>FA Taxi Boeking</title>
+  <!-- Voeg hier je CSS-bestanden toe -->
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- De applicatie wordt hier ingeladen -->
+  </div>
+
+  <!-- Laad de configuratie eerst -->
+  <script src="static/js/config.js"></script>
+  
+  <script src="static/js/translations.js"></script>
+  <script src="static/js/utils.js"></script>
+  <script src="static/js/location.js"></script>
+  <script src="static/js/addressSuggestions.js"></script>
+  <script src="static/js/priceCalculator.js"></script>
+  <script src="static/js/map.js"></script>
+  <script src="static/js/idealPayment.js"></script>
+  <script src="static/js/languageSettings.js"></script>
+  <script src="static/js/formHandler.js"></script>
+  <script src="static/js/draft-manager.js"></script>
+  
+  <!-- Laad de hoofdapplicatie als laatste -->
+  <script src="static/js/main.js"></script>
+  
+  <!-- Initialiseer de applicatie -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // Initialiseer de applicatie
+        if (window.App) {
+          const app = new window.App();
+          window.app = app; // Maak beschikbaar in de globale scope
+          
+          // Initialiseer eventuele andere componenten
+          if (window.FormHandler) {
+            window.formHandler = new window.FormHandler(app);
+          }
+          
+          if (window.idealPayment && typeof window.idealPayment.initialize === 'function') {
+            window.idealPayment.initialize();
+          }
+          
+          console.log('Applicatie succesvol geïnitialiseerd');
+        } else {
+          console.error('App klasse niet gevonden');
+        }
+      } catch (error) {
+        console.error('Fout bij het initialiseren van de applicatie:', error);
+      }
+    });
+  </script>
+</body>
+</html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>FA Taxi Boeking</title>
   <style>
+    /* Laadspinner stijlen */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 1.5em;
+      height: 1.5em;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    /* Foutmelding stijlen */
+    .error-message {
+      color: #d32f2f;
+      background-color: #ffebee;
+      padding: 12px;
+      border-radius: 4px;
+      margin: 10px 0;
+      border-left: 4px solid #d32f2f;
+      transition: all 0.3s ease;
+    }
+    
+    .error-message strong {
+      font-weight: 600;
+    }
+    
+    /* Knopstijlen tijdens het laden */
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
     /* Responsive base */
     body { padding: 0.5rem; }
     .container { max-width: 95vw; margin: 1rem auto; padding: 1rem; }
@@ -1288,7 +1386,7 @@ button {
 }
 </style>
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="static/css/styles.css"> crossorigin=""/>
+  <!-- Leaflet CSS wordt geladen via CDN hieronder -->
 </head>
 
 <body>
@@ -1342,7 +1440,7 @@ button {
   </svg>
 </div>
 <!-- Hoekknoppen -->
-  <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍 </label>
+  <label for="ophaaladres" id="labelOphaal" data-i18n="ophaal">📍 OPHAAL ADRES 📍</label>
   <div class="input-wrapper" style="position:relative; width:100%;">
     <input 
       type="text" 
@@ -1354,14 +1452,14 @@ button {
       required 
     />
     <div id="ophaaladres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; z-index:10;"></div>
-    <button type="button" onclick="gebruikLocatie()" id="locatieBtn">📍 Mijn locatie</button>
+    <button type="button" onclick="gebruikLocatie()" id="locatieBtn" data-i18n="locatieBtn">📍 Mijn locatie</button>
   </div>
 
   <!-- Tussenstop knop en velden -->
-  <button type="button" id="tussenstopBtn" onclick="toonTussenstopVeld()" style="margin-bottom:0.5rem;">➕ Tussenstop toevoegen</button>
+  <button type="button" id="tussenstopBtn" onclick="toonTussenstopVeld()" style="margin-bottom:0.5rem;" data-i18n="tussenstop">➕ Tussenstop toevoegen</button>
   <div id="tussenstopContainer" style="display:none; margin-bottom:0.5rem;"></div>
 
-  <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
+  <label for="afzetadres" id="labelAfzet" data-i18n="afzet">📍 AFZET ADRES 📍</label>
   <div class="input-wrapper" style="position:relative; width:100%;">
     <input 
       type="text" 
@@ -1381,22 +1479,22 @@ button {
     <div id="map" style="height: 330px; width: 100%; border-radius: 13px; overflow: hidden; box-shadow: 0 2px 12px #0005;"></div>
   </div>
 
-  <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
+  <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false" data-i18n="datum">📅 Reserveren? €17.50,- 📅</button>
 
   <div id="datumContainer">
-    <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒</label>
+    <label for="tijdstip" id="labelTijdstip" data-i18n="tijdstip">🕒 Gewenst tijdstip 🕒</label>
     <input type="datetime-local" id="tijdstip" aria-label="Gewenst tijdstip" />
   </div>
 
-  <label for="betaalmethode" id="labelBetaal">💳 Kies een betaalmethode 💳</label>
+  <label for="betaalmethode" id="labelBetaal" data-i18n="betaal">💳 Kies een betaalmethode 💳</label>
   <select id="betaalmethode" aria-label="Betaalmethode" required>
-    <option value="IDEAL Online-Betaal-Link">🌐 IDEAL Online-Betaal-Link</option>
-    <option value="Tikkie">🔗 Tikkie</option>
-    <option value="Pin bij chauffeur">💳 Pin bij chauffeur</option>
-    <option value="Contant">💶 Contant</option>
+    <option value="IDEAL Online-Betaal-Link" data-i18n="selectIdeal">🌐 IDEAL Online-Betaal-Link</option>
+    <option value="Tikkie" data-i18n="selectTikkie">🔗 Tikkie</option>
+    <option value="Pin" data-i18n="selectPin">💳 Pin bij chauffeur</option>
+    <option value="Contant" data-i18n="selectCash">💶 Contant</option>
   </select>
 
-  <label for="kortingscode" id="labelKorting">💰 Kortingscode 💰</label>
+  <label for="kortingscode" id="labelKorting" data-i18n="korting">💰 Kortingscode 💰</label>
   <input 
     type="text" 
     id="kortingscode" 
@@ -1404,7 +1502,7 @@ button {
     aria-label="Kortingscode" 
   />
 
-  <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen ✏️</label>
+  <label for="opmerkingen" id="labelOpmerkingen" data-i18n="opmerkingen">✏️ Opmerkingen ✏️</label>
   <textarea 
     id="opmerkingen" 
     placeholder="Bijvoorbeeld: helpen met bagage, bijzonderheden, etc." 
@@ -1412,15 +1510,15 @@ button {
     style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"
   ></textarea>
 
-  <button type="button" onclick="toggleHuisdier()" id="huisdierBtn">🐶 Huisdieren €5,- 🐶</button>
+  <button type="button" onclick="toggleHuisdier()" id="huisdierBtn" data-i18n="huisdier">🐶 Huisdieren €5,- 🐶</button>
   <input type="hidden" id="huisdieren" value="0">
 
-  <button type="button" onclick="toggleSpoed()" id="spoedBtn">🚀 Spoedrit €10 🚀</button>
+  <button type="button" onclick="toggleSpoed()" id="spoedBtn" data-i18n="spoed">🚀 Spoedrit €10 🚀</button>
 
-  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Annuleringskosten €10,- 🚨</button>
+  <button onclick="toggleAkkoord()" id="akkoordBtn" data-i18n="akkoord">🚨 Annuleringskosten €10,- 🚨</button>
   <input type="hidden" id="akkoord" value="0">
 
-  <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
+  <button onclick="berekenRit()" id="btnBereken" data-i18n="bereken">🚖 Bereken ritprijs 🚖</button>
 
   <div id="resultaat"></div>
 
@@ -1441,7 +1539,7 @@ button {
 
   <div id="bevestigContainer" style="display:none;">
     <a id="whatsappKnop" href="https://wa.me/message/WPXHSY3TEYVPA1" target="_blank">
-      <button disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;">📩 Bevestig & Verstuur naar WhatsApp 📩</button>
+      <button disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;" data-i18n="whatsapp">📩 Bevestig & Verstuur naar WhatsApp 📩</button>
     </a>
   </div>
 </div>
@@ -1482,16 +1580,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 <!-- Oude scripts voor compatibiliteit -->
 <script>
-// Maak globale functies beschikbaar voor backward compatibility
-window.startIdealPay = () => {
-    if (window.app?.modules?.idealPayment?.IdealPayment) {
-        const payment = new window.app.modules.idealPayment.IdealPayment();
-        return payment.startPayment();
-    }
-    console.error('iDEAL betaling is niet beschikbaar');
-    return Promise.reject('iDEAL betaling is niet beschikbaar');
-};
-
+// Globale hulpfuncties
 window.kiesAdresSuggestie = (inputId, suggestionBoxId, adres) => {
     const input = document.getElementById(inputId);
     if (input) {
@@ -1502,133 +1591,31 @@ window.kiesAdresSuggestie = (inputId, suggestionBoxId, adres) => {
     }
 };
 
-// Kaart initialisatie (tijdelijk, verplaats dit later naar de juiste module)
+// Kaart initialisatie (wordt nu afgehandeld door MapManager)
 let map, routeLayer, startMarker, endMarker;
 
-// Initieer kaart direct bij laden op Nederland
-function initMap() {
-    if (!map) {
-        map = L.map('map').setView([52.2, 5.3], 7); // Nederland
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-            maxZoom: 19
-        }).addTo(map);
-    }
-    return map;
-}
-
-// Initialiseer de kaart wanneer het DOM geladen is
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialiseer de kaart alleen als het element bestaat
-    if (document.getElementById('map')) {
-        initMap();
-    }
-});
-</script>
-<!-- Kaart functionaliteit wordt geladen door de hoofdapplicatie -->
-
-<!-- Importeer de hoofdapplicatie -->
-<script>
-// Wacht tot de DOM volledig is geladen
+// Initialize the application when the DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Initialiseren FA Taxi applicatie...');
+    
     try {
-        console.log('Initialiseren van modules...');
+        // The App class will initialize all modules
+        const app = new App();
+        await app.initialize();
         
-        // Initialiseer modules
-        const locationService = new LocationService();
-        const addressSuggestions = new AddressSuggestions();
-        const idealPayment = new IdealPayment();
-        const languageSettings = LanguageSettings.initialize();
-        const priceCalculator = new PriceCalculator();
-        const formHandler = new FormHandler();
-        const ui = new UI();
-        const validator = new Validator();
+        // Make app instance globally available
+        window.app = app;
         
-        // Maak modules beschikbaar in de globale scope indien nodig
-        window.locationService = locationService;
-        window.addressSuggestions = addressSuggestions;
-        window.idealPayment = idealPayment;
+        console.log('FA Taxi applicatie succesvol geïnitialiseerd');
         
-        console.log('Modules succesvol geïnitialiseerd');
-
-        // Initialiseer adres suggesties
-        try {
-            console.log('Initialiseren van adres suggesties...');
-            
-            // Voeg adresuggesties containers toe als ze nog niet bestaan
-            const addSuggestionBoxIfNotExists = (inputId, boxId) => {
-                const input = document.getElementById(inputId);
-                if (input && !document.getElementById(boxId)) {
-                    const box = document.createElement('div');
-                    box.id = boxId;
-                    box.className = 'suggesties-box';
-                    input.parentNode.insertBefore(box, input.nextSibling);
-                }
-            };
-            
-            // Voeg suggestie containers toe voor ophaal- en afzetadres
-            addSuggestionBoxIfNotExists('ophaaladres', 'ophaaladres-suggesties');
-            addSuggestionBoxIfNotExists('afzetadres', 'afzetadres-suggesties');
-            
-            // Voeg adresuggesties listeners toe
-            const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
-            adresInputs.forEach(input => {
-                input.addEventListener('input', debounce(async (e) => {
-                    const suggestionBoxId = e.target.dataset.suggestie;
-                    const suggestionBox = document.getElementById(suggestionBoxId);
-                    
-                    if (!suggestionBox) return;
-                    
-                    const searchTerm = e.target.value.trim();
-                    
-                    if (searchTerm.length < 3) {
-                        suggestionBox.innerHTML = '';
-                        suggestionBox.classList.remove('active');
-                        return;
-                    }
-                    
-                    try {
-                        // Toon loading state
-                        suggestionBox.innerHTML = '<div class="loading-suggestions">Zoeken naar adressen...</div>';
-                        suggestionBox.classList.add('active');
-                        
-                        // Zoek adressen
-                        const results = await locationService.searchAddress(searchTerm);
-                        
-                        if (results.length === 0) {
-                            suggestionBox.innerHTML = '<div class="loading-suggestions">Geen adressen gevonden</div>';
-                            return;
-                        }
-                        
-                        // Toon resultaten
-                        suggestionBox.innerHTML = results.map(result => 
-                            `<div class="suggestie-item" onclick="document.getElementById('${e.target.id}').value = '${result.displayName.replace(/'/g, "\\'")}'; this.parentNode.classList.remove('active');">
-                                ${result.displayName}
-                            </div>`
-                        ).join('');
-                        
-                    } catch (error) {
-                        console.error('Fout bij het ophalen van adressuggesties:', error);
-                        suggestionBox.innerHTML = '<div class="loading-suggestions">Fout bij het ophalen van adressen</div>';
-                    }
-                }, 300)); // Debounce met 300ms
-                
-                // Sluit suggesties bij klik buiten het veld
-                input.addEventListener('blur', () => {
-                    setTimeout(() => {
-                        const box = document.getElementById(input.dataset.suggestie);
-                        if (box) box.classList.remove('active');
-                    }, 200);
-                });
-            });
-            
-            console.log('Adres suggesties succesvol geïnitialiseerd');
-            
-        } catch (error) {
-            console.error('Fout bij het initialiseren van adres suggesties:', error);
-        }
     } catch (error) {
         console.error('Er is een fout opgetreden bij het initialiseren van de applicatie:', error);
+        
+        // Show error message to user
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'background: #ffebee; color: #c62828; padding: 1rem; margin: 1rem; border-radius: 4px; text-align: center;';
+        errorDiv.textContent = 'Er is een fout opgetreden bij het initialiseren van de applicatie. Ververs de pagina of neem contact op met de beheerder.';
+        document.body.prepend(errorDiv);
     }
 });
 
@@ -1639,13 +1626,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 // Globale functies voor backward compatibility
-window.startIdealPay = () => {
-    if (window.app?.modules?.idealPayment?.IdealPayment) {
-        const payment = new window.app.modules.idealPayment.IdealPayment();
-        return payment.startPayment();
-    }
-    console.error('iDEAL betaling is niet beschikbaar');
-    return Promise.reject('iDEAL betaling is niet beschikbaar');};
 
 window.kiesAdresSuggestie = (inputId, suggestionBoxId, adres) => {
     const input = document.getElementById(inputId);
@@ -1669,7 +1649,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!map) {
     map = L.map('map').setView([52.2, 5.3], 7); // Nederland
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       maxZoom: 18,
     }).addTo(map);
   }
@@ -1778,7 +1758,7 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
   if (!map) {
     map = L.map('map').setView([coordsArr[0][1], coordsArr[0][0]], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       maxZoom: 18,
     }).addTo(map);
   } else {
@@ -2745,78 +2725,64 @@ function boekRit() {
   ritten.push(rit);
   localStorage.setItem('ritten', JSON.stringify(ritten));
 }
+
 // Alles in één object, geen dubbele variabelen meer.
 
 // --- Draft saving met timestamp voor oningevulde gegevens ---
 (function() {
   const fields = ['ophaaladres','afzetadres','tijdstip','betaalmethode','kortingscode','huisdieren','opmerkingen'];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('change', () => {
-      const draft = { timestamp: new Date().toLocaleString() };
-      fields.forEach(fid => draft[fid] = document.getElementById(fid)?.value || '');
-      localStorage.setItem('draftRit', JSON.stringify(draft));
+  const DRAFT_EXPIRY = 24 * 60 * 60 * 1000; // 24 uur
+  
+  // Laad opgeslagen velden bij het laden van de pagina
+  function loadDraft() {
+    const saved = JSON.parse(localStorage.getItem('draftRit') || '{}');
+    if (saved.timestamp && (Date.now() - saved.timestamp < DRAFT_EXPIRY)) {
+      fields.forEach(field => {
+        const el = document.getElementById(field);
+        if (el && saved[field] !== undefined) el.value = saved[field];
+      });
+    }
+  }
+  
+  // Sla wijzigingen op
+  function setupDraftSaving() {
+    fields.forEach(field => {
+      const el = document.getElementById(field);
+      if (el) {
+        el.addEventListener('change', () => {
+          const draft = JSON.parse(localStorage.getItem('draftRit') || '{}');
+          draft[field] = el.value;
+          draft.timestamp = Date.now();
+          localStorage.setItem('draftRit', JSON.stringify(draft));
+        });
+      }
     });
+  }
+  
+  // Initialisatie
+  document.addEventListener('DOMContentLoaded', function() {
+    loadDraft();
+    setupDraftSaving();
+    
+    // Event listeners voor adres suggesties
+    const ophaaladresInput = document.getElementById('ophaaladres');
+    const afzetadresInput = document.getElementById('afzetadres');
+    
+    if (ophaaladresInput) {
+      ophaaladresInput.addEventListener('input', function() {
+        zoekAdresSuggesties(this, 'ophaaladres-suggesties');
+      });
+    }
+    
+    if (afzetadresInput) {
+      afzetadresInput.addEventListener('input', function() {
+        zoekAdresSuggesties(this, 'afzetadres-suggesties');
+      });
+    }
   });
 })();
 
-// --- Adres autocomplete ---
-async function zoekAdresSuggesties(inputElem, suggestieDivId) {
-  const waarde = inputElem.value.trim();
-  const suggestieDiv = document.getElementById(suggestieDivId);
-  if (waarde.length < 3) {
-    suggestieDiv.innerHTML = '';
-    suggestieDiv.classList.remove('active');
-    return;
-  }
-  const apiKey = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
-  const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(waarde)}.json?key=${apiKey}&limit=5&countrySet=NL`;
-  try {
-    console.log('Suggestie URL:', url);
-    const res = await fetch(url);
-    console.log('Suggestie Response Status:', res.status);
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error('Suggestie API Error:', errorText);
-      suggestieDiv.innerHTML = '';
-      suggestieDiv.classList.remove('active');
-      return;
-    }
-    
-    const data = await res.json();
-    console.log('Suggestie Response Data:', data);
-    
-    if (!data.results || data.results.length === 0) {
-      suggestieDiv.innerHTML = '';
-      suggestieDiv.classList.remove('active');
-      return;
-    }
-    
-    const shownResults = data.results.map(r => ({
-      formatted: r.address.freeformAddress
-    })).filter(r => r.formatted);
-    
-    console.log('Suggestie Resultaten:', shownResults);
-    
-    const escapeHtmlAttr = (str) => str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
-        .replace(/\r/g, " ")
-        .replace(/"/g, '&quot;');
-    
-    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${escapeHtmlAttr(r.formatted)}')"}>${r.formatted}</div>`).join('');
-    suggestieDiv.classList.add('active');
-  } catch (error) {
-    console.error('Fout bij ophalen adressuggesties:', error);
-    suggestieDiv.innerHTML = '';
-    suggestieDiv.classList.remove('active');
-  }
-}
+// Functie om adressuggesties te selecteren
 function kiesAdresSuggestie(inputId, suggestieDivId, waarde) {
   document.getElementById(inputId).value = waarde;
   document.getElementById(suggestieDivId).innerHTML = '';
@@ -2833,62 +2799,7 @@ window.addEventListener('click', e => {
   });
 });
 
-// Event listeners voor adres suggesties
-document.getElementById('ophaaladres').addEventListener('input', function() {
-  zoekAdresSuggesties(this, 'ophaaladres-suggesties');
-});
-
-document.getElementById('afzetadres').addEventListener('input', function() {
-  zoekAdresSuggesties(this, 'afzetadres-suggesties');
-});
-// Geen dubbele listeners meer.
-
-// Ontbrekende functies hersteld
-function toggleHuisdier() {
-  const huisdierBtn = document.getElementById('huisdierToggle');
-  const huisdierInput = document.getElementById('huisdieren');
-  
-  if (huisdierInput.value === 'nee') {
-    huisdierInput.value = 'ja';
-    huisdierBtn.textContent = '🐶 Huisdier: Ja';
-    huisdierBtn.classList.add('active');
-  } else {
-    huisdierInput.value = 'nee';
-    huisdierBtn.textContent = '🐶 Huisdier: Nee';
-    huisdierBtn.classList.remove('active');
-  }
-}
-
-function toggleSpoed() {
-  const spoedBtn = document.getElementById('spoedToggle');
-  const spoedInput = document.getElementById('spoed');
-  
-  if (spoedInput.value === 'nee') {
-    spoedInput.value = 'ja';
-    spoedBtn.textContent = '⚡ Spoed: Ja';
-    spoedBtn.classList.add('active');
-  } else {
-    spoedInput.value = 'nee';
-    spoedBtn.textContent = '⚡ Spoed: Nee';
-    spoedBtn.classList.remove('active');
-  }
-}
-
-function toggleAkkoord() {
-  const akkoordBtn = document.getElementById('akkoordToggle');
-  const akkoordInput = document.getElementById('akkoord');
-  
-  if (akkoordInput.value === 'nee') {
-    akkoordInput.value = 'ja';
-    akkoordBtn.textContent = '✅ Akkoord: Ja';
-    akkoordBtn.classList.add('active');
-  } else {
-    akkoordInput.value = 'nee';
-    akkoordBtn.textContent = '✅ Akkoord: Nee';
-    akkoordBtn.classList.remove('active');
-  }
-}
-
+// Functie om rit te berekenen
 function berekenRit() {
   // Roep de bestaande berekenRit functie aan
   if (typeof window.berekenRit === 'function') {
@@ -2900,7 +2811,40 @@ function berekenRit() {
 }
 </script>
 
-<script>
+<!-- Main app initialization -->
+<script type="module">
+  // Laad eerst de configuratie
+  import { config } from './static/js/config.js';
+  
+  // Maak config beschikbaar voor legacy code
+  window.config = config;
+  
+  // Laad de hoofdapplicatie
+  import { App } from './static/js/app.js';
+  
+  // Initialiseer de applicatie wanneer het DOM geladen is
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Initialiseren van de applicatie...');
+    
+    try {
+      const app = new App();
+      await app.initialize();
+      window.app = app; // Maak beschikbaar in het globale bereik
+      
+      console.log('Applicatie succesvol geïnitialiseerd');
+    } catch (error) {
+      console.error('Fout bij het initialiseren van de applicatie:', error);
+      
+      // Toon foutmelding aan de gebruiker
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.textContent = 'Er is een fout opgetreden bij het laden van de applicatie. Vernieuw de pagina of probeer het later opnieuw.';
+      document.body.prepend(errorDiv);
+    }
+  });
+</script>
+
+<script type="module">
 // Apply translations based on lang param
 document.addEventListener('DOMContentLoaded', ()=>{
   const lang = new URLSearchParams(location.search).get('lang') || 'nl';
@@ -3114,7 +3058,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 </script>
 
-<script>
+<script type="module">
 window.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById('langToggle');
   const menu = document.getElementById('langMenu');
@@ -3129,55 +3073,11 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-  // Maak een globale functie zodat deze direct aangeroepen kan worden
-  window.startIdealPay = async function() {
-    // Check eerst of we een geldige prijs hebben
-    if (!window.lastPrice || isNaN(window.lastPrice) || parseFloat(window.lastPrice) <= 0) {
-      // Probeer de prijs uit het prijsveld te halen als fallback
-      const prijsEl = document.getElementById('ritprijs');
-      if (prijsEl && prijsEl.innerText) {
-        const prijsText = prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.');
-        const prijs = parseFloat(prijsText);
-        if (!isNaN(prijs) && prijs > 0) {
-          window.lastPrice = prijs;
-        } else {
-          showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
-          return;
-        }
-      } else {
-        showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
-        return;
-      }
-    }
-    
-    // Toon loader tijdens betaalproces
-    const betaalBtn = document.querySelector('button[onclick="startIdealPay()"]');
-    const origText = betaalBtn ? betaalBtn.innerText : '';
-    if (betaalBtn) {
-      betaalBtn.innerHTML = '<span class="loader" style="display:inline-block;width:16px;height:16px;border:2px solid #232526;border-top:2px solid #ffd700;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px;"></span>Betaling starten...';
-      betaalBtn.disabled = true;
-    }
-    
-    const description = `Taxi rit ${window.currentRitID || 'FA' + Date.now()}`;
-    try {
-      const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: window.lastPrice, description })
-      });
-      const data = await res.json();
-      if (data.checkoutUrl) window.location.href = data.checkoutUrl;
-      else throw new Error(data.error || 'Geen checkoutURL');
-    } catch (err) {
-      showSubtleError('Betaling kon niet worden gestart.', 'ritprijs');
-      // Herstel knop
-      if (betaalBtn) {
-        betaalBtn.innerHTML = origText;
-        betaalBtn.disabled = false;
-      }
-    }
-  };
+// ===== HOOFDAPPLICATIE INITIALISATIE =====
+// Alle functionaliteit is nu verplaatst naar modules in de static/js map
+// Zie init.js voor de hoofdinitialisatie
 </script>
+
 <script>
 // OVERRIDE BEREKENRIT NA ALLES ANDERS!
 window.addEventListener('DOMContentLoaded', function() {
@@ -3190,19 +3090,6 @@ window.addEventListener('DOMContentLoaded', function() {
       if (ophalen && afzetten) {
         showRouteOnMap(ophalen, afzetten);
       }
-    };
-  }
-});
-</script>
-<script>
-// --- Automatische prijsberekening bij wijzigen invoervelden ---
-(function() {
-  // Loader helpers
-  function showPriceLoader() {
-    let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
-    if (prijsEl) {
-      prijsEl.dataset.origText = prijsEl.innerText;
-      prijsEl.innerHTML = '<span class="loader" style="display:inline-block;width:18px;height:18px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px;"></span>Bezig met berekenen...';
     }
   }
   function hidePriceLoader() {
@@ -3316,36 +3203,18 @@ window.addEventListener('DOMContentLoaded', function() {
   document.head.appendChild(style);
 })();
 </script>
-<script>
-window.startIdealPay = async function() {
-  try {
-    // Haal prijs en omschrijving uit het formulier
-    const prijsEl = document.getElementById('ritprijs');
-    const prijs = prijsEl ? prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.') : '17.50';
-    const amount = prijs || '17.50'; // fallback
-    const description = 'Taxi rit via klant.html';
-    // Dynamisch API base kiezen
-    const apiBase = (window.location.hostname === 'fataxi.github.io') ? 'https://yolo-n9xa.onrender.com' : '';
-    const response = await fetch(`${apiBase}/api/pay`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, description })
+  <!-- Main application script -->
+  <!-- Main.js is al eerder geladen -->
+  
+  <!-- Initialize the application -->
+  <script type="module">
+    import { App } from '/static/js/main.js';
+    
+    // Initialize the application when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create and expose the app instance
+      window.app = new App();
     });
-    if (!response.ok) {
-      alert('Betaling starten mislukt. Probeer het later opnieuw.');
-      return;
-    }
-    const data = await response.json();
-    if (data.checkoutUrl) {
-      window.location.href = data.checkoutUrl;
-    } else {
-      alert('Geen betaallink ontvangen van de server.');
-    }
-  } catch (err) {
-    alert('Er ging iets mis bij het starten van de betaling.');
-    console.error(err);
-  }
-};
-</script>
+  </script>
 </body>
 </html>
