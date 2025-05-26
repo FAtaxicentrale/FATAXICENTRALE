@@ -9,87 +9,116 @@
       box-sizing: border-box;
     }
 
+    /* Responsive base */
+    body { padding: 0.5rem; }
+    .container { max-width: 95vw; margin: 1rem auto; padding: 1rem; }
+    input, select, textarea, button { width: 100% !important; box-sizing: border-box; }
+    @media (max-width: 600px) {
+      label, input, button, select, textarea { font-size: 0.9rem !important; }
+      button, input { padding: 0.8rem !important; }
+    }
+    
+    /* --- BASIS STYLING --- */
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      animation: fadeIn 2s ease;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
       color: #fff;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .container {
-      background-color: rgba(255, 215, 0, 0.07);
-      padding: 40px;
-      border-radius: 20px;
-      border: 2px solid gold;
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-      text-align: center;
-      width: 90%;
-      max-width: 500px;
+      padding: 1rem;
+      min-height: 100vh;
+      overflow-x: hidden;
       position: relative;
-      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
+      z-index: 0;
+      mix-blend-mode: lighten;
+    }
+    
+    .container {
+      max-width: 420px;
+      margin: 1rem auto 0.7rem auto;
+      background: #111;
+      padding: 1.1rem 1rem 1.1rem 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.18);
+      box-sizing: border-box;
     }
 
     h1 {
-      margin: 20px 0 30px;
-      font-size: 2.5rem;
-      color: red;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+      text-align: center;
+      margin: 0.7rem 0 0.7rem 0;
+      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 12px #ffd70088) drop-shadow(0 1px 4px #bfa10044);
+      text-shadow: 0 2px 16px #fff7, 0 1px 4px #bfa100;
+      position: relative;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
 
     .taxi-icon {
-      width: 80px;
-      animation: moveTaxi 3s infinite alternate ease-in-out;
-    }
-
-    @keyframes moveTaxi {
-      0% { transform: translateX(-10px) rotate(-2deg); }
-      100% { transform: translateX(10px) rotate(2deg); }
+      width: 100px;
+      height: 100px;
+      margin-bottom: 1.2rem;
+      filter: drop-shadow(0 2px 18px #ffd70088);
     }
 
     .button-group {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 1.2rem;
+      margin-top: 1.5rem;
     }
 
     button {
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      background-color: gold;
-      color: black;
-      font-size: 1.2rem;
+      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+      color: #222;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4);
-      transition: 0.3s ease;
+      border: none;
+      box-shadow: 0 3px 18px 0 #fff8, 0 3px 18px 0 #ffe06699, 0 1px 6px #bfa10055;
+      text-shadow: 0 2px 10px #fff8, 0 1px 4px #bfa10099;
+      transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
+      filter: brightness(1.13) drop-shadow(0 1px 8px #ffd70077);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      padding: 0.8rem;
+      font-size: 1.1rem;
     }
 
-    button:hover {
-      background-color: #fff;
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px gold;
+    button:after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
+      pointer-events: none;
+      border-radius: 8px;
+      z-index: 0;
+    }
+
+    button:hover, button:focus {
+      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+      filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
+      outline: none;
+      transform: scale(1.03);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <img src="https://cdn-icons-png.flaticon.com/512/296/296216.png" alt="Taxi" class="taxi-icon" />
-    <h1>Welkom<h1>
-    <h1>FA Taxi Service</h1>
-      <h1>24/7 Service</h1>
+    <h1>Welkom</h1>
+    <h2>FA Taxi Service</h2>
+    <h2>24/7 Service</h2>
     <div class="button-group">
       <button onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
       <button onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
