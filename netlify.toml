@@ -6,9 +6,7 @@
   NODE_VERSION = "18"
 
 [context.production.environment]
-  TWILIO_ACCOUNT_SID = "$TWILIO_ACCOUNT_SID"
-  TWILIO_AUTH_TOKEN = "$TWILIO_AUTH_TOKEN"
-  TWILIO_PHONE_NUMBER = "$TWILIO_PHONE_NUMBER"
+  # Voeg hier eventuele andere omgevingsvariabelen toe
 
 [[redirects]]
   from = "/api/*"

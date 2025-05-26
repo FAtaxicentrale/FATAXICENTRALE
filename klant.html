@@ -1840,22 +1840,6 @@ function updateWhatsappKnopVisibility() {
   }
 }
 
-// Vervang directe WhatsApp link door Twilio endpoint
-async function sendWhatsApp(bericht) {
-  try {
-    const response = await fetch('http://localhost:3000/api/whatsapp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: process.env.TWILIO_WHATSAPP_NUMBER,
-        message: bericht
-      })
-    });
-    console.log('Bericht verstuurd:', await response.json());
-  } catch (err) {
-    console.error('Fout bij versturen:', err);
-  }
-};
 
 document.addEventListener('DOMContentLoaded', function() {
   // Reset betalingGeslaagd als iDEAL geselecteerd bij laden
