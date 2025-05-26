@@ -15,13 +15,15 @@
     /* Responsive base */
     :root {
       --base-font-size: 16px;
-      --container-max-width: 420px;
       --spacing-unit: 0.5rem;
-      --color-primary: #ffd700;
-      --color-primary-dark: #bfa100;
-      --color-primary-light: #fffbe6;
-      --color-text: #fff;
-      --color-bg: #111;
+      --color-primary: #000000;
+      --color-primary-dark: #1d1d1d;
+      --color-primary-light: #ffffff;
+      --color-accent: #ffd700;
+      --color-text: #ffffff;
+      --color-text-dark: #000000;
+      --color-bg: #ffffff;
+      --color-bg-dark: #1d1d1d;
     }
     
     html {
@@ -30,126 +32,121 @@
     }
     
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--color-bg);
       color: var(--color-text);
-      padding: var(--spacing-unit);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0 1rem;
     }
     
     /* Container */
     .container {
-      max-width: var(--container-max-width);
-      margin: 0 auto;
-      background: var(--color-bg);
-      padding: calc(var(--spacing-unit) * 4);
-      border-radius: calc(var(--spacing-unit) * 3);
-      box-shadow: 0 10px 30px rgba(var(--color-primary), 0.2);
-      box-sizing: border-box;
-      position: relative;
-      overflow: hidden;
+      max-width: 1200px;
       width: 100%;
-      min-height: 100vh;
+      margin: 0 auto;
+      padding: 4rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      gap: 4rem;
+      background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-dark) 100%);
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     }
     
     /* Header */
     .header {
       text-align: center;
-      margin-bottom: calc(var(--spacing-unit) * 4);
-      flex: 0 0 auto;
+      max-width: 800px;
+      width: 100%;
     }
     
     .header h1 {
-      font-size: calc(var(--base-font-size) * 2.5);
-      margin: 0;
-      background: linear-gradient(90deg, var(--color-primary-light) 0%, var(--color-primary) 70%, var(--color-primary-dark) 100%);
+      font-size: 4rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--color-bg-dark) 0%, var(--color-primary-dark) 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 0 2px 16px var(--color-primary);
-      letter-spacing: 1px;
-      line-height: 1.2;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
     
     .header h2 {
-      color: var(--color-primary);
-      font-size: calc(var(--base-font-size) * 1.5);
-      margin: calc(var(--spacing-unit) * 0.5) 0;
-      font-weight: 500;
+      font-size: 1.5rem;
+      color: var(--color-primary-dark);
+      opacity: 0.9;
       line-height: 1.4;
+      margin-bottom: 2rem;
     }
     
     /* Taxi icon */
     .taxi-icon {
-      width: calc(var(--base-font-size) * 8);
-      height: calc(var(--base-font-size) * 8);
-      margin: calc(var(--spacing-unit) * 2) auto;
-      filter: drop-shadow(0 4px 25px rgba(var(--color-primary), 0.55));
-      animation: taxiBounce 2s infinite ease-in-out;
+      width: 200px;
+      height: 200px;
+      margin: 2rem 0;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+      animation: taxiBounce 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     /* Button group */
     .button-group {
       display: flex;
       flex-direction: column;
-      gap: calc(var(--spacing-unit) * 3);
-      margin-top: calc(var(--spacing-unit) * 4);
-      flex: 0 0 auto;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 600px;
     }
     
     /* Buttons */
     button {
-      background: linear-gradient(90deg, var(--color-primary-light) 0%, var(--color-primary) 70%, var(--color-primary-dark) 100%);
-      color: rgba(0, 0, 0, 0.8);
-      font-weight: bold;
+      background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text);
+      font-weight: 600;
+      font-size: 1.1rem;
       cursor: pointer;
       border: none;
-      box-shadow: 0 8px 25px rgba(var(--color-primary), 0.3);
-      text-shadow: 0 2px 10px rgba(var(--color-primary), 0.4);
+      border-radius: 1rem;
+      padding: 1rem 2rem;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: calc(var(--spacing-unit) * 2);
-      position: relative;
-      overflow: hidden;
-      padding: calc(var(--spacing-unit) * 2);
-      font-size: calc(var(--base-font-size) * 1.2);
-      width: 100%;
-      max-width: calc(var(--base-font-size) * 18.75);
-      margin: 0 auto;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: calc(var(--spacing-unit) * 1.5);
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
     
     button span {
-      font-size: calc(var(--base-font-size) * 1.5);
+      font-size: 1.5rem;
     }
     
     button:after {
       content: "";
-      display: block;
       position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
-      background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
       pointer-events: none;
-      border-radius: calc(var(--spacing-unit) * 2);
-      z-index: 0;
+      z-index: 1;
     }
     
-    button:hover, button:focus {
-      background: linear-gradient(90deg, var(--color-primary-light) 0%, var(--color-primary) 50%, var(--color-primary-dark) 100%);
-      box-shadow: 0 12px 35px rgba(var(--color-primary), 0.4);
-      transform: translateY(-1px);
-      outline: none;
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
     }
     
     /* Animaties */
@@ -160,46 +157,56 @@
     }
     
     /* Responsive aanpassingen */
-    @media (max-width: 600px) {
-      html {
-        font-size: calc(var(--base-font-size) * 0.9);
-      }
-      
+    @media (max-width: 1200px) {
       .container {
-        padding: calc(var(--spacing-unit) * 2.5);
+        padding: 3rem 1rem;
       }
       
       .header h1 {
-        font-size: calc(var(--base-font-size) * 2);
-      }
-      
-      .header h2 {
-        font-size: calc(var(--base-font-size) * 1.2);
-      }
-      
-      button {
-        font-size: calc(var(--base-font-size) * 1);
-        padding: calc(var(--spacing-unit) * 1.5);
-      }
-      
-      button span {
-        font-size: calc(var(--base-font-size) * 1.2);
+        font-size: 3rem;
       }
     }
     
-    /* Extra kleine schermen */
-    @media (max-width: 400px) {
-      html {
-        font-size: calc(var(--base-font-size) * 0.8);
+    @media (max-width: 900px) {
+      .container {
+        padding: 2rem 1rem;
       }
       
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .header h2 {
+        font-size: 1.25rem;
+      }
+    }
+    
+    @media (max-width: 600px) {
       .container {
-        padding: calc(var(--spacing-unit) * 2);
+        padding: 1.5rem;
+        border-radius: 1rem;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .header h2 {
+        font-size: 1rem;
       }
       
       .taxi-icon {
-        width: calc(var(--base-font-size) * 6);
-        height: calc(var(--base-font-size) * 6);
+        width: 150px;
+        height: 150px;
+      }
+      
+      button {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+      }
+      
+      button span {
+        font-size: 1.25rem;
       }
     }
   </style>
@@ -213,10 +220,10 @@
     <img src="https://cdn-icons-png.flaticon.com/512/296/296216.png" alt="Taxi" class="taxi-icon" />
     <div class="button-group">
       <button onclick="window.location.href='klant.html'">
-        <span>🚖</span> TAXI 4 Personen 🚖
+        <span>🚖</span> Taxi 4 Personen 🚖
       </button>
       <button onclick="window.location.href='busjexxl.html'">
-        <span>🚍</span> BUSJE XXL 6 Personen 🚍
+        <span>🚍</span> Busje XXL 6 Personen 🚍
       </button>
     </div>
   </div>
