@@ -2,52 +2,17 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-  <title>FA Taxi Boeking</title>
-  
-  <!-- Base URL for static files -->
-  <base href="/">
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  
-  <!-- Scripts -->
+  <meta http-equiv="refresh" content="0; url=/FATAXICENTRALE/">
+  <title>FA Taxi Boeking - Doorverwijzen...</title>
   <script>
-    // Functie om scripts te laden en fouten te loggen
-    function loadScript(src, callback) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-          console.log(`✅ ${src} loaded successfully`);
-          if (callback) callback();
-          resolve();
-        };
-        script.onerror = () => {
-          console.error(`❌ Error loading ${src}`);
-          reject(new Error(`Failed to load ${src}`));
-        };
-        document.head.appendChild(script);
-      });
-    }
-
-    // Laad alle scripts in de juiste volgorde
-    async function loadAllScripts() {
-      const scripts = [
-        '/static/js/config.js',
-        '/static/js/translations.js',
-        '/static/js/utils.js',
-        '/static/js/location.js',
-        '/static/js/addressSuggestions.js',
-        '/static/js/priceCalculator.js',
-        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-        '/static/js/map.js',
-        '/static/js/idealPayment.js',
-        '/static/js/languageSettings.js',
-        '/static/js/formHandler.js',
-        '/static/js/draft-manager.js',
-        '/static/js/main.js'
+    // Redirect to the new location
+    window.location.href = '/FATAXICENTRALE/';
+  </script>
+</head>
+<body>
+  <p>Als je niet automatisch wordt doorgestuurd, <a href="/FATAXICENTRALE/">klik dan hier</a>.</p>
+</body>
+</html>
       ];
 
       try {
