@@ -19,25 +19,22 @@
       --color-primary: #000000;
       --color-primary-dark: #1d1d1d;
       --color-primary-light: #ffffff;
-      --color-accent: #ffd700;
-      --color-text: #ffffff;
-      --color-text-dark: #000000;
+      --color-text: #000000;
+      --color-text-light: #ffffff;
       --color-bg: #ffffff;
       --color-bg-dark: #1d1d1d;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
     html {
       font-size: var(--base-font-size);
-      scroll-behavior: smooth;
     }
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: var(--color-bg);
-      color: var(--color-text);
+      background: var(--color-bg-dark);
+      color: var(--color-text-light);
       line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -55,9 +52,9 @@
       flex-direction: column;
       align-items: center;
       gap: 4rem;
-      background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-dark) 100%);
-      border-radius: 2rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      background: var(--color-bg);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
     }
     
     /* Header */
@@ -68,32 +65,25 @@
     }
     
     .header h1 {
-      font-size: 4rem;
+      font-size: 3.5rem;
       font-weight: 900;
       line-height: 1.1;
       margin-bottom: 1rem;
-      background: linear-gradient(90deg, var(--color-bg-dark) 0%, var(--color-primary-dark) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      color: var(--color-primary-dark);
     }
     
     .header h2 {
-      font-size: 1.5rem;
-      color: var(--color-primary-dark);
-      opacity: 0.9;
+      font-size: 1.25rem;
+      color: var(--color-primary);
       line-height: 1.4;
       margin-bottom: 2rem;
     }
     
     /* Taxi icon */
     .taxi-icon {
-      width: 200px;
-      height: 200px;
+      width: 150px;
+      height: 150px;
       margin: 2rem 0;
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
-      animation: taxiBounce 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     /* Button group */
@@ -107,66 +97,30 @@
     
     /* Buttons */
     button {
-      background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary-dark) 100%);
-      color: var(--color-text);
+      background: var(--color-primary-dark);
+      color: var(--color-text-light);
       font-weight: 600;
       font-size: 1.1rem;
       cursor: pointer;
       border: none;
-      border-radius: 1rem;
+      border-radius: 0.5rem;
       padding: 1rem 2rem;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       gap: 1rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
     }
     
     button span {
       font-size: 1.5rem;
     }
     
-    button:after {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-    
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    button:active {
-      transform: translateY(0);
-    }
-    
-    /* Animaties */
-    @keyframes taxiBounce {
-      0% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-10px) rotate(2deg); }
-      100% { transform: translateY(0) rotate(0deg); }
+      background: var(--color-primary);
+      transform: translateY(-1px);
     }
     
     /* Responsive aanpassingen */
-    @media (max-width: 1200px) {
-      .container {
-        padding: 3rem 1rem;
-      }
-      
-      .header h1 {
-        font-size: 3rem;
-      }
-    }
-    
     @media (max-width: 900px) {
       .container {
         padding: 2rem 1rem;
@@ -177,14 +131,14 @@
       }
       
       .header h2 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
       }
     }
     
     @media (max-width: 600px) {
       .container {
         padding: 1.5rem;
-        border-radius: 1rem;
+        border-radius: 0.5rem;
       }
       
       .header h1 {
@@ -196,8 +150,8 @@
       }
       
       .taxi-icon {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
       }
       
       button {
