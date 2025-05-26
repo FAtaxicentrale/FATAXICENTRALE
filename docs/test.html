@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Pagina</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 10px;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    .btn:hover {
+      opacity: 0.8;
+    }
+    .btn-taxi {
+      background: #007bff;
+    }
+    .btn-bus {
+      background: #28a745;
+    }
+    .icon {
+      font-size: 20px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Pagina</h1>
+  <p>Deze pagina test of de knoppen werken:</p>
+  
+  <div class="vehicle-selection">
+    <a href="klant.html" class="btn btn-taxi">
+      <span class="icon">🚖</span>
+      <span>TAXI 4 Personen</span>
+    </a>
+    
+    <a href="klant.html?vehicle=bus" class="btn btn-bus">
+      <span class="icon">🚍</span>
+      <span>BUSJE XXL 6 Personen</span>
+    </a>
+  </div>
+  
+  <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px; text-align: left;">
+    <h3>Instructies:</h3>
+    <ol>
+      <li>Klik op een van de knoppen hierboven</li>
+      <li>Controleer of je naar de boekingspagina wordt doorgestuurd</li>
+      <li>Als het niet werkt, controleer dan de URL in je browser</li>
+    </ol>
+    <p>Als je een foutmelding ziet, kopieer deze dan en deel deze met ons.</p>
+  </div>
+</body>
+</html>

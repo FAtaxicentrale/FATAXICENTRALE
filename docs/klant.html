@@ -2,62 +2,56 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=/FATAXICENTRALE/">
-  <title>FA Taxi Boeking - Doorverwijzen...</title>
-  <script>
-    // Redirect to the new location
-    window.location.href = '/FATAXICENTRALE/';
-  </script>
-</head>
-<body>
-  <p>Als je niet automatisch wordt doorgestuurd, <a href="/FATAXICENTRALE/">klik dan hier</a>.</p>
-</body>
-</html>
-      ];
-
-      try {
-        for (const script of scripts) {
-          await loadScript(script);
-        }
-        console.log('All scripts loaded successfully');
-      } catch (error) {
-        console.error('Error loading scripts:', error);
-      }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FA Taxi Boeking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
     }
-
-    // Start het laden van de scripts wanneer de DOM geladen is
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM fully loaded, starting to load scripts...');
-      loadAllScripts().then(() => {
-        console.log('All scripts loaded, initializing app...');
-        if (typeof App !== 'undefined') {
-          App.initialize();
-        } else {
-          console.error('App is not defined after loading all scripts');
-        }
-      });
-    });
-  </script>
+    h1 { color: #007bff; }
+    .success { 
+      color: #28a745;
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      text-align: left;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <h1>FA Taxi Service</h1>
-    <p>Bezig met laden van de applicatie...</p>
+  <h1>FA Taxi Boeking</h1>
+  <div class="success">✅ De doorverwijzing is gelukt!</div>
+  
+  <div class="info">
+    <h3>Informatie:</h3>
+    <p>Je bent succesvol doorgestuurd naar de boekingspagina.</p>
+    <p>URL parameters: <span id="url-params">Geen</span></p>
   </div>
+  
+  <p><a href="index.html">Terug naar de hoofdpagina</a></p>
 
   <script>
-    // Toon een foutmelding als er iets misgaat
-    window.addEventListener('error', (event) => {
-      console.error('Global error:', event.error);
-      const app = document.getElementById('app');
-      if (app) {
-        app.innerHTML += `
-          <div style="color: red; padding: 10px; margin: 10px; border: 1px solid red;">
-            <strong>Fout opgetreden:</strong> ${event.message}
-            <br><small>${event.filename} (${event.lineno}:${event.colno})</small>
-          </div>`;
-      }
-    });
+    // Toon URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = [];
+    
+    for (const [key, value] of urlParams.entries()) {
+      params.push(`${key}=${value}`);
+    }
+    
+    document.getElementById('url-params').textContent = 
+      params.length > 0 ? params.join(', ') : 'Geen';
+      
+    console.log('Pagina geladen:', window.location.href);
   </script>
 </body>
 </html>
