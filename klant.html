@@ -5,37 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>FA Taxi Boeking</title>
   
+  <!-- Base URL for static files -->
+  <base href="/">
+  
   <!-- CSS -->
-  <link rel="stylesheet" href="static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   
   <!-- Scripts -->
-  <script src="static/js/config.js"></script>
-  <script src="static/js/translations.js"></script>
-  <script src="static/js/utils.js"></script>
-  <script src="static/js/location.js"></script>
-  <script src="static/js/addressSuggestions.js"></script>
-  <script src="static/js/priceCalculator.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="static/js/map.js"></script>
-  <script src="static/js/idealPayment.js"></script>
-  <script src="static/js/languageSettings.js"></script>
-  <script src="static/js/formHandler.js"></script>
-  <script src="static/js/draft-manager.js"></script>
-  <script src="static/js/main.js"></script>
+  <script>
+    // Functie om scripts te laden en fouten te loggen
+    function loadScript(src, callback) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+          console.log(`✅ ${src} loaded successfully`);
+          if (callback) callback();
+          resolve();
+        };
+        script.onerror = () => {
+          console.error(`❌ Error loading ${src}`);
+          reject(new Error(`Failed to load ${src}`));
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    // Laad alle scripts in de juiste volgorde
+    async function loadAllScripts() {
+      const scripts = [
+        '/static/js/config.js',
+        '/static/js/translations.js',
+        '/static/js/utils.js',
+        '/static/js/location.js',
+        '/static/js/addressSuggestions.js',
+        '/static/js/priceCalculator.js',
+        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+        '/static/js/map.js',
+        '/static/js/idealPayment.js',
+        '/static/js/languageSettings.js',
+        '/static/js/formHandler.js',
+        '/static/js/draft-manager.js',
+        '/static/js/main.js'
+      ];
+
+      try {
+        for (const script of scripts) {
+          await loadScript(script);
+        }
+        console.log('All scripts loaded successfully');
+      } catch (error) {
+        console.error('Error loading scripts:', error);
+      }
+    }
+
+    // Start het laden van de scripts wanneer de DOM geladen is
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM fully loaded, starting to load scripts...');
+      loadAllScripts().then(() => {
+        console.log('All scripts loaded, initializing app...');
+        if (typeof App !== 'undefined') {
+          App.initialize();
+        } else {
+          console.error('App is not defined after loading all scripts');
+        }
+      });
+    });
+  </script>
 </head>
 <body>
   <div id="app">
-    <!-- De applicatie wordt hier ingeladen -->
+    <h1>FA Taxi Service</h1>
+    <p>Bezig met laden van de applicatie...</p>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM fully loaded, initializing application...');
-      if (typeof App !== 'undefined') {
-        App.initialize();
-      } else {
-        console.error('App is not defined. Check console for script loading errors.');
+    // Toon een foutmelding als er iets misgaat
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+      const app = document.getElementById('app');
+      if (app) {
+        app.innerHTML += `
+          <div style="color: red; padding: 10px; margin: 10px; border: 1px solid red;">
+            <strong>Fout opgetreden:</strong> ${event.message}
+            <br><small>${event.filename} (${event.lineno}:${event.colno})</small>
+          </div>`;
       }
     });
   </script>
