@@ -150,34 +150,70 @@ class App {
   // Set up event listeners
   setupEventListeners() {
     console.log('Setting up event listeners...');
+    
+    // Direct click handler function
+    const handleButtonClick = (e, vehicleType) => {
+      console.log(`${vehicleType} button clicked directly`);
+      e.preventDefault();
+      const url = vehicleType === 'taxi' 
+        ? '/FATAXICENTRALE/klant.html'
+        : `/FATAXICENTRALE/klant.html?vehicle=${vehicleType}`;
+      console.log('Navigating to:', url);
+      window.location.href = url;
+      return false;
+    };
+
     try {
       // Taxi button click handler
       const btnTaxi = document.getElementById('btnTaxi');
       if (btnTaxi) {
-        btnTaxi.addEventListener('click', (e) => {
-          e.preventDefault();
-          console.log('Taxi button clicked');
-          window.location.href = '/FATAXICENTRALE/klant.html';
-        });
+        console.log('Found Taxi button, adding event listeners');
+        
+        // Remove any existing event listeners to prevent duplicates
+        const newBtnTaxi = btnTaxi.cloneNode(true);
+        btnTaxi.parentNode.replaceChild(newBtnTaxi, btnTaxi);
+        
+        // Add new event listeners
+        newBtnTaxi.onclick = (e) => handleButtonClick(e, 'taxi');
+        newBtnTaxi.addEventListener('click', (e) => handleButtonClick(e, 'taxi'));
+        
+        // Make it look clickable
+        newBtnTaxi.style.cursor = 'pointer';
+        console.log('Taxi button listeners added');
       } else {
-        console.warn('Taxi button not found');
+        console.warn('Taxi button not found in DOM');
       }
 
       // Bus button click handler
       const btnBus = document.getElementById('btnBus');
       if (btnBus) {
-        btnBus.addEventListener('click', (e) => {
-          e.preventDefault();
-          console.log('Bus button clicked');
-          window.location.href = '/FATAXICENTRALE/klant.html?vehicle=bus';
-        });
+        console.log('Found Bus button, adding event listeners');
+        
+        // Remove any existing event listeners to prevent duplicates
+        const newBtnBus = btnBus.cloneNode(true);
+        btnBus.parentNode.replaceChild(newBtnBus, btnBus);
+        
+        // Add new event listeners
+        newBtnBus.onclick = (e) => handleButtonClick(e, 'bus');
+        newBtnBus.addEventListener('click', (e) => handleButtonClick(e, 'bus'));
+        
+        // Make it look clickable
+        newBtnBus.style.cursor = 'pointer';
+        console.log('Bus button listeners added');
       } else {
-        console.warn('Bus button not found');
+        console.warn('Bus button not found in DOM');
       }
       
-      console.log('Event listeners set up');
+      console.log('All event listeners set up');
     } catch (error) {
       console.error('Error setting up event listeners:', error);
+      // Try to show error on page
+      const app = document.getElementById('app');
+      if (app) {
+        app.innerHTML += `<div style="color:red;padding:10px;margin:10px;border:1px solid red">
+          Error: ${error.message}
+        </div>`;
+      }
       throw error;
     }
   }

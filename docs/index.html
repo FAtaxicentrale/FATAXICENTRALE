@@ -77,15 +77,22 @@
 <body>
   <div id="app">
     <h1>FA Taxi Service</h1>
-    <div class="vehicle-selection">
-      <button id="btnTaxi" class="btn btn-taxi">
-        <span class="icon">🚖</span>
-        <span class="text">TAXI 4 Personen</span>
-      </button>
-      <button id="btnBus" class="btn btn-bus">
-        <span class="icon">🚍</span>
-        <span class="text">BUSJE XXL 6 Personen</span>
-      </button>
+    <div class="vehicle-selection" style="margin: 20px 0; text-align: center;">
+      <a href="/FATAXICENTRALE/klant.html" 
+         style="display: inline-block; padding: 15px 30px; margin: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; cursor: pointer;"
+         onmouseover="this.style.opacity=0.8" 
+         onmouseout="this.style.opacity=1">
+        <span style="font-size: 20px; margin-right: 10px;">🚖</span>
+        <span>TAXI 4 Personen</span>
+      </a>
+      
+      <a href="/FATAXICENTRALE/klant.html?vehicle=bus" 
+         style="display: inline-block; padding: 15px 30px; margin: 10px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; cursor: pointer;"
+         onmouseover="this.style.opacity=0.8" 
+         onmouseout="this.style.opacity=1">
+        <span style="font-size: 20px; margin-right: 10px;">🚍</span>
+        <span>BUSJE XXL 6 Personen</span>
+      </a>
     </div>
     <p>Bezig met laden van de applicatie...</p>
   </div>
