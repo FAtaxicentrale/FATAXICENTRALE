@@ -19,6 +19,147 @@ export class UI {
   }
 
   /**
+   * Initialize the UI
+   */
+  async initialize(managers = {}) {
+    try {
+      // Initialize managers
+      this.mapManager = managers.mapManager || null;
+      this.bookingManager = managers.bookingManager || null;
+      
+      // Initialize map if container and manager exist
+      if (this.elements.mapContainer && this.mapManager) {
+        this.initializeMap();
+      }
+      
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      this.elements.dateInput.min = today;
+      
+      // Set default time to current time + 1 hour
+      const now = new Date();
+      now.setHours(now.getHours() + 1);
+      this.elements.timeInput.value = now.toTimeString().slice(0, 5);
+      
+      // Initialize form validation
+      this.setupFormValidation();
+      
+      // Initialize event listeners
+      this.initializeEventListeners();
+      
+      console.log('UI initialized successfully');
+    } catch (error) {
+      console.error('Error initializing UI:', error);
+      this.showError('Er is een fout opgetreden bij het initialiseren van de gebruikersinterface');
+    }
+  }
+  
+  /**
+   * Initialize map functionality
+   */
+  initializeMap() {
+    if (!this.mapManager) return;
+    
+    try {
+      // Initialize map if not already done
+      if (!this.mapManager.initialized) {
+        this.mapManager.init();
+      }
+      
+      // Add event listeners for address inputs if they exist
+      if (this.elements.pickupInput) {
+        this.elements.pickupInput.addEventListener('input', this.handleAddressInput);
+      }
+      
+      if (this.elements.dropoffInput) {
+        this.elements.dropoffInput.addEventListener('input', this.handleAddressInput);
+      }
+      
+      // Add form submit handler
+      if (this.elements.bookingForm) {
+        this.elements.bookingForm.addEventListener('submit', this.handleSubmit);
+      }
+      
+      console.log('Map functionality initialized');
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      this.showError('Er is een fout opgetreden bij het initialiseren van de kaart');
+    }
+  }
+  
+  /**
+   * Handle form submission
+   */
+  async handleSubmit(event) {
+    event.preventDefault();
+    
+    if (!this.bookingManager) {
+      console.error('Booking manager is not initialized');
+      return;
+    }
+    
+    try {
+      this.showLoader('Bezig met verwerken...');
+      
+      // Submit the booking
+      const result = await this.bookingManager.submit();
+      
+      if (result && result.success) {
+        this.showSuccess('Boeking succesvol ingediend!');
+        
+        // Reset the form
+        if (this.elements.bookingForm) {
+          this.elements.bookingForm.reset();
+        }
+        
+        // Update UI
+        this.updatePriceDisplay(0);
+      }
+    } catch (error) {
+      console.error('Booking submission failed:', error);
+      this.showError(error.message || 'Er is een fout opgetreden bij het indienen van de boeking');
+    } finally {
+      this.hideLoader();
+    }
+  }
+  
+  /**
+   * Handle address input for map updates
+   */
+  async handleAddressInput(event) {
+    if (!this.mapManager) return;
+    
+    const input = event.target;
+    const address = input.value.trim();
+    
+    if (!address || address.length < 3) return;
+    
+    try {
+      // Check if this is pickup or dropoff input
+      const isPickup = input.id === 'ophaaladres';
+      
+      // Update booking data
+      if (this.bookingManager) {
+        if (isPickup) {
+          this.bookingManager.bookingData.pickupAddress = address;
+        } else {
+          this.bookingManager.bookingData.dropoffAddress = address;
+        }
+      }
+      
+      // Update map if we have both addresses
+      if (this.bookingManager?.bookingData.pickupAddress && this.bookingManager?.bookingData.dropoffAddress) {
+        await this.updateRouteOnMap(
+          this.bookingManager.bookingData.pickupAddress,
+          this.bookingManager.bookingData.dropoffAddress
+        );
+      }
+    } catch (error) {
+      console.error('Error handling address input:', error);
+    }
+  }
+
+  /**
    * Initialize date and time picker
    */
   initializeDateTimePicker() {

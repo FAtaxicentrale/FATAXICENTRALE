@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FA Taxi - Test Prijscalculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .test-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .test-form {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .test-results {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f0f8ff;
+            overflow: auto;
+            max-height: 600px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"],
+        input[type="text"],
+        input[type="datetime-local"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .result-item.error {
+            border-left-color: #f44336;
+            background-color: #ffebee;
+        }
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result-value {
+            color: #2196F3;
+        }
+        .result-details {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>FA Taxi - Test Prijscalculator</h1>
+    
+    <div class="test-container">
+        <div class="test-form">
+            <h2>Testparameters</h2>
+            <div class="form-group">
+                <label for="distance">Afstand (km):</label>
+                <input type="number" id="distance" value="15" min="0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label for="duration">Reistijd (minuten):</label>
+                <input type="number" id="duration" value="25" min="1">
+            </div>
+            <div class="form-group">
+                <label for="dateTime">Datum en tijd:</label>
+                <input type="datetime-local" id="dateTime">
+            </div>
+            <div class="form-group">
+                <label for="passengers">Aantal passagiers:</label>
+                <input type="number" id="passengers" value="1" min="1" max="8">
+            </div>
+            <div class="form-group">
+                <label for="luggage">Aantal koffers:</label>
+                <input type="number" id="luggage" value="1" min="0" max="10">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="fromAirport"> Vanaf luchthaven
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="toAirport"> Naar luchthaven
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="isRoundTrip"> Retourrit
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="isFrequentRider" checked> Vaste klant
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="paymentMethod">Betalingsmethode:</label>
+                <select id="paymentMethod">
+                    <option value="online">Online betalen</option>
+                    <option value="cash">Contant betalen</option>
+                    <option value="pin">Pinnen in de taxi</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="promoCode">Kortingscode (optioneel):</label>
+                <input type="text" id="promoCode" placeholder="Bijv. WELKOM10">
+            </div>
+            <button id="calculateBtn">Bereken prijs</button>
+        </div>
+        
+        <div class="test-results" id="results">
+            <h2>Resultaten</h2>
+            <p>Vul de gewenste parameters in en klik op "Bereken prijs".</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { PriceCalculator } from './js/priceCalculator.js';
+        
+        // Initialiseer de prijscalculator
+        const calculator = new PriceCalculator();
+        
+        // Stel de huidige datum/tijd in als standaardwaarde
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            // Voeg een uur toe om rekening te houden met tijdzoneverschillen
+            now.setHours(now.getHours() + 1);
+            document.getElementById('dateTime').value = now.toISOString().slice(0, 16);
+        });
+        
+        // Voeg een klikgebeurtenis toe aan de knop
+        document.getElementById('calculateBtn').addEventListener('click', calculatePrice);
+        
+        async function calculatePrice() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Resultaten</h2>';
+            
+            try {
+                // Haal de waarden op uit het formulier
+                const distance = parseFloat(document.getElementById('distance').value);
+                const duration = parseInt(document.getElementById('duration').value);
+                const dateTime = document.getElementById('dateTime').value;
+                const passengers = parseInt(document.getElementById('passengers').value);
+                const luggage = parseInt(document.getElementById('luggage').value);
+                const fromAirport = document.getElementById('fromAirport').checked;
+                const toAirport = document.getElementById('toAirport').checked;
+                const isRoundTrip = document.getElementById('isRoundTrip').checked;
+                const isFrequentRider = document.getElementById('isFrequentRider').checked;
+                const paymentMethod = document.getElementById('paymentMethod').value;
+                const promoCode = document.getElementById('promoCode').value.trim();
+                
+                // Valideer invoer
+                if (isNaN(distance) || distance <= 0) {
+                    throw new Error('Voer een geldige afstand in (groter dan 0)');
+                }
+                if (isNaN(duration) || duration <= 0) {
+                    throw new Error('Voer een geldige reistijd in (groter dan 0)');
+                }
+                
+                // Maak een opties object
+                const options = {
+                    dateTime: dateTime ? new Date(dateTime).toISOString() : new Date().toISOString(),
+                    passengers,
+                    luggage,
+                    fromAirport,
+                    toAirport,
+                    isRoundTrip,
+                    isFrequentRider,
+                    paymentMethod,
+                    promoCode: promoCode || undefined
+                };
+                
+                // Bereken de prijs
+                const priceData = calculator.calculateTotalFare(distance, duration, options);
+                
+                // Toon de resultaten
+                showResult('Basisprijs', calculator.formatPrice(priceData.baseFare));
+                
+                // Toon toeslagen
+                if (priceData.surcharges.details.length > 0) {
+                    showResult('Toeslagen', calculator.formatPrice(priceData.surcharges.total), 
+                        priceData.surcharges.details.map(d => `${d.description}: ${calculator.formatPrice(d.amount)}`).join('<br>'));
+                }
+                
+                // Toon kortingen
+                if (priceData.discounts.details.length > 0) {
+                    showResult('Kortingen', `-${calculator.formatPrice(priceData.discounts.total)}`, 
+                        priceData.discounts.details.map(d => `${d.description}: -${calculator.formatPrice(d.amount)}`).join('<br>'));
+                }
+                
+                // Toon totaalprijs
+                showResult('Totaalprijs', calculator.formatPrice(priceData.total), 
+                    `Inclusief ${(priceData.taxRate * 100)}% BTW (${calculator.formatPrice(priceData.taxAmount)})`);
+                
+                // Test de kortingscode validatie
+                if (promoCode) {
+                    const validation = calculator.validatePromoCode(promoCode);
+                    const validationText = validation.isValid 
+                        ? `Geldig: ${validation.formattedDiscount} korting` 
+                        : 'Ongeldige code';
+                    showResult('Kortingscode', validationText);
+                }
+                
+                // Test de prijsopgave
+                try {
+                    const quote = calculator.generateQuote(distance, duration, options);
+                    showResult('Prijsopgave', quote.formatted.total, 
+                        `Voor ${quote.distance.formatted} en ${quote.duration.formatted}`);
+                } catch (error) {
+                    showError('Fout bij genereren prijsopgave', error);
+                }
+                
+            } catch (error) {
+                showError('Er is een fout opgetreden', error);
+            }
+        }
+        
+        function showResult(title, value, details = '') {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result-item';
+            resultDiv.innerHTML = `
+                <div class="result-title">${title}: <span class="result-value">${value}</span></div>
+                ${details ? `<div class="result-details">${details}</div>` : ''}
+            `;
+            document.getElementById('results').appendChild(resultDiv);
+        }
+        
+        function showError(title, error) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'result-item error';
+            errorDiv.innerHTML = `
+                <div class="result-title">${title}</div>
+                <div class="result-details">${error.message || error}</div>
+            `;
+            document.getElementById('results').appendChild(errorDiv);
+            console.error(error);
+        }
+    </script>
+</body>
+</html>

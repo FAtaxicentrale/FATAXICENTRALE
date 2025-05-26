@@ -1454,203 +1454,215 @@ button {
 
 <!-- Load application scripts -->
 <script type="module">
-    // Importeer alle benodigde modules
-    import { config } from './static/js/config.js';
-    import { formatPrice, debounce, showError, clearError } from './static/js/utils.js';
-    import { LocationService } from './static/js/location.js';
-    import { AddressSuggestions } from './static/js/addressSuggestions.js';
-    import { IdealPayment } from './static/js/idealPayment.js';
-    import { LanguageSettings } from './static/js/languageSettings.js';
-    import { PriceCalculator } from './static/js/priceCalculator.js';
-    import { FormHandler } from './static/js/formHandler.js';
-    import { UI } from './static/js/ui.js';
-    import { Validator } from './static/js/validator.js';
+// Laad de hoofdapplicatie
+import { App } from '/static/js/app.js';
 
-    // Wacht tot de DOM volledig is geladen
-    document.addEventListener('DOMContentLoaded', async () => {
+// Initialiseer de applicatie wanneer het DOM geladen is
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        window.app = new App();
+        await app.initialize();
+    } catch (error) {
+        console.error('Fout bij het initialiseren van de applicatie:', error);
+        // Toon een gebruiksvriendelijke foutmelding
+        const errorDiv = document.createElement('div');
+        errorDiv.style.color = 'red';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.textAlign = 'center';
+        errorDiv.innerHTML = `
+            <h2>Er is een fout opgetreden</h2>
+            <p>Er is een onverwachte fout opgetreden bij het laden van de applicatie.</p>
+            <p>Probeer de pagina te verversen of neem contact op met de klantenservice als het probleem aanhoudt.</p>
+            <p><small>Foutdetails: ${error.message}</small></p>
+        `;
+        document.body.insertBefore(errorDiv, document.body.firstChild);
+    }
+});
+</script>
+
+<!-- Oude scripts voor compatibiliteit -->
+<script>
+// Maak globale functies beschikbaar voor backward compatibility
+window.startIdealPay = () => {
+    if (window.app?.modules?.idealPayment?.IdealPayment) {
+        const payment = new window.app.modules.idealPayment.IdealPayment();
+        return payment.startPayment();
+    }
+    console.error('iDEAL betaling is niet beschikbaar');
+    return Promise.reject('iDEAL betaling is niet beschikbaar');
+};
+
+window.kiesAdresSuggestie = (inputId, suggestionBoxId, adres) => {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = adres;
+        if (window.app?.addressSuggestions?.closeAllSuggestions) {
+            window.app.addressSuggestions.closeAllSuggestions();
+        }
+    }
+};
+
+// Kaart initialisatie (tijdelijk, verplaats dit later naar de juiste module)
+let map, routeLayer, startMarker, endMarker;
+
+// Initieer kaart direct bij laden op Nederland
+function initMap() {
+    if (!map) {
+        map = L.map('map').setView([52.2, 5.3], 7); // Nederland
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+    }
+    return map;
+}
+
+// Initialiseer de kaart wanneer het DOM geladen is
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialiseer de kaart alleen als het element bestaat
+    if (document.getElementById('map')) {
+        initMap();
+    }
+});
+</script>
+<!-- Kaart functionaliteit wordt geladen door de hoofdapplicatie -->
+
+<!-- Importeer de hoofdapplicatie -->
+<script>
+// Wacht tot de DOM volledig is geladen
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        console.log('Initialiseren van modules...');
+        
+        // Initialiseer modules
+        const locationService = new LocationService();
+        const addressSuggestions = new AddressSuggestions();
+        const idealPayment = new IdealPayment();
+        const languageSettings = LanguageSettings.initialize();
+        const priceCalculator = new PriceCalculator();
+        const formHandler = new FormHandler();
+        const ui = new UI();
+        const validator = new Validator();
+        
+        // Maak modules beschikbaar in de globale scope indien nodig
+        window.locationService = locationService;
+        window.addressSuggestions = addressSuggestions;
+        window.idealPayment = idealPayment;
+        
+        console.log('Modules succesvol geïnitialiseerd');
+
+        // Initialiseer adres suggesties
         try {
-            console.log('Initialiseren van modules...');
+            console.log('Initialiseren van adres suggesties...');
             
-            // Initialiseer modules
-            const locationService = new LocationService();
-            const addressSuggestions = new AddressSuggestions();
-            const idealPayment = new IdealPayment();
-            const languageSettings = LanguageSettings.initialize();
-            const priceCalculator = new PriceCalculator();
-            const formHandler = new FormHandler();
-            const ui = new UI();
-            const validator = new Validator();
+            // Voeg adresuggesties containers toe als ze nog niet bestaan
+            const addSuggestionBoxIfNotExists = (inputId, boxId) => {
+                const input = document.getElementById(inputId);
+                if (input && !document.getElementById(boxId)) {
+                    const box = document.createElement('div');
+                    box.id = boxId;
+                    box.className = 'suggesties-box';
+                    input.parentNode.insertBefore(box, input.nextSibling);
+                }
+            };
             
-            // Maak modules beschikbaar in de globale scope indien nodig
-            window.locationService = locationService;
-            window.addressSuggestions = addressSuggestions;
-            window.idealPayment = idealPayment;
+            // Voeg suggestie containers toe voor ophaal- en afzetadres
+            addSuggestionBoxIfNotExists('ophaaladres', 'ophaaladres-suggesties');
+            addSuggestionBoxIfNotExists('afzetadres', 'afzetadres-suggesties');
             
-            console.log('Modules succesvol geïnitialiseerd');
-
-            // Initialiseer adres suggesties
-            try {
-                console.log('Initialiseren van adres suggesties...');
-                
-                // Voeg adresuggesties containers toe als ze nog niet bestaan
-                const addSuggestionBoxIfNotExists = (inputId, boxId) => {
-                    const input = document.getElementById(inputId);
-                    if (input && !document.getElementById(boxId)) {
-                        const box = document.createElement('div');
-                        box.id = boxId;
-                        box.className = 'suggesties-box';
-                        input.parentNode.insertBefore(box, input.nextSibling);
+            // Voeg adresuggesties listeners toe
+            const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
+            adresInputs.forEach(input => {
+                input.addEventListener('input', debounce(async (e) => {
+                    const suggestionBoxId = e.target.dataset.suggestie;
+                    const suggestionBox = document.getElementById(suggestionBoxId);
+                    
+                    if (!suggestionBox) return;
+                    
+                    const searchTerm = e.target.value.trim();
+                    
+                    if (searchTerm.length < 3) {
+                        suggestionBox.innerHTML = '';
+                        suggestionBox.classList.remove('active');
+                        return;
                     }
-                };
-                
-                // Voeg suggestie containers toe voor ophaal- en afzetadres
-                addSuggestionBoxIfNotExists('ophaaladres', 'ophaaladres-suggesties');
-                addSuggestionBoxIfNotExists('afzetadres', 'afzetadres-suggesties');
-                
-                // Voeg adresuggesties listeners toe
-                const adresInputs = document.querySelectorAll('input[type="text"][data-suggestie]');
-                adresInputs.forEach(input => {
-                    input.addEventListener('input', debounce(async (e) => {
-                        const suggestionBoxId = e.target.dataset.suggestie;
-                        const suggestionBox = document.getElementById(suggestionBoxId);
+                    
+                    try {
+                        // Toon loading state
+                        suggestionBox.innerHTML = '<div class="loading-suggestions">Zoeken naar adressen...</div>';
+                        suggestionBox.classList.add('active');
                         
-                        if (!suggestionBox) return;
+                        // Zoek adressen
+                        const results = await locationService.searchAddress(searchTerm);
                         
-                        const searchTerm = e.target.value.trim();
-                        
-                        if (searchTerm.length < 3) {
-                            suggestionBox.innerHTML = '';
-                            suggestionBox.classList.remove('active');
+                        if (results.length === 0) {
+                            suggestionBox.innerHTML = '<div class="loading-suggestions">Geen adressen gevonden</div>';
                             return;
                         }
                         
-                        try {
-                            // Toon loading state
-                            suggestionBox.innerHTML = '<div class="loading-suggestions">Zoeken naar adressen...</div>';
-                            suggestionBox.classList.add('active');
-                            
-                            // Zoek adressen
-                            const results = await locationService.searchAddress(searchTerm);
-                            
-                            if (results.length === 0) {
-                                suggestionBox.innerHTML = '<div class="loading-suggestions">Geen adressen gevonden</div>';
-                                return;
-                            }
-                            
-                            // Toon resultaten
-                            suggestionBox.innerHTML = results.map(result => 
-                                `<div class="suggestie-item" onclick="document.getElementById('${e.target.id}').value = '${result.displayName.replace(/'/g, "\\'")}'; this.parentNode.classList.remove('active');">
-                                    ${result.displayName}
-                                </div>`
-                            ).join('');
-                            
-                        } catch (error) {
-                            console.error('Fout bij het ophalen van adressuggesties:', error);
-                            suggestionBox.innerHTML = '<div class="loading-suggestions">Fout bij het ophalen van adressen</div>';
-                        }
-                    }, 300)); // Debounce met 300ms
-                    
-                    // Sluit suggesties bij klik buiten het veld
-                    input.addEventListener('blur', () => {
-                        setTimeout(() => {
-                            const box = document.getElementById(input.dataset.suggestie);
-                            if (box) box.classList.remove('active');
-                        }, 200);
-                    });
+                        // Toon resultaten
+                        suggestionBox.innerHTML = results.map(result => 
+                            `<div class="suggestie-item" onclick="document.getElementById('${e.target.id}').value = '${result.displayName.replace(/'/g, "\\'")}'; this.parentNode.classList.remove('active');">
+                                ${result.displayName}
+                            </div>`
+                        ).join('');
+                        
+                    } catch (error) {
+                        console.error('Fout bij het ophalen van adressuggesties:', error);
+                        suggestionBox.innerHTML = '<div class="loading-suggestions">Fout bij het ophalen van adressen</div>';
+                    }
+                }, 300)); // Debounce met 300ms
+                
+                // Sluit suggesties bij klik buiten het veld
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        const box = document.getElementById(input.dataset.suggestie);
+                        if (box) box.classList.remove('active');
+                    }, 200);
                 });
-                
-                console.log('Adres suggesties succesvol geïnitialiseerd');
-                
-            } catch (error) {
-                console.error('Fout bij het initialiseren van adres suggesties:', error);
-            }
-
-            // Initialiseer iDEAL betaling
-            try {
-                console.log('Initialiseren van iDEAL betaling...');
-                
-                const idealButton = document.getElementById('ideal-button');
-                if (idealButton && idealPayment && typeof idealPayment.startPayment === 'function') {
-                    idealButton.addEventListener('click', async () => {
-                        try {
-                            await idealPayment.startPayment();
-                        } catch (error) {
-                            console.error('Fout bij het starten van iDEAL betaling:', error);
-                            // Toon foutmelding aan gebruiker
-                            const errorDiv = document.createElement('div');
-                            errorDiv.className = 'error-message';
-                            errorDiv.textContent = 'Er is een fout opgetreden bij het starten van de betaling. Probeer het opnieuw.';
-                            idealButton.parentNode.insertBefore(errorDiv, idealButton.nextSibling);
-                        }
-                    });
-                    console.log('iDEAL betaling succesvol geïnitialiseerd');
-                } else {
-                    console.warn('iDEAL betaling knop niet gevonden of ongeldig');
-                }
-            } catch (error) {
-                console.error('Fout bij het initialiseren van iDEAL betaling:', error);
-            }
-
-            // Initialiseer modules indien beschikbaar
-            try {
-                console.log('Initialiseren van formulier handler...');
-                if (formHandler && typeof formHandler.initialize === 'function') {
-                    await formHandler.initialize();
-                    console.log('Formulier handler succesvol geïnitialiseerd');
-                } else {
-                    console.warn('Formulier handler niet beschikbaar of ongeldig');
-                }
-            } catch (error) {
-                console.error('Fout bij het initialiseren van de formulier handler:', error);
-            }
-
-            try {
-                console.log('Initialiseren van UI...');
-                if (ui && typeof ui.initialize === 'function') {
-                    await ui.initialize();
-                    console.log('UI succesvol geïnitialiseerd');
-                } else {
-                    console.warn('UI niet beschikbaar of ongeldig');
-                }
-            } catch (error) {
-                console.error('Fout bij het initialiseren van de UI:', error);
-            }
-
-            try {
-                console.log('Initialiseren van validator...');
-                if (validator && typeof validator.initialize === 'function') {
-                    await validator.initialize();
-                    console.log('Validator succesvol geïnitialiseerd');
-                } else {
-                    console.warn('Validator niet beschikbaar of ongeldig');
-                }
-            } catch (error) {
-                console.error('Fout bij het initialiseren van de validator:', error);
-            }
-
-            console.log('Alle modules zijn geïnitialiseerd');
+            });
+            
+            console.log('Adres suggesties succesvol geïnitialiseerd');
+            
         } catch (error) {
-            console.error('Fout bij het initialiseren van modules:', error);
+            console.error('Fout bij het initialiseren van adres suggesties:', error);
         }
-    });
+    } catch (error) {
+        console.error('Er is een fout opgetreden bij het initialiseren van de applicatie:', error);
+    }
+});
 
-    // Maak globale functies beschikbaar
-    window.startIdealPay = () => idealPayment.startPayment();
-    window.kiesAdresSuggestie = (inputId, suggestionBoxId, adres) => {
-        const input = document.getElementById(inputId);
-        if (input) {
-            input.value = adres;
-            addressSuggestions.closeAllSuggestions();
-        }
-    };
+// Voeg hier eventuele aanvullende initialisatiecode toe
+// die direct in de pagina moet worden uitgevoerd
+
+// Sluit de module af
 </script>
-<script type="module">
-  import { App } from './static/js/main.js';
-  window.app = new App();
-</script>
-<script>
-// Kaart object globaal zodat we hem kunnen hergebruiken
-let map, routeLayer, startMarker, endMarker;
+
+// Globale functies voor backward compatibility
+window.startIdealPay = () => {
+    if (window.app?.modules?.idealPayment?.IdealPayment) {
+        const payment = new window.app.modules.idealPayment.IdealPayment();
+        return payment.startPayment();
+    }
+    console.error('iDEAL betaling is niet beschikbaar');
+    return Promise.reject('iDEAL betaling is niet beschikbaar');};
+
+window.kiesAdresSuggestie = (inputId, suggestionBoxId, adres) => {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = adres;
+        const box = document.getElementById(suggestionBoxId);
+        if (box) box.classList.remove('active');
+    }
+};
+
+// Sluit suggesties bij klik buiten het veld
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.suggesties-box') && !e.target.matches('input[data-suggestie]')) {
+        const boxes = document.querySelectorAll('.suggesties-box');
+        boxes.forEach(box => box.classList.remove('active'));
+    }
+});
 
 // Initieer kaart direct bij laden op Nederland
 window.addEventListener('DOMContentLoaded', () => {
