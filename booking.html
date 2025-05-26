@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taxi Boeken | FA Taxi Service</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .form-container {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #ffd700;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    #map {
+      height: 300px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    button {
+      background: #ffd700;
+      color: #222;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #e6c300;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-container">
+      <h1>Taxi Boeken</h1>
+      
+      <div class="form-group">
+        <label for="pickup">Ophaaladres</label>
+        <input type="text" id="pickup" placeholder="Voer ophaaladres in">
+      </div>
+      
+      <div class="form-group">
+        <label for="destination">Bestemming</label>
+        <input type="text" id="destination" placeholder="Voer bestemming in">
+      </div>
+      
+      <div id="map"></div>
+      
+      <div class="form-group">
+        <label for="date">Datum</label>
+        <input type="date" id="date">
+      </div>
+      
+      <div class="form-group">
+        <label for="time">Tijd</label>
+        <input type="time" id="time">
+      </div>
+      
+      <div class="form-group">
+        <label for="passengers">Aantal personen</label>
+        <select id="passengers">
+          <option value="1">1 persoon</option>
+          <option value="2">2 personen</option>
+          <option value="3">3 personen</option>
+          <option value="4" selected>4 personen</option>
+          <option value="5">5 personen</option>
+          <option value="6">6 personen</option>
+          <option value="7">7+ personen</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="name">Naam</label>
+        <input type="text" id="name" placeholder="Volledige naam">
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Telefoonnummer</label>
+        <input type="tel" id="phone" placeholder="06-12345678">
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Opmerkingen</label>
+        <input type="text" id="notes" placeholder="Optionele opmerkingen">
+      </div>
+      
+      <button id="bookBtn">Taxi Boeken</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Initialiseer kaart
+    const map = L.map('map').setView([52.3676, 4.9041], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Voeg markers toe voor ophaal- en bestemmingslocatie
+    let pickupMarker, destinationMarker;
+    
+    document.getElementById('pickup').addEventListener('change', function() {
+      // Hier zou je geocoding logica toevoegen
+      if (pickupMarker) map.removeLayer(pickupMarker);
+      pickupMarker = L.marker([52.3676, 4.9041]).addTo(map)
+        .bindPopup("Ophaaladres").openPopup();
+    });
+    
+    document.getElementById('destination').addEventListener('change', function() {
+      // Hier zou je geocoding logica toevoegen
+      if (destinationMarker) map.removeLayer(destinationMarker);
+      destinationMarker = L.marker([52.3702, 4.8952]).addTo(map)
+        .bindPopup("Bestemming").openPopup();
+    });
+    
+    // Boekingslogica
+    document.getElementById('bookBtn').addEventListener('click', function() {
+      const bookingData = {
+        pickup: document.getElementById('pickup').value,
+        destination: document.getElementById('destination').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        passengers: document.getElementById('passengers').value,
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        notes: document.getElementById('notes').value
+      };
+      
+      // Stuur boeking naar backend
+      fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Boeking succesvol! We nemen contact met u op.');
+        } else {
+          alert('Er is een fout opgetreden: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Er is een fout opgetreden bij het boeken');
+      });
+    });
+  </script>
+</body>
+</html>

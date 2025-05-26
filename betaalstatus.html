@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betalingsstatus | FA Taxi Service</title>
+  <style>
+    body { background: #191919; color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 0; margin: 0; }
+    .container { max-width: 500px; margin: 8vh auto; background: #222; border-radius: 24px; box-shadow: 0 0 32px #ffd70055; padding: 3rem 2rem; }
+    h1 { color: #ffd700; font-size: 2.2rem; margin-bottom: 1.2rem; }
+    p { font-size: 1.2rem; margin-bottom: 2.2rem; }
+    .home-btn, .whatsapp-btn { background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%); color: #222; font-weight: bold; font-size: 1.1rem; border: none; border-radius: 10px; padding: 0.7rem 2.2rem; cursor: pointer; box-shadow: 0 2px 12px 0 #fff8, 0 2px 12px 0 #ffe06699, 0 1px 4px #bfa10055; text-shadow: 0 1px 6px #fff8, 0 1px 4px #bfa10099; margin-top: 2rem; transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s; filter: brightness(1.08); display: inline-block; margin-right: 1rem; }
+    .home-btn:hover, .whatsapp-btn:hover { background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%); filter: brightness(1.18); }
+    .push-fail { background: #ff4d4d; color: #fff; border-radius: 8px; padding: 1rem; margin-top: 1.2rem; font-size: 1.1rem; display: none; }
+  </style>
+</head>
+<body>
+<script>
+// Zet betaling als geslaagd in localStorage zodat WhatsApp-knop getoond wordt
+localStorage.setItem('betalingGeslaagd','1');
+</script>
+
+  <div class="container" id="statusContainer">
+    <h1 id="statusTitle">Status wordt gecontroleerd...</h1>
+    <p id="statusMsg">Even geduld alstublieft.</p>
+    <div style="display:none; margin-top:1.5rem; color:#ffd700; font-size:1.05rem;" id="debugStatus"></div>
+    <button class="home-btn" onclick="window.location.href='index.html'">Terug naar Home</button>
+    <button class="whatsapp-btn" id="whatsappBtn" style="display:none;">WhatsApp bevestiging</button>
+    <div class="push-fail" id="pushFail">Betaling is niet geslaagd. Probeer opnieuw of kies een andere betaalwijze.</div>
+  </div>
+  <script>
+    // Functie om Mollie payment status op te vragen
+    async function checkPayment(maxTries = 5, delayMs = 2000) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentId = urlParams.get('id');
+      if (!paymentId) {
+        document.getElementById('statusTitle').textContent = 'Geen betaling gevonden';
+        document.getElementById('statusMsg').textContent = 'Er is geen betalings-ID gevonden.';
+        // Toon knoppen voor opnieuw betalen of terug
+        const container = document.getElementById('statusContainer');
+        const opnieuwBtn = document.createElement('button');
+        opnieuwBtn.className = 'home-btn';
+        opnieuwBtn.textContent = 'Opnieuw proberen';
+        opnieuwBtn.onclick = function() {
+          window.location.href = 'klant.html'; // Of: window.history.back();
+        };
+        const terugBtn = document.createElement('button');
+        terugBtn.className = 'home-btn';
+        terugBtn.textContent = 'Terug naar boekingspagina';
+        terugBtn.onclick = function() {
+          window.location.href = 'klant.html';
+        };
+        container.appendChild(opnieuwBtn);
+        container.appendChild(terugBtn);
+        return;
+      }
+      let tries = 0;
+      let lastStatus = '';
+      async function poll() {
+        tries++;
+        try {
+          const res = await fetch('https://yolo-n9xa.onrender.com/api/payment-status?id=' + encodeURIComponent(paymentId));
+          const data = await res.json();
+          lastStatus = data.status;
+          document.getElementById('debugStatus').textContent = 'DEBUG: Mollie status = ' + data.status;
+          if (data.status === 'paid') {
+            document.getElementById('statusTitle').textContent = 'Betaling geslaagd!';
+            document.getElementById('statusMsg').textContent = 'Uw betaling is succesvol ontvangen.';
+            document.getElementById('whatsappBtn').style.display = 'inline-block';
+            document.getElementById('whatsappBtn').onclick = function() {
+              // Haal ritgegevens uit localStorage
+              let rit = null;
+              try {
+                // Probeer de laatste rit uit 'ritten' (array met afgeronde ritten)
+                const ritten = JSON.parse(localStorage.getItem('ritten'));
+                if (Array.isArray(ritten) && ritten.length > 0) {
+                  rit = ritten[ritten.length - 1];
+                } else {
+                  // Anders: neem concept uit 'draftRit'
+                  rit = JSON.parse(localStorage.getItem('draftRit'));
+                }
+              } catch {}
+              // Bouw WhatsApp emoji-bericht op
+              let bericht = '🚖 FA TAXI SERVICE 4 Personen 🚖';
+              bericht += '\n\n📲 Nieuw ritverzoek';
+              if (rit) {
+                if (rit.ritId) bericht += `\n🆔 Rit-ID: ${rit.ritId}`;
+                if (rit.ophaaladres) bericht += `\n📍 Ophaaladres: ${rit.ophaaladres}`;
+                if (rit.afzetadres) bericht += `\n📍 Afzetadres: ${rit.afzetadres}`;
+                if (rit.tijdstip) bericht += `\n🕒 Tijdstip: ${rit.tijdstip}`;
+                if (rit.betaalmethode) bericht += `\n💳 Betaalmethode: ${rit.betaalmethode}`;
+                if (rit.prijs) bericht += `\n🚖 Ritprijs: €${rit.prijs}`;
+                if (rit.afstand) bericht += `\n🛣️ Afstand: ${rit.afstand}`;
+                if (rit.duur) bericht += `\n🕒 Duur: ${rit.duur}`;
+                if (rit.pinkosten) bericht += `\n💳 Pin-kosten: ${rit.pinkosten}`;
+                if (rit.annuleringskosten) bericht += `\n📌 Annuleringskosten: ${rit.annuleringskosten}`;
+                if (rit.korting) bericht += `\n🎁 Korting toegepast: ${rit.korting}`;
+                if (rit.kortingscode) bericht += `\n🏷️ Kortingscode: ${rit.kortingscode}`;
+                if (rit.huisdieren && rit.huisdieren !== '0') bericht += `\n🐶 Huisdieren: Ja`;
+                if (rit.opmerkingen) bericht += `\n🗒️ Opmerkingen: ${rit.opmerkingen}`;
+              }
+              bericht += '\n\n✅ Betaald via iDEAL (geslaagd)';
+              const msg = encodeURIComponent(bericht);
+              window.open('https://wa.me/+31647972301?text=' + msg, '_blank');
+            }
+            return;
+          }
+          if (['failed', 'canceled', 'expired'].includes(data.status)) {
+            document.getElementById('statusTitle').textContent = 'Betaling niet geslaagd';
+            document.getElementById('statusMsg').textContent = 'Uw betaling is niet gelukt. U kunt het direct opnieuw proberen of terug naar de boekingspagina.';
+            document.getElementById('pushFail').style.display = 'block';
+            // Toon knoppen voor opnieuw betalen of terug
+            const container = document.getElementById('statusContainer');
+            const opnieuwBtn = document.createElement('button');
+            opnieuwBtn.className = 'home-btn';
+            opnieuwBtn.textContent = 'Opnieuw proberen';
+            opnieuwBtn.onclick = function() {
+              window.location.href = 'klant.html'; // Of: window.history.back();
+            };
+            const terugBtn = document.createElement('button');
+            terugBtn.className = 'home-btn';
+            terugBtn.textContent = 'Terug naar boekingspagina';
+            terugBtn.onclick = function() {
+              window.location.href = 'klant.html';
+            };
+            container.appendChild(opnieuwBtn);
+            container.appendChild(terugBtn);
+            return;
+          }
+          // Bij open/pending: nogmaals proberen
+          if (tries < maxTries) {
+            document.getElementById('statusTitle').textContent = 'Betaling wordt verwerkt...';
+            document.getElementById('statusMsg').textContent = 'We controleren uw betaling. Even geduld alstublieft.';
+            setTimeout(poll, delayMs);
+          } else {
+            document.getElementById('statusTitle').textContent = 'Betaling niet bevestigd';
+            document.getElementById('statusMsg').textContent = 'We konden de status van uw betaling niet bevestigen ('+lastStatus+'). Neem contact op of probeer opnieuw.';
+            document.getElementById('pushFail').style.display = 'block';
+            setTimeout(()=>{
+              window.location.href = 'klant.html';
+            }, 6000);
+          }
+        } catch (e) {
+          document.getElementById('statusTitle').textContent = 'Fout bij controleren betaling';
+          document.getElementById('statusMsg').textContent = 'Probeer het later opnieuw.';
+          document.getElementById('pushFail').style.display = 'block';
+          setTimeout(()=>{
+            window.location.href = 'klant.html';
+          }, 5500);
+        }
+      }
+      poll();
+    }
+    checkPayment();
+  </script>
+</body>
+</html>
