@@ -2477,16 +2477,50 @@ const initApp = () => {
 </script>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
+// Functie om betaalmethode opties bij te werken
+function updateBetaalOpties() {
+  const betaalSelect = document.getElementById('betaalmethode');
+  if (betaalSelect && betaalSelect.options.length >= 4) {
+    const options = [
+      t.selectIdeal || dict.nl.selectIdeal,
+      t.selectTikkie || dict.nl.selectTikkie,
+      t.selectPin || dict.nl.selectPin,
+      t.selectCash || dict.nl.selectCash
+    ];
+    
+    options.forEach((text, index) => {
+      if (betaalSelect.options[index]) {
+        betaalSelect.options[index].text = text;
+      }
+    });
+  }
+}
+
+// Functie om de taalmenu te initialiseren
+function initTaalMenu() {
   const toggle = document.getElementById('langToggle');
   const menu = document.getElementById('langMenu');
   if (!toggle || !menu) return;
+  
   toggle.addEventListener('click', e => {
     e.stopPropagation();
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
   });
+  
   menu.addEventListener('click', e => e.stopPropagation());
   document.addEventListener('click', () => { menu.style.display = 'none'; });
+}
+
+// Voeg de event listeners toe
+window.addEventListener('DOMContentLoaded', () => {
+  updateElement('opmerkingen', 'placeholder', t.textareaPH || dict.nl.textareaPH);
+  const idealBtn = document.getElementById('idealPayBtn');
+  if (idealBtn && idealBtn.lastChild) {
+    idealBtn.lastChild.textContent = ' ' + (t.idealPayBtn || dict.nl.idealPayBtn);
+  }
+  updateElement('adminSpecificaties', 'innerText', t.adminSpecificaties || dict.nl.adminSpecificaties);
+  updateBetaalOpties();
+  initTaalMenu();
 });
 </script>
 
