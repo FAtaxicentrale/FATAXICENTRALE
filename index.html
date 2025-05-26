@@ -1486,6 +1486,34 @@ function gebruikLocatie() {
 </div>
 
 <!-- Zet ALLE scripts vlak voor </body> -->
+<!-- Voeg de getCoordinates functie toe -->
+<script>
+async function getCoordinates(adres) {
+  try {
+    // Simuleer een API-aanroep om coördinaten op te halen
+    // In een echte app zou je hier een echte API gebruiken zoals Google Maps Geocoding
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simuleer API vertraging
+    
+    // Simuleer coördinaten op basis van het adres
+    const adresLower = adres.toLowerCase();
+    if (adresLower.includes('amsterdam')) {
+      return { lat: 52.379189, lon: 4.899431 };
+    } else if (adresLower.includes('rotterdam')) {
+      return { lat: 51.922481, lon: 4.479189 };
+    } else if (adresLower.includes('utrecht')) {
+      return { lat: 52.090738, lon: 5.121420 };
+    } else if (adresLower.includes('den haag')) {
+      return { lat: 52.070498, lon: 4.300699 };
+    } else {
+      console.warn('Onbekend adres:', adres);
+      return null;
+    }
+  } catch (error) {
+    console.error('Fout bij het ophalen van coördinaten:', error);
+    return null;
+  }
+}
+</script>
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
@@ -1784,14 +1812,75 @@ const orig_berekenRitprijs = window.berekenRitprijs || function() { return 0; };
 
 function berekenRitprijs(afstand, duur, weer) {
   try {
-    // Roep de oorspronkelijke functie aan
-    const basisprijs = orig_berekenRitprijs(afstand, duur, weer) || 0;
+    // Basisprijs berekening
+    const basisprijs = 10; // Basisprijs van €10
+    const prijsPerKm = 2.5; // €2.50 per kilometer
+    const prijsPerMinuut = 0.4; // €0.40 per minuut
+    
+    // Bereken prijs componenten
+    const afstandPrijs = afstand * prijsPerKm;
+    const tijdPrijs = duur * prijsPerMinuut;
+    
+    // Bepaal toeslagen
+    const toeslagen = {
+      basis: basisprijs,
+      afstand: afstandPrijs,
+      tijd: tijdPrijs,
+      tussenstops: 0,
+      nacht: 0,
+      weekend: 0,
+      spoed: 0
+    };
     
     // Voeg toeslagen toe voor tussenstops
     const tussenstops = document.querySelectorAll('.tussenstop').length;
     const toeslagPerStop = 5; // €5 toeslag per tussenstop
+    toeslagen.tussenstops = tussenstops * toeslagPerStop;
     
-    return basisprijs + (tussenstops * toeslagPerStop);
+    // Bepaal of het nachtwerk is (22:00 - 06:00)
+    const tijdstip = document.getElementById('tijdstip')?.value;
+    if (tijdstip) {
+      const [uur, minuten] = tijdstip.split(':').map(Number);
+      if (uur >= 22 || uur < 6) {
+        toeslagen.nacht = (basisprijs + afstandPrijs + tijdPrijs) * 0.2; // 20% nachttoeslag
+      }
+    }
+    
+    // Bepaal of het weekend is
+    const datum = document.getElementById('datum')?.value;
+    if (datum) {
+      const date = new Date(datum);
+      const dag = date.getDay();
+      if (dag === 0 || dag === 6) { // Zondag of Zaterdag
+        toeslagen.weekend = (basisprijs + afstandPrijs + tijdPrijs) * 0.15; // 15% weekendtoeslag
+      }
+    }
+    
+    // Controleer of spoed is aangevinkt
+    const spoed = document.getElementById('spoed')?.checked;
+    if (spoed) {
+      toeslagen.spoed = (basisprijs + afstandPrijs + tijdPrijs) * 0.3; // 30% spoedtoeslag
+    }
+    
+    // Bereken totaalprijs
+    const totaalPrijs = Object.values(toeslagen).reduce((sum, val) => sum + val, 0);
+    
+    // Rond af naar 2 decimalen
+    const eindPrijs = Math.round(totaalPrijs * 100) / 100;
+    
+    // Sla de prijsdetails op voor de UI
+    window.prijsDetails = {
+      basis: basisprijs,
+      afstand: afstandPrijs,
+      tijd: tijdPrijs,
+      tussenstops: toeslagen.tussenstops,
+      nacht: toeslagen.nacht,
+      weekend: toeslagen.weekend,
+      spoed: toeslagen.spoed,
+      totaal: eindPrijs
+    };
+    
+    return eindPrijs;
   } catch (error) {
     console.error('Fout bij het berekenen van de ritprijs:', error);
     return 0; // Geef een standaardwaarde terug bij fouten
@@ -2030,13 +2119,21 @@ function berekenRitprijs(afstand, duur, weer) {
 // De toggleAkkoord functie is nu beschikbaar via het window object
 
 // Functie om de rit te berekenen
-window.berekenRit = function() {
+// Voeg een unieke naam toe aan de berekenRit functie om oneindige recursie te voorkomen
+window.berekenRit = async function berekenRit() {
   try {
-    // Roep de bestaande berekenRit functie aan
-    if (typeof window.berekenRit === 'function') {
-      window.berekenRit();
-    } else {
-      throw new Error('berekenRit functie niet gevonden');
+    // Haal de adreswaarden op
+    const ophalen = document.getElementById('ophaaladres').value;
+    const afzetten = document.getElementById('afzetadres').value;
+    
+    if (!ophalen || !afzetten) {
+      console.warn('Beide adressen moeten worden ingevuld');
+      return;
+    }
+    
+    // Toon de route op de kaart
+    if (ophalen && afzetten) {
+      showRouteOnMap(ophalen, afzetten);
     }
   } catch (error) {
     console.error('Fout bij het berekenen van de rit:', error);
