@@ -9,7 +9,7 @@
   <base href="/FATAXICENTRALE/">
   
   <!-- CSS -->
-  <link rel="stylesheet" href="/FATAXICENTRALE/static/css/styles.css">
+  <link rel="stylesheet" href="static/css/styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   
   <!-- Scripts -->
@@ -34,21 +34,20 @@
 
     // Laad alle scripts in de juiste volgorde
     async function loadAllScripts() {
-      const basePath = '/FATAXICENTRALE';
       const scripts = [
-        `${basePath}/static/js/config.js`,
-        `${basePath}/static/js/translations.js`,
-        `${basePath}/static/js/utils.js`,
-        `${basePath}/static/js/location.js`,
-        `${basePath}/static/js/addressSuggestions.js`,
-        `${basePath}/static/js/priceCalculator.js`,
+        'static/js/config.js',
+        'static/js/translations.js',
+        'static/js/utils.js',
+        'static/js/location.js',
+        'static/js/addressSuggestions.js',
+        'static/js/priceCalculator.js',
         'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-        `${basePath}/static/js/map.js`,
-        `${basePath}/static/js/idealPayment.js`,
-        `${basePath}/static/js/languageSettings.js`,
-        `${basePath}/static/js/formHandler.js`,
-        `${basePath}/static/js/draft-manager.js`,
-        `${basePath}/static/js/main.js`
+        'static/js/map.js',
+        'static/js/idealPayment.js',
+        'static/js/languageSettings.js',
+        'static/js/formHandler.js',
+        'static/js/draft-manager.js',
+        'static/js/main.js'
       ];
 
       try {
