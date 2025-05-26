@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=/FATAXICENTRALE/">
+  <title>FA Taxi Boeking - Doorverwijzen...</title>
+  <script>
+    // Redirect to the new location
+    window.location.href = '/FATAXICENTRALE/';
+  </script>
+</head>
+<body>
+  <p>Als je niet automatisch wordt doorgestuurd, <a href="/FATAXICENTRALE/">klik dan hier</a>.</p>
+</body>
+</html>
+      ];
+
+      try {
+        for (const script of scripts) {
+          await loadScript(script);
+        }
+        console.log('All scripts loaded successfully');
+      } catch (error) {
+        console.error('Error loading scripts:', error);
+      }
+    }
+
+    // Start het laden van de scripts wanneer de DOM geladen is
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM fully loaded, starting to load scripts...');
+      loadAllScripts().then(() => {
+        console.log('All scripts loaded, initializing app...');
+        if (typeof App !== 'undefined') {
+          App.initialize();
+        } else {
+          console.error('App is not defined after loading all scripts');
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <div id="app">
+    <h1>FA Taxi Service</h1>
+    <p>Bezig met laden van de applicatie...</p>
+  </div>
+
+  <script>
+    // Toon een foutmelding als er iets misgaat
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+      const app = document.getElementById('app');
+      if (app) {
+        app.innerHTML += `
+          <div style="color: red; padding: 10px; margin: 10px; border: 1px solid red;">
+            <strong>Fout opgetreden:</strong> ${event.message}
+            <br><small>${event.filename} (${event.lineno}:${event.colno})</small>
+          </div>`;
+      }
+    });
+  </script>
+</body>
+</html>
