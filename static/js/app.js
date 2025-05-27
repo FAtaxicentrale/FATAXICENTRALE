@@ -4,7 +4,7 @@
 // Importeer benodigde modules
 import { PriceCalculator } from './priceCalculator.js';
 import { MapManager } from './map.js';
-import { AddressSuggestions } from './addressSuggestions.js';
+import AddressSuggestions from './addressSuggestions.js';
 import { LocationService } from './location.js';
 import { IdealPayment } from './idealPayment.js';
 import { LanguageSettings } from './languageSettings.js';

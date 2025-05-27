@@ -5,7 +5,7 @@
 
 // Importeer benodigde modules
 import { MapManager } from './map.js';
-import { AddressSuggestions } from './addressSuggestions.js';
+import AddressSuggestions from './addressSuggestions.js';
 import { PriceCalculator } from './priceCalculator.js';
 import { FormHandler } from './formHandler.js';
 import { LanguageSettings } from './languageSettings.js';

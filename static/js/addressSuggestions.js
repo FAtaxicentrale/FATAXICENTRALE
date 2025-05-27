@@ -300,8 +300,8 @@ class AddressSuggestions {
     }
 }
 
-// Exporteer de klasse voor gebruik in andere modules
-export { AddressSuggestions };
+// Exporteer de klasse als default export
+export default AddressSuggestions;
 
 // Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
 if (typeof window !== 'undefined') {
