@@ -1,0 +1,460 @@
+/* ==========================================================================
+   #SERVICES
+   ========================================================================== */
+
+.services {
+  padding: 6rem 0;
+  background-color: var(--color-gray-50);
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.service-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.service-image {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.service-card:hover .service-image img {
+  transform: scale(1.05);
+}
+
+.service-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 1;
+}
+
+.service-content {
+  padding: 1.75rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-category {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.service-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: var(--color-gray-900);
+  line-height: 1.3;
+}
+
+.service-description {
+  color: var(--color-gray-600);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.service-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.service-features li {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-700);
+}
+
+.service-features li::before {
+  content: '\f00c';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+  font-size: 0.875rem;
+}
+
+.service-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.service-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.service-price span {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+/* Service Details */
+.service-details {
+  padding: 6rem 0;
+  background-color: var(--color-white);
+}
+
+.service-details-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 4rem;
+}
+
+.service-main {
+  flex-grow: 1;
+}
+
+.service-sidebar {
+  flex: 0 0 350px;
+}
+
+.service-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.gallery-main {
+  grid-column: 1 / -1;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  height: 400px;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumb {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  height: 120px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.gallery-thumb:hover,
+.gallery-thumb.active {
+  border-color: var(--color-primary);
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.service-description-long {
+  margin-bottom: 2.5rem;
+}
+
+.service-description-long h3 {
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1.25rem;
+  color: var(--color-gray-900);
+}
+
+.service-description-long p {
+  color: var(--color-gray-700);
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+.service-features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.service-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.service-feature-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.service-feature-text h4 {
+  font-size: 1.125rem;
+  margin: 0 0 0.25rem;
+  color: var(--color-gray-900);
+}
+
+.service-feature-text p {
+  color: var(--color-gray-600);
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+/* Service Sidebar */
+.service-booking-card {
+  background-color: var(--color-gray-50);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-border);
+}
+
+.service-booking-card h3 {
+  font-size: 1.375rem;
+  margin: 0 0 1.5rem;
+  color: var(--color-gray-900);
+  text-align: center;
+}
+
+.service-price-large {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.service-price-large .price {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  margin: 0 0 0.25rem;
+}
+
+.service-price-large .duration {
+  color: var(--color-gray-600);
+  font-size: 0.9375rem;
+}
+
+.service-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+}
+
+.service-info-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.service-info-list li:last-child {
+  border-bottom: none;
+}
+
+.service-info-list strong {
+  color: var(--color-gray-900);
+}
+
+.service-info-list span {
+  color: var(--color-gray-600);
+}
+
+.service-contact-card {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-contact-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.service-contact-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.service-contact-card h4 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.service-contact-card p {
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive styles */
+@media (max-width: 1199.98px) {
+  .service-details-content {
+    grid-template-columns: 1fr 300px;
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .services,
+  .service-details {
+    padding: 4rem 0;
+  }
+  
+  .service-details-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .service-sidebar {
+    margin-top: 2rem;
+  }
+  
+  .service-gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .gallery-main {
+    height: 350px;
+  }
+  
+  .service-features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .service-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .gallery-main {
+    height: 300px;
+  }
+  
+  .gallery-thumb {
+    height: 100px;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .services {
+    background-color: var(--color-gray-900);
+  }
+  
+  .service-card,
+  .service-details {
+    background-color: var(--color-gray-900);
+  }
+  
+  .service-card {
+    background-color: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+  }
+  
+  .service-title,
+  .service-features li,
+  .service-info-list strong,
+  .service-booking-card h3,
+  .service-feature-text h4 {
+    color: var(--color-white);
+  }
+  
+  .service-description,
+  .service-features li,
+  .service-price span,
+  .service-info-list span,
+  .service-feature-text p {
+    color: var(--color-gray-400);
+  }
+  
+  .service-booking-card {
+    background-color: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+  }
+  
+  .service-info-list li {
+    border-color: var(--color-gray-700);
+  }
+  
+  .service-description-long h3 {
+    color: var(--color-white);
+  }
+  
+  .service-description-long p {
+    color: var(--color-gray-300);
+  }
+}

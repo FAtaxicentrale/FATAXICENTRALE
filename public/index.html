@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FA Taxi Boeking - Boek eenvoudig en snel uw taxirit">
+  <title>FA Taxi Boeking - Boek uw rit</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tX/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+  <link rel="stylesheet" href="/static/css/styles-new.css">
+  
+  <!-- Preload belangrijke bronnen -->
+  <link rel="preload" href="/static/js/main.js" as="script">
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
+  
+  <!-- Preconnect naar externe domeinen -->
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://api.mapbox.com">
+  <link rel="preconnect" href="https://api.tiles.mapbox.com">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://uwdomein.nl/" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://uwdomein.nl/">
+  <meta property="og:title" content="FA Taxi Boeking - Boek uw rit">
+  <meta property="og:description" content="Boek eenvoudig en snel uw taxirit bij FA Taxi Centrale. Betrouwbaar, veilig en tegen een vaste lage prijs.">
+  <meta property="og:image" content="https://uwdomein.nl/static/images/og-image.jpg">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://uwdomein.nl/">
+  <meta name="twitter:title" content="FA Taxi Boeking - Boek uw rit">
+  <meta name="twitter:description" content="Boek eenvoudig en snel uw taxirit bij FA Taxi Centrale. Betrouwbaar, veilig en tegen een vaste lage prijs.">
+  <meta name="twitter:image" content="https://uwdomein.nl/static/images/og-image.jpg">
+</head>
+<body>
+  <!-- Laadscherm -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <p>Applicatie wordt geladen...</p>
+  </div>
+  
+  <!-- Hoofdnavigatie -->
+  <header class="main-header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="/static/images/logo.png" alt="FA Taxi Centrale" class="logo-img">
+          <span class="logo-text">FA Taxi Centrale</span>
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul class="nav-links">
+          <li><a href="/" class="active">Boek nu</a></li>
+          <li><a href="/tarieven">Tarieven</a></li>
+          <li><a href="/zakelijk">Zakelijk</a></li>
+          <li><a href="/over-ons">Over ons</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+        <div class="mobile-menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Hoofdinhoud -->
+  <main class="main-content">
+    <div class="container">
+      <div class="booking-container">
+        <!-- Kaart -->
+        <div class="map-container">
+          <div id="map"></div>
+          <div class="map-controls">
+            <button id="locateMe" class="btn btn-icon" title="Vind mijn locatie">
+              <i class="icon-location"></i>
+            </button>
+            <button id="zoomIn" class="btn btn-icon" title="Inzoomen">
+              <i class="icon-plus"></i>
+            </button>
+            <button id="zoomOut" class="btn btn-icon" title="Uitzoomen">
+              <i class="icon-minus"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Boekingsformulier -->
+        <div class="booking-form-container">
+          <h1>Boek uw taxirit</h1>
+          <p class="subtitle">Vul onderstaande gegevens in om uw rit te boeken</p>
+          
+          <!-- Foutmeldingen -->
+          <div id="errorContainer" class="alert alert-error" style="display: none;"></div>
+          <div id="successContainer" class="alert alert-success" style="display: none;"></div>
+          
+          <form id="bookingForm" class="booking-form">
+            <div class="form-group">
+              <label for="pickupAddress">Ophaaladres*</label>
+              <input type="text" id="pickupAddress" name="pickupAddress" required 
+                     placeholder="Vul een adres in" autocomplete="off">
+              <div id="pickupSuggestions" class="suggestions"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="dropoffAddress">Bestemming*</label>
+              <input type="text" id="dropoffAddress" name="dropoffAddress" required 
+                     placeholder="Vul een bestemming in" autocomplete="off">
+              <div id="dropoffSuggestions" class="suggestions"></div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="pickupDate">Datum*</label>
+                <input type="date" id="pickupDate" name="pickupDate" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="pickupTime">Tijd*</label>
+                <input type="time" id="pickupTime" name="pickupTime" required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="passengers">Passagiers*</label>
+                <select id="passengers" name="passengers" required>
+                  <option value="1">1 persoon</option>
+                  <option value="2">2 personen</option>
+                  <option value="3">3 personen</option>
+                  <option value="4">4 personen</option>
+                  <option value="5">5 personen</option>
+                  <option value="6">6 personen</option>
+                  <option value="7">7 personen</option>
+                  <option value="8">8 personen</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="vehicleType">Voertuigtype</label>
+                <select id="vehicleType" name="vehicleType">
+                  <option value="" disabled selected>Kies een optie</option>
+                  <option value="standard">Standaard (max 4 personen)</option>
+                  <option value="business">Business (max 3 personen)</option>
+                  <option value="van">Busje (max 8 personen)</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="name">Uw naam*</label>
+              <input type="text" id="name" name="name" required 
+                     placeholder="Volledige naam" autocomplete="name">
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">E-mailadres*</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="uw@email.nl" autocomplete="email">
+              </div>
+              
+              <div class="form-group">
+                <label for="phone">Telefoonnummer*</label>
+                <input type="tel" id="phone" name="phone" required 
+                       placeholder="0612345678" autocomplete="tel">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="specialRequests">Speciale verzoeken (optioneel)</label>
+              <textarea id="specialRequests" name="specialRequests" 
+                        rows="3" placeholder="Bijzonderheden over uw rit..."></textarea>
+            </div>
+            
+            <div class="price-summary">
+              <div class="price-display">
+                <span class="price-label">Geschatte prijs:</span>
+                <span id="priceEstimate" class="price-amount">€0,00</span>
+              </div>
+              <div id="surchargesContainer" class="surcharges">
+                <!-- Toeslagen worden hier dynamisch ingeladen -->
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                <span class="btn-text">Bevestig boeking</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+            
+            <div class="form-footer">
+              <p class="small">
+                Door te boeken gaat u akkoord met onze 
+                <a href="/algemene-voorwaarden" target="_blank">Algemene Voorwaarden</a> 
+                en bevestigt u dat u 18 jaar of ouder bent.
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Voettekst -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>FA Taxi Centrale</h3>
+          <p>Betrouwbaar vervoer in de regio. 24/7 beschikbaar voor al uw ritten.</p>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Navigatie</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/tarieven">Tarieven</a></li>
+            <li><a href="/zakelijk">Zakelijk</a></li>
+            <li><a href="/over-ons">Over ons</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <address>
+            <p><i class="icon-location"></i> Voorbeeldstraat 123, 1234 AB Amsterdam</p>
+            <p><i class="icon-phone"></i> <a href="tel:+31123456789">012-3456789</a></p>
+            <p><i class="icon-email"></i> <a href="mailto:info@fataxi.nl">info@fataxi.nl</a></p>
+          </address>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Volg ons</h4>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="icon-facebook"></i></a>
+            <a href="#" aria-label="Twitter"><i class="icon-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="icon-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="icon-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 FA Taxi Centrale. Alle rechten voorbehouden.</p>
+        <div class="legal-links">
+          <a href="/privacyverklaring">Privacyverklaring</a>
+          <a href="/cookies">Cookiebeleid</a>
+          <a href="/algemene-voorwaarden">Algemene Voorwaarden</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- JavaScript -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+          
+  <!-- TypeScript types voor Leaflet -->
+  <script type="importmap">
+    {
+      "imports": {
+        "leaflet": "https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js"
+      }
+    }
+  </script>
+  
+  <!-- Hoofd-JavaScript bestand als module -->
+  <script type="module" src="/static/js/main.js"></script>
+  
+  <!-- Oudere browser ondersteuning -->
+  <script nomodule>
+    document.getElementById('browser-support').style.display = 'block';
+  </script>
+</body>
+</html>

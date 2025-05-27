@@ -9,18 +9,88 @@ import { IdealPayment } from './idealPayment.js';
 import { LanguageSettings } from './languageSettings.js';
 import { FormHandler } from './formHandler.js';
 
-// Main application class
+/**
+ * Hoofdapplicatie klasse voor de FA Taxi boeking
+ */
 class App {
     constructor() {
         this.modules = {};
         this.initialized = false;
+        this.appElement = document.getElementById('app');
     }
 
+    /**
+     * Laadt het HTML template voor de boekingspagina
+     * @returns {Promise<string>} De HTML van het template of een foutmelding
+     */
+    async loadTemplate() {
+        try {
+            const response = await fetch('templates/booking-form.html');
+            if (!response.ok) throw new Error('Kon het template niet laden');
+            return await response.text();
+        } catch (error) {
+            console.error('Fout bij het laden van het template:', error);
+            return `
+                <div style="color: red; padding: 20px; text-align: center;">
+                    <h2>Fout bij het laden</h2>
+                    <p>Er is een fout opgetreden bij het laden van de applicatie.</p>
+                    <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">
+                        Probeer opnieuw
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Toont een foutmelding aan de gebruiker
+     * @param {string} message - Het foutbericht dat getoond moet worden
+     */
+    showError(message) {
+        if (this.appElement) {
+            this.appElement.innerHTML = `
+                <div style="color: red; padding: 20px; text-align: center;">
+                    <h2>Er is een fout opgetreden</h2>
+                    <p>${message}</p>
+                    <button onclick="window.location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">
+                        Vernieuw de pagina
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Initialiseert de applicatie
+     */
     async initialize() {
         if (this.initialized) return;
         
         console.log('Initializing FA Taxi application...');
         
+        try {
+            // Laad eerst de template
+            const template = await this.loadTemplate();
+            if (this.appElement) {
+                this.appElement.innerHTML = template;
+            }
+            
+            // Initialiseer alle modules nadat de DOM is geladen
+            await this.initializeModules();
+            
+            this.initialized = true;
+            console.log('Applicatie succesvol geïnitialiseerd');
+            
+        } catch (error) {
+            console.error('Fout tijdens initialisatie:', error);
+            this.showError('Er is een fout opgetreden bij het initialiseren van de applicatie');
+        }
+    }
+    
+    /**
+     * Initialiseert alle modules van de applicatie
+     */
+    async initializeModules() {
         try {
             // Initialize all modules
             this.modules.languageSettings = new LanguageSettings();
@@ -31,56 +101,47 @@ class App {
             this.modules.formHandler = new FormHandler(this);
             this.modules.locationService = new LocationService();
             
-            // Initialize map if element exists
-            if (document.getElementById('map')) {
-                await this.modules.mapManager.init();
+            // Initialiseer de kaart als het element bestaat
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                await this.modules.mapManager.initializeMap('map');
             }
             
-            // Initialize address suggestions
-            if (this.modules.addressSuggestions.initialize) {
-                this.modules.addressSuggestions.initialize();
-            }
+            // Initialiseer event listeners
+            this.setupEventListeners();
             
-            // Initialize form handler
-            if (this.modules.formHandler.initialize) {
-                this.modules.formHandler.initialize();
-            }
-            
-            // Make app instance globally available
-            window.app = this;
-            
-            // Make modules available globally for backward compatibility
-            window.config = config;
-            window.utils = { formatPrice, debounce };
-            window.locationService = this.modules.locationService;
-            window.addressSuggestions = this.modules.addressSuggestions;
-            window.PriceCalculator = PriceCalculator;
-            window.mapManager = this.modules.mapManager;
-            window.idealPayment = this.modules.idealPayment;
-            window.languageSettings = this.modules.languageSettings;
-            window.formHandler = this.modules.formHandler;
-            
-            this.initialized = true;
-            console.log('FA Taxi application initialized successfully!');
         } catch (error) {
-            console.error('Error initializing FA Taxi application:', error);
+            console.error('Fout bij het initialiseren van modules:', error);
             throw error;
         }
     }
-}
-// Create and initialize the application when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', async () => {
-    const app = new App();
-    try {
-        await app.initialize();
-    } catch (error) {
-        console.error('Failed to initialize application:', error);
-        // Show error message to user
-        const errorDiv = document.createElement('div');
-        errorDiv.style.cssText = 'background: #ffebee; color: #c62828; padding: 1rem; margin: 1rem; border-radius: 4px; text-align: center;';
-        errorDiv.textContent = 'Er is een fout opgetreden bij het initialiseren van de applicatie. Ververs de pagina of neem contact op met de beheerder.';
-        document.body.prepend(errorDiv);
+    
+    /**
+     * Stelt alle event listeners in voor de applicatie
+     */
+    setupEventListeners() {
+        console.log('Event listeners worden ingesteld...');
+        
+        // Voeg hier eventuele globale event listeners toe
+        const form = document.getElementById('booking-form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleFormSubmit(e);
+            });
+        }
     }
-});
+    
+    /**
+     * Handelt het verzenden van het formulier af
+     * @param {Event} event - Het submit event
+     */
+    async handleFormSubmit(event) {
+        console.log('Formulier verzonden');
+        // Hier komt de logica voor het verwerken van het formulier
+    }
+}
 
-// The application is now initialized automatically when the DOM is loaded
+// Exporteer de App klasse
+export { App };
+export default App;

@@ -1,0 +1,199 @@
+/* ==========================================================================
+   #MAP
+   ========================================================================== */
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  background-color: var(--color-gray-100);
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+/* Markeringen op de kaart */
+.map-marker {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: var(--color-primary);
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -15px;
+  cursor: pointer;
+}
+
+.map-marker:after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  margin: 8px 0 0 8px;
+  background: #fff;
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* Popup stijlen */
+.mapboxgl-popup {
+  max-width: 300px;
+  font-family: var(--font-sans);
+}
+
+.mapboxgl-popup-content {
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 1.5rem;
+  padding: 0.25rem 0.5rem;
+  color: var(--color-gray-600);
+}
+
+.mapboxgl-popup-close-button:hover {
+  color: var(--color-error);
+  background-color: transparent;
+}
+
+/* Kaart besturingselementen */
+.mapboxgl-ctrl-top-right {
+  top: 10px;
+  right: 10px;
+}
+
+.mapboxgl-ctrl-group {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow) !important;
+}
+
+.mapboxgl-ctrl button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  outline: none;
+  background-color: white;
+  transition: background-color 0.2s;
+}
+
+.mapboxgl-ctrl button:hover {
+  background-color: var(--color-gray-100);
+}
+
+.mapboxgl-ctrl button + button {
+  border-top: 1px solid var(--color-border);
+}
+
+/* Zoekbalk op de kaart */
+.mapboxgl-ctrl-geocoder {
+  border-radius: var(--border-radius) !important;
+  box-shadow: var(--box-shadow) !important;
+  max-width: none !important;
+  width: 100%;
+  max-width: 360px;
+}
+
+.mapboxgl-ctrl-geocoder input[type='text'] {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: var(--border-radius) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+/* Route weergave */
+.map-route-info {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  z-index: 10;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-route-info svg {
+  color: var(--color-primary);
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Volledig scherm modus */
+.mapboxgl-ctrl-fullscreen {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+/* Aanpassingen voor mobiele apparaten */
+@media (max-width: 768px) {
+  .map-container {
+    height: 300px;
+    margin-bottom: 1rem;
+  }
+  
+  .mapboxgl-ctrl-geocoder {
+    max-width: 280px;
+  }
+  
+  .map-route-info {
+    bottom: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .map-route-info svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Donkere modus ondersteuning */
+@media (prefers-color-scheme: dark) {
+  .map-container {
+    background-color: var(--color-gray-900);
+  }
+  
+  .mapboxgl-ctrl button {
+    background-color: var(--color-gray-800);
+    color: var(--color-gray-200);
+  }
+  
+  .mapboxgl-ctrl button:hover {
+    background-color: var(--color-gray-700);
+  }
+  
+  .mapboxgl-popup-content {
+    background-color: var(--color-gray-800);
+    color: var(--color-gray-200);
+  }
+  
+  .mapboxgl-popup-close-button {
+    color: var(--color-gray-400);
+  }
+  
+  .mapboxgl-popup-close-button:hover {
+    color: var(--color-error);
+  }
+  
+  .map-route-info {
+    background-color: var(--color-gray-800);
+    color: var(--color-gray-200);
+  }
+}

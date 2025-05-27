@@ -1,0 +1,208 @@
+/* ==========================================================================
+   #NAVBAR
+   ========================================================================== */
+
+.navbar {
+  padding: 1rem 0;
+  background-color: var(--color-white);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  padding: 0.5rem 0;
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary) !important;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.navbar-nav .nav-link {
+  color: var(--color-gray-800);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--color-primary);
+}
+
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 2px;
+  background-color: var(--color-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.navbar-toggler {
+  border: none;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  background-color: transparent;
+  border-radius: var(--border-radius);
+  transition: all 0.3s;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.navbar .btn-primary {
+  margin-left: 1rem;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.dropdown-item {
+  padding: 0.5rem 1.5rem;
+  color: var(--color-gray-800);
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--color-gray-100);
+  color: var(--color-primary);
+}
+
+.dropdown-divider {
+  border-top: 1px solid var(--color-border);
+  margin: 0.5rem 0;
+}
+
+/* Responsive styles */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .navbar-nav {
+    padding: 1rem 0;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.75rem 0;
+    margin: 0;
+  }
+  
+  .navbar-nav .nav-link::after {
+    display: none;
+  }
+  
+  .navbar .btn-primary {
+    margin: 0.5rem 0 0;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .dropdown-menu {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--color-gray-50);
+  }
+  
+  .dropdown-item {
+    padding-left: 2rem;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background-color: var(--color-gray-900);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .navbar.scrolled {
+    background-color: rgba(17, 24, 39, 0.98);
+  }
+  
+  .navbar-nav .nav-link {
+    color: var(--color-gray-300);
+  }
+  
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link.active {
+    color: var(--color-primary-light);
+  }
+  
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+  
+  @media (max-width: 991.98px) {
+    .navbar-collapse {
+      background-color: var(--color-gray-800);
+    }
+    
+    .navbar-nav .nav-link {
+      color: var(--color-gray-300);
+    }
+    
+    .dropdown-menu {
+      background-color: var(--color-gray-700);
+    }
+    
+    .dropdown-item {
+      color: var(--color-gray-300);
+    }
+    
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+      background-color: var(--color-gray-600);
+      color: var(--color-white);
+    }
+  }
+}

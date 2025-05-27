@@ -1,0 +1,114 @@
+<div class="booking-container">
+    <header class="booking-header">
+        <h1>FA Taxi Boeking</h1>
+        <div class="language-selector">
+            <select id="language-select">
+                <option value="nl">Nederlands</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="booking-main">
+        <form id="booking-form" class="booking-form">
+            <div class="form-section">
+                <h2>Ritgegevens</h2>
+                
+                <div class="form-group">
+                    <label for="pickup-location">Ophaallocatie</label>
+                    <input type="text" id="pickup-location" name="pickup" required 
+                           placeholder="Vul een adres in" autocomplete="off">
+                    <div id="pickup-suggestions" class="suggestions"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dropoff-location">Bestemming</label>
+                    <input type="text" id="dropoff-location" name="dropoff" required 
+                           placeholder="Vul een adres in" autocomplete="off">
+                    <div id="dropoff-suggestions" class="suggestions"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pickup-date">Datum</label>
+                        <input type="date" id="pickup-date" name="pickup-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickup-time">Tijd</label>
+                        <input type="time" id="pickup-time" name="pickup-time" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Persoonsgegevens</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first-name">Voornaam</label>
+                        <input type="text" id="first-name" name="first-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Achternaam</label>
+                        <input type="text" id="last-name" name="last-name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mailadres</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Telefoonnummer</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Betaling</h2>
+                <div class="payment-methods">
+                    <div class="payment-method">
+                        <input type="radio" id="ideal" name="payment-method" value="ideal" checked>
+                        <label for="ideal">iDEAL</label>
+                    </div>
+                    <div class="payment-method">
+                        <input type="radio" id="credit-card" name="payment-method" value="credit-card">
+                        <label for="credit-card">Creditcard</label>
+                    </div>
+                    <div class="payment-method">
+                        <input type="radio" id="cash" name="payment-method" value="cash">
+                        <label for="cash">Contant</label>
+                    </div>
+                </div>
+                <div id="payment-details">
+                    <!-- iDEAL bank selectie komt hier -->
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Bevestig boeking</button>
+                <button type="button" id="calculate-price" class="btn btn-secondary">Bereken prijs</button>
+            </div>
+        </form>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div id="price-estimate" class="price-estimate">
+                <h3>Prijsindicatie</h3>
+                <div class="price-amount">€ 0,00</div>
+                <small class="price-note">Dit is een schatting, de uiteindelijke prijs kan afwijken</small>
+            </div>
+        </div>
+    </main>
+
+    <footer class="booking-footer">
+        <p>&copy; 2023 FA Taxi. Alle rechten voorbehouden.</p>
+        <nav>
+            <a href="#">Algemene voorwaarden</a>
+            <a href="#">Privacyverklaring</a>
+            <a href="#">Contact</a>
+        </nav>
+    </footer>
+</div>

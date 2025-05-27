@@ -1,0 +1,477 @@
+/* ==========================================================================
+   #TEAM
+   ========================================================================== */
+
+.team {
+  padding: 6rem 0;
+  background-color: var(--color-white);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.team-member {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid var(--color-border);
+}
+
+.team-member:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.member-image {
+  position: relative;
+  overflow: hidden;
+  height: 320px;
+}
+
+.member-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.team-member:hover .member-image img {
+  transform: scale(1.05);
+}
+
+.member-social {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.team-member:hover .member-social {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border-radius: 50%;
+  margin: 0 0.25rem;
+  font-size: 0.9375rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.social-link:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-3px);
+}
+
+.member-info {
+  padding: 1.75rem;
+  text-align: center;
+}
+
+.member-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: var(--color-gray-900);
+}
+
+.member-position {
+  display: block;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+}
+
+.member-bio {
+  color: var(--color-gray-600);
+  font-size: 0.9375rem;
+  margin-bottom: 1.5rem;
+}
+
+.member-contact {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.member-contact i {
+  color: var(--color-primary);
+  margin-right: 0.5rem;
+  width: 16px;
+  text-align: center;
+}
+
+/* Team Style 2 */
+.team-style-2 .team-member {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.team-style-2 .member-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 2rem;
+}
+
+.team-style-2 .member-bio {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+}
+
+.team-style-2 .member-social {
+  position: static;
+  opacity: 1;
+  transform: none;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.team-style-2 .social-link {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+}
+
+.team-style-2 .social-link:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Team Details */
+.team-details {
+  padding: 6rem 0;
+  background-color: var(--color-white);
+}
+
+.team-details-container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 4rem;
+  align-items: flex-start;
+}
+
+.member-details-image {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+}
+
+.member-details-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.member-details-info {
+  padding: 2rem 0;
+}
+
+.member-details-info h1 {
+  font-size: 2.25rem;
+  margin: 0 0 0.5rem;
+  color: var(--color-gray-900);
+}
+
+.member-designation {
+  display: inline-block;
+  font-size: 1.125rem;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.member-details-bio {
+  margin-bottom: 2rem;
+  color: var(--color-gray-700);
+  line-height: 1.8;
+}
+
+.member-details-contact {
+  margin-bottom: 2.5rem;
+}
+
+.contact-info-item {
+  display: flex;
+  margin-bottom: 0.75rem;
+  align-items: flex-start;
+}
+
+.contact-info-item i {
+  color: var(--color-primary);
+  margin-right: 1rem;
+  margin-top: 0.25rem;
+  width: 20px;
+  text-align: center;
+}
+
+.contact-info-item a {
+  color: var(--color-gray-700);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-info-item a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.skills-section h3,
+.experience-section h3 {
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1.5rem;
+  color: var(--color-gray-900);
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.skills-section h3::after,
+.experience-section h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: var(--color-primary);
+  border-radius: 3px;
+}
+
+.skill-item {
+  margin-bottom: 1.5rem;
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.skill-name {
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.skill-percent {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.skill-bar {
+  height: 8px;
+  background-color: var(--color-gray-100);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.skill-progress {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+  width: 0;
+  transition: width 1s ease-in-out;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin: 2rem 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--color-border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 0.25rem;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--color-white);
+  border: 3px solid var(--color-primary);
+  z-index: 1;
+}
+
+.timeline-period {
+  display: inline-block;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.timeline-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--color-gray-900);
+}
+
+.timeline-company {
+  display: block;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.timeline-description {
+  color: var(--color-gray-600);
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* Responsive styles */
+@media (max-width: 1199.98px) {
+  .team-details-container {
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .team,
+  .team-details {
+    padding: 4rem 0;
+  }
+  
+  .team-details-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .member-details-image {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .team-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  .member-image {
+    height: 280px;
+  }
+  
+  .team-style-2 .member-info {
+    padding: 1.5rem;
+  }
+  
+  .member-details-info h1 {
+    font-size: 1.875rem;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .team,
+  .team-details {
+    background-color: var(--color-gray-900);
+  }
+  
+  .team-member {
+    background-color: var(--color-gray-800);
+    border-color: var(--color-gray-700);
+  }
+  
+  .member-name,
+  .member-details-info h1,
+  .timeline-title,
+  .skill-name {
+    color: var(--color-white);
+  }
+  
+  .member-bio,
+  .member-contact,
+  .member-details-bio,
+  .timeline-description {
+    color: var(--color-gray-400);
+  }
+  
+  .contact-info-item a,
+  .contact-info-item i {
+    color: var(--color-gray-300);
+  }
+  
+  .contact-info-item a:hover {
+    color: var(--color-primary);
+  }
+  
+  .skills-section h3,
+  .experience-section h3 {
+    color: var(--color-white);
+  }
+  
+  .skill-bar {
+    background-color: var(--color-gray-800);
+  }
+  
+  .timeline::before {
+    background-color: var(--color-gray-700);
+  }
+  
+  .timeline-item::before {
+    background-color: var(--color-gray-900);
+  }
+  
+  .team-style-2 .social-link {
+    background-color: var(--color-gray-700);
+    color: var(--color-gray-300);
+  }
+  
+  .team-style-2 .social-link:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+  }
+}
