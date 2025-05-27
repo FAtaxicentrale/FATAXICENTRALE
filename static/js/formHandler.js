@@ -3,7 +3,7 @@
  * Behandelt het verzenden en valideren van het boekingsformulier
  */
 
-export class FormHandler {
+class FormHandler {
   constructor(app) {
     this.app = app;
     this.form = document.getElementById('bookingForm');

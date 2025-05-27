@@ -1,5 +1,5 @@
 // iDEAL Betaling module
-export class IdealPayment {
+class IdealPayment {
     constructor() {
         this.lastPrice = null;
         this.ritId = null;

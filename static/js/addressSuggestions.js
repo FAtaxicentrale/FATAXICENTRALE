@@ -2,7 +2,7 @@
  * Adresuggesties module voor het ophalen en weergeven van adressuggesties
  * Gebruikt de PDOK Locatieserver API voor het zoeken naar Nederlandse adressen
  */
-export class AddressSuggestions {
+class AddressSuggestions {
     constructor() {
         this.suggestionBoxes = {};
         this.apiEndpoint = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1/suggest';

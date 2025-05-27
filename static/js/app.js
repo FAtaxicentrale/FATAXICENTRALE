@@ -9,6 +9,17 @@ import { IdealPayment } from './idealPayment.js';
 import { LanguageSettings } from './languageSettings.js';
 import { FormHandler } from './formHandler.js';
 
+// Zorg ervoor dat de klassen beschikbaar zijn in het globale bereik
+if (typeof window !== 'undefined') {
+  window.LocationService = LocationService;
+  window.AddressSuggestions = AddressSuggestions;
+  window.PriceCalculator = PriceCalculator;
+  window.MapManager = MapManager;
+  window.IdealPayment = IdealPayment;
+  window.LanguageSettings = LanguageSettings;
+  window.FormHandler = FormHandler;
+}
+
 // Hoofdapplicatie klasse
 export class App {
     constructor() {

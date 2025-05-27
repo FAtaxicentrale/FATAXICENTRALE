@@ -3,7 +3,7 @@
  * Behandelt alle prijsberekeningen voor taxiritten
  */
 
-export class PriceCalculator {
+class PriceCalculator {
   constructor() {
     // Basis tarieven in euro's
     this.baseRates = {

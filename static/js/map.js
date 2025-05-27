@@ -1,5 +1,5 @@
 // Map module voor het beheren van de kaartfunctionaliteit
-export class MapManager {
+class MapManager {
     constructor() {
         this.map = null;
         this.routeLayer = null;

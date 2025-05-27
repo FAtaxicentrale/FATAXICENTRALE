@@ -13,64 +13,12 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   
   <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="static/js/bundle.js"></script>
   <script>
-    // Functie om scripts te laden en fouten te loggen
-    function loadScript(src, callback) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-          console.log(`✅ ${src} loaded successfully`);
-          if (callback) callback();
-          resolve();
-        };
-        script.onerror = () => {
-          console.error(`❌ Error loading ${src}`);
-          reject(new Error(`Failed to load ${src}`));
-        };
-        document.head.appendChild(script);
-      });
-    }
-
-    // Laad alle scripts in de juiste volgorde
-    async function loadAllScripts() {
-      const scripts = [
-        'static/js/config.js',
-        'static/js/translations.js',
-        'static/js/utils.js',
-        'static/js/location.js',
-        'static/js/addressSuggestions.js',
-        'static/js/priceCalculator.js',
-        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-        'static/js/map.js',
-        'static/js/idealPayment.js',
-        'static/js/languageSettings.js',
-        'static/js/formHandler.js',
-        'static/js/draft-manager.js',
-        'static/js/main.js'
-      ];
-
-      try {
-        for (const script of scripts) {
-          await loadScript(script);
-        }
-        console.log('All scripts loaded successfully');
-      } catch (error) {
-        console.error('Error loading scripts:', error);
-      }
-    }
-
-    // Start het laden van de scripts wanneer de DOM geladen is
+    // Toon een bericht wanneer het DOM geladen is
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM fully loaded, starting to load scripts...');
-      loadAllScripts().then(() => {
-        console.log('All scripts loaded, initializing app...');
-        if (typeof App !== 'undefined') {
-          App.initialize();
-        } else {
-          console.error('App is not defined after loading all scripts');
-        }
-      });
+      console.log('DOM fully loaded, loading bundle...');
     });
   </script>
 </head>

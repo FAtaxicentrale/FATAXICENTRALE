@@ -1,5 +1,5 @@
 // Locatie-gerelateerde functies
-class LocationService {
+export class LocationService {
   constructor() {
     this.currentPosition = null;
     this.watchId = null;
