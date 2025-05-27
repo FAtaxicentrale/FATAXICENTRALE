@@ -196,7 +196,10 @@ class IdealPayment {
     }
 }
 
-// Maak beschikbaar in het globale bereik (voor backward compatibility)
+// Exporteer de klasse voor gebruik in andere modules
+export { IdealPayment };
+
+// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
 if (typeof window !== 'undefined') {
   window.IdealPayment = IdealPayment;
   window.idealPayment = new IdealPayment();
@@ -204,13 +207,10 @@ if (typeof window !== 'undefined') {
   // Globale functie voor backward compatibility
   window.startIdealPay = function() {
     if (window.idealPayment) {
-      window.idealPayment.startPayment().catch(error => {
-        console.error('Fout bij starten iDEAL betaling:', error);
-        alert('Er is een fout opgetreden bij het starten van de betaling. Probeer het opnieuw of kies een andere betaalmethode.');
-      });
+      return window.idealPayment.startPayment();
     } else {
-      console.error('iDEAL betaling module is niet beschikbaar');
-      alert('iDEAL betaling is momenteel niet beschikbaar. Probeer het later opnieuw.');
+      console.error('iDEAL betalingsmodule is niet geladen');
+      return false;
     }
   };
 }

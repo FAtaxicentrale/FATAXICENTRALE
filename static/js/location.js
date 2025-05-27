@@ -136,8 +136,10 @@ class LocationService {
   }
 }
 
-// Maak beschikbaar in het globale bereik
-// Maak beschikbaar in globaal bereik
+// Exporteer de klasse voor gebruik in andere modules
+export { LocationService };
+
+// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
 if (typeof window !== 'undefined') {
   window.LocationService = LocationService;
 }
