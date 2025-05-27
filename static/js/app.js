@@ -15,7 +15,7 @@ const LanguageSettings = window.LanguageSettings;
 const FormHandler = window.FormHandler;
 
 // Hoofdapplicatie klasse
-export class App {
+class App {
     constructor() {
         this.modules = {
             languageSettings: new LanguageSettings(),
@@ -233,19 +233,24 @@ export class App {
     }
 }
 
-// Initialiseer de applicatie wanneer het DOM geladen is
-document.addEventListener('DOMContentLoaded', () => {
-    const app = new App();
-    window.app = app; // Maak beschikbaar in het globale bereik
+// Maak beschikbaar in globaal bereik
+if (typeof window !== 'undefined') {
+    window.App = App;
     
-    // Start de applicatie
-    app.initialize().catch(error => {
-        console.error('Fout bij het starten van de applicatie:', error);
-        // Toon een gebruiksvriendelijke foutmelding
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = 'Er is een fout opgetreden bij het laden van de applicatie. Vernieuw de pagina of probeer het later opnieuw.';
-        document.body.prepend(errorDiv);
+    // Initialiseer de applicatie wanneer het DOM geladen is
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = new App();
+        window.app = app; // Maak beschikbaar in het globale bereik
+        
+        // Start de applicatie
+        app.initialize().catch(error => {
+            console.error('Fout bij het starten van de applicatie:', error);
+            // Toon een gebruiksvriendelijke foutmelding
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = 'Er is een fout opgetreden bij het laden van de applicatie. Vernieuw de pagina of probeer het later opnieuw.';
+            document.body.prepend(errorDiv);
+        });
     });
-});
+}
 

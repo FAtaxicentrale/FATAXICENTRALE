@@ -67,10 +67,7 @@ class LanguageSettings {
     }
 }
 
-// Exporteer de klasse
-export { LanguageSettings };
-
-// Maak beschikbaar in het globale bereik voor compatibiliteit
+// Maak beschikbaar in het globale bereik
 if (typeof window !== 'undefined') {
     window.LanguageSettings = LanguageSettings;
     window.languageSettings = new LanguageSettings();

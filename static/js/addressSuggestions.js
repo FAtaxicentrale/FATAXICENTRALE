@@ -300,9 +300,6 @@ class AddressSuggestions {
     }
 }
 
-// Export voor gebruik in modules
-export { AddressSuggestions };
-
 // Maak beschikbaar in globaal bereik
 if (typeof window !== 'undefined') {
   window.AddressSuggestions = AddressSuggestions;

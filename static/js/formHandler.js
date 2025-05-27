@@ -351,4 +351,7 @@ class FormHandler {
   }
 }
 
-export default FormHandler;
+// Maak beschikbaar in globaal bereik
+if (typeof window !== 'undefined') {
+  window.FormHandler = FormHandler;
+}

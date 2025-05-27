@@ -337,4 +337,7 @@ class PriceCalculator {
   }
 }
 
-export default PriceCalculator;
+// Maak beschikbaar in globaal bereik
+if (typeof window !== 'undefined') {
+  window.PriceCalculator = PriceCalculator;
+}

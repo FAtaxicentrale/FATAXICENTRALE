@@ -273,5 +273,7 @@ class MapManager {
     }
 }
 
-// Exporteer de MapManager klasse
-export default MapManager;
+// Maak beschikbaar in globaal bereik
+if (typeof window !== 'undefined') {
+  window.MapManager = MapManager;
+}
