@@ -351,10 +351,7 @@ class FormHandler {
   }
 }
 
-// Exporteer de klasse voor gebruik in andere modules
-export { FormHandler };
-
-// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
+// Maak beschikbaar in globaal bereik
 if (typeof window !== 'undefined') {
   window.FormHandler = FormHandler;
 }

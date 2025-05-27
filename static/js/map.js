@@ -273,10 +273,7 @@ class MapManager {
     }
 }
 
-// Exporteer de klasse voor gebruik in andere modules
-export { MapManager };
-
-// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
+// Maak beschikbaar in globaal bereik
 if (typeof window !== 'undefined') {
   window.MapManager = MapManager;
 }

@@ -196,10 +196,7 @@ class IdealPayment {
     }
 }
 
-// Exporteer de klasse voor gebruik in andere modules
-export { IdealPayment };
-
-// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
+// Maak beschikbaar in globaal bereik
 if (typeof window !== 'undefined') {
   window.IdealPayment = IdealPayment;
   window.idealPayment = new IdealPayment();

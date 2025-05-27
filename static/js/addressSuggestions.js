@@ -300,11 +300,7 @@ class AddressSuggestions {
     }
 }
 
-// Exporteer de klasse als zowel benoemde als default export
-export { AddressSuggestions };
-export default AddressSuggestions;
-
-// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
+// Maak beschikbaar in globaal bereik
 if (typeof window !== 'undefined') {
   window.AddressSuggestions = AddressSuggestions;
 }
