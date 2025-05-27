@@ -1,20 +1,46 @@
 /* ==========================================================================
-   #BASE
+   #IMPORTS - Must be at the top of the file
    ========================================================================== */
+
+/* Base imports */
 @import 'base/base.css';
-
-/* ==========================================================================
-   #VARIABLES
-   ========================================================================== */
-
-/* Importeer basisstijlen */
 @import 'base/typography.css';
 @import 'base/layout.css';
+
+/* Component imports */
+@import 'components/header.css';
+@import 'components/navbar.css';
+@import 'components/hero.css';
+@import 'components/booking-form.css';
+@import 'components/features.css';
+@import 'components/testimonials.css';
+@import 'components/cta.css';
+@import 'components/contact.css';
+@import 'components/faq.css';
+@import 'components/services.css';
+@import 'components/team.css';
+@import 'components/blog.css';
+@import 'components/pricing.css';
+@import 'components/error.css';
+@import 'components/cart.css';
+@import 'components/account.css';
+@import 'components/auth.css';
+@import 'components/error-pages.css';
+@import 'components/ui-components.css';
 @import 'components/forms.css';
 @import 'components/map.css';
 @import 'components/cards.css';
 @import 'components/footer.css';
+@import 'components/layout.css';
+@import 'components/animations.css';
+@import 'components/theme.css';
+
+/* Utility imports */
 @import 'utilities/utilities.css';
+
+/* ==========================================================================
+   #VARIABLES
+   ========================================================================== */
 
 :root {
   /* Kleuren */
@@ -109,32 +135,6 @@
   --max-width-screen-2xl: 1536px;
 }
 
-/* ==========================================================================
-   #IMPORTS
-   ========================================================================== */
-
-@import 'components/header.css';
-@import 'components/navbar.css';
-@import 'components/hero.css';
-@import 'components/booking-form.css';
-@import 'components/features.css';
-@import 'components/testimonials.css';
-@import 'components/cta.css';
-@import 'components/contact.css';
-@import 'components/faq.css';
-@import 'components/services.css';
-@import 'components/team.css';
-@import 'components/blog.css';
-@import 'components/pricing.css';
-@import 'components/error.css';
-@import 'components/cart.css';
-@import 'components/account.css';
-@import 'components/auth.css';
-@import 'components/error-pages.css';
-@import 'components/ui-components.css';
-@import 'components/layout.css';
-@import 'components/animations.css';
-@import 'components/theme.css';
 
 
 /* ==========================================================================
