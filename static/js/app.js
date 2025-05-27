@@ -244,5 +244,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Exporteer de App klasse voor gebruik in andere bestanden
-export { App };
