@@ -1,5 +1,5 @@
 // Taalinstellingen module
-export class LanguageSettings {
+class LanguageSettings {
     constructor() {
         this.currentLanguage = 'nl';
         this.translations = {
@@ -38,15 +38,19 @@ export class LanguageSettings {
         };
     }
 
-    setLanguage(lang) {
-        if (this.translations[lang]) {
-            this.currentLanguage = lang;
-            this.updateTranslations();
-        }
-    }
-
     getTranslation(key) {
-        return this.translations[this.currentLanguage][key] || key;
+        const keys = key.split('.');
+        let value = this.translations[this.currentLanguage];
+        
+        for (const k of keys) {
+            if (value && value[k] !== undefined) {
+                value = value[k];
+            } else {
+                return key; // Return de originele key als de vertaling niet gevonden is
+            }
+        }
+        
+        return value || key;
     }
 
     updateTranslations() {
@@ -54,45 +58,20 @@ export class LanguageSettings {
         document.querySelectorAll('[data-translate]').forEach(element => {
             const key = element.getAttribute('data-translate');
             const translation = this.getTranslation(key);
-            if (element.tagName === 'INPUT') {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                 element.placeholder = translation;
             } else {
                 element.textContent = translation;
             }
         });
-
-        // Update error messages
-        document.querySelectorAll('[data-error]').forEach(element => {
-            const key = element.getAttribute('data-error');
-            const translation = this.getTranslation(`error.${key}`);
-            element.textContent = translation;
-        });
-    }
-
-    static initialize() {
-        const settings = new LanguageSettings();
-        const languageSelect = document.getElementById('language-select');
-        
-        if (languageSelect) {
-            languageSelect.addEventListener('change', (e) => {
-                settings.setLanguage(e.target.value);
-            });
-        }
-
-        // Stel standaard taal in
-        const savedLanguage = localStorage.getItem('preferredLanguage');
-        if (savedLanguage && settings.translations[savedLanguage]) {
-            settings.setLanguage(savedLanguage);
-        }
-
-        return settings;
     }
 }
 
-// Maak beschikbaar in het globale bereik
+// Exporteer de klasse
+export { LanguageSettings };
+
+// Maak beschikbaar in het globale bereik voor compatibiliteit
 if (typeof window !== 'undefined') {
-  window.LanguageSettings = LanguageSettings;
-  
-  // Maak een instantie beschikbaar
-  window.languageSettings = new LanguageSettings();
+    window.LanguageSettings = LanguageSettings;
+    window.languageSettings = new LanguageSettings();
 }
