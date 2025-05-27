@@ -246,8 +246,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Exporteer de App klasse voor gebruik in andere bestanden
 export { App };
-
-// Maak ook beschikbaar in window voor backward compatibility
-if (typeof window !== 'undefined') {
-    window.App = App;
-}

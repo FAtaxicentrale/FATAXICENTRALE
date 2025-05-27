@@ -1,5 +1,5 @@
 // iDEAL Betaling module
-class IdealPayment {
+export class IdealPayment {
     constructor() {
         this.lastPrice = null;
         this.ritId = null;
@@ -196,26 +196,21 @@ class IdealPayment {
     }
 }
 
-// Maak beschikbaar in het globale bereik
+// Maak beschikbaar in het globale bereik (voor backward compatibility)
 if (typeof window !== 'undefined') {
-  // Maak een instantie beschikbaar
+  window.IdealPayment = IdealPayment;
   window.idealPayment = new IdealPayment();
   
-  // Maak de startPayment functie beschikbaar als globale functie
+  // Globale functie voor backward compatibility
   window.startIdealPay = function() {
-    if (!window.idealPayment) {
-      console.error('iDEAL betaling is niet beschikbaar');
-      return;
-    }
-    
-    const idealBtn = document.getElementById('idealPayBtn');
-    if (idealBtn) {
-      idealBtn.click();
+    if (window.idealPayment) {
+      window.idealPayment.startPayment().catch(error => {
+        console.error('Fout bij starten iDEAL betaling:', error);
+        alert('Er is een fout opgetreden bij het starten van de betaling. Probeer het opnieuw of kies een andere betaalmethode.');
+      });
     } else {
-      console.error('iDEAL knop niet gevonden');
+      console.error('iDEAL betaling module is niet beschikbaar');
+      alert('iDEAL betaling is momenteel niet beschikbaar. Probeer het later opnieuw.');
     }
   };
-  
-  // Maak de klasse beschikbaar voor eventueel gebruik
-  window.IdealPayment = IdealPayment;
 }
