@@ -67,7 +67,10 @@ class LanguageSettings {
     }
 }
 
-// Maak beschikbaar in het globale bereik
+// Exporteer de klasse voor gebruik in andere modules
+export { LanguageSettings };
+
+// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
 if (typeof window !== 'undefined') {
     window.LanguageSettings = LanguageSettings;
     window.languageSettings = new LanguageSettings();

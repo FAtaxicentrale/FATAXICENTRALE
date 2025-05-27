@@ -300,7 +300,8 @@ class AddressSuggestions {
     }
 }
 
-// Exporteer de klasse als default export
+// Exporteer de klasse als zowel benoemde als default export
+export { AddressSuggestions };
 export default AddressSuggestions;
 
 // Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
