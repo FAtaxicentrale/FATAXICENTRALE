@@ -1,24 +1,18 @@
-// Importeer alle benodigde modules
-import { config } from './config.js';
-import { formatPrice, debounce } from './utils.js';
-import { LocationService } from './location.js';
-import { AddressSuggestions } from './addressSuggestions.js';
-import { PriceCalculator } from './priceCalculator.js';
-import { MapManager } from './map.js';
-import { IdealPayment } from './idealPayment.js';
-import { LanguageSettings } from './languageSettings.js';
-import { FormHandler } from './formHandler.js';
+// Hoofdapplicatie klasse
+// Maakt gebruik van globale variabelen die door de bundle worden geladen
 
-// Zorg ervoor dat de klassen beschikbaar zijn in het globale bereik
-if (typeof window !== 'undefined') {
-  window.LocationService = LocationService;
-  window.AddressSuggestions = AddressSuggestions;
-  window.PriceCalculator = PriceCalculator;
-  window.MapManager = MapManager;
-  window.IdealPayment = IdealPayment;
-  window.LanguageSettings = LanguageSettings;
-  window.FormHandler = FormHandler;
-}
+// Haal configuratie op uit het globale bereik
+const config = window.config || {};
+const { formatPrice, debounce } = window.utils || {};
+
+// Haal klassen op uit het globale bereik
+const LocationService = window.LocationService;
+const AddressSuggestions = window.AddressSuggestions;
+const PriceCalculator = window.PriceCalculator;
+const MapManager = window.MapManager;
+const IdealPayment = window.IdealPayment;
+const LanguageSettings = window.LanguageSettings;
+const FormHandler = window.FormHandler;
 
 // Hoofdapplicatie klasse
 export class App {

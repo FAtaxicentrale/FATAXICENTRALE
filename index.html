@@ -15,16 +15,63 @@
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Laad het bundel script
+    // Laad scripts in de juiste volgorde
     document.addEventListener('DOMContentLoaded', () => {
       console.log('DOM fully loaded, loading scripts...');
       
-      // Laad eerst het bundel script
-      const script = document.createElement('script');
-      script.src = 'static/js/bundle.js';
-      script.onload = () => console.log('Bundle script loaded successfully');
-      script.onerror = (e) => console.error('Error loading bundle script:', e);
-      document.head.appendChild(script);
+      // Laad eerst config en utils
+      const loadScript = (src) => {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.onload = () => {
+            console.log(`✅ ${src} loaded`);
+            resolve();
+          };
+          script.onerror = (e) => {
+            console.error(`❌ Error loading ${src}`, e);
+            reject(e);
+          };
+          document.body.appendChild(script);
+        });
+      };
+
+      // Laad scripts in de juiste volgorde
+      const scripts = [
+        'static/js/config.js',
+        'static/js/translations.js',
+        'static/js/utils.js',
+        'static/js/location.js',
+        'static/js/addressSuggestions.js',
+        'static/js/priceCalculator.js',
+        'static/js/map.js',
+        'static/js/idealPayment.js',
+        'static/js/languageSettings.js',
+        'static/js/formHandler.js',
+        'static/js/draft-manager.js',
+        'static/js/app.js',
+        'static/js/main.js'
+      ];
+
+      // Laad alle scripts sequentieel
+      (async () => {
+        try {
+          for (const src of scripts) {
+            await loadScript(src);
+          }
+          console.log('All scripts loaded successfully');
+          
+          // Initialiseer de app
+          if (window.App) {
+            const app = new window.App();
+            window.app = app;
+            await app.initialize();
+            console.log('App initialized successfully');
+          }
+        } catch (error) {
+          console.error('Error loading scripts:', error);
+        }
+      })();
     });
   </script>
 </head>
