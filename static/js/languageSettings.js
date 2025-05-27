@@ -1,5 +1,5 @@
 // Taalinstellingen module
-class LanguageSettings {
+export class LanguageSettings {
     constructor() {
         this.currentLanguage = 'nl';
         this.translations = {
