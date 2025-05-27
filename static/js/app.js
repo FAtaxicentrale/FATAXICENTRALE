@@ -1,14 +1,14 @@
 // Hoofdapplicatie klasse
 // Maakt gebruik van globale variabelen die door de bundle worden geladen
 
-// Importeer benodigde modules
-import { PriceCalculator } from './priceCalculator.js';
-import { MapManager } from './map.js';
-import AddressSuggestions from './addressSuggestions.js';
-import { LocationService } from './location.js';
-import { IdealPayment } from './idealPayment.js';
-import { LanguageSettings } from './languageSettings.js';
-import { FormHandler } from './formHandler.js';
+// Gebruik globale variabelen in plaats van imports
+const PriceCalculator = window.PriceCalculator;
+const MapManager = window.MapManager;
+const AddressSuggestions = window.AddressSuggestions;
+const LocationService = window.LocationService;
+const IdealPayment = window.IdealPayment;
+const LanguageSettings = window.LanguageSettings;
+const FormHandler = window.FormHandler;
 
 // Haal configuratie op uit het globale bereik
 const config = window.config || {};

@@ -14,37 +14,48 @@
   
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
   <!-- Laad eerst config en utils -->
-  <script type="module" src="static/js/config.js"></script>
-  <script type="module" src="static/js/translations.js"></script>
-  <script type="module" src="static/js/utils.js"></script>
+  <script src="static/js/config.js"></script>
+  <script src="static/js/translations.js"></script>
+  <script src="static/js/utils.js"></script>
   
   <!-- Laad de modules -->
-  <script type="module" src="static/js/location.js"></script>
-  <script type="module" src="static/js/addressSuggestions.js"></script>
-  <script type="module" src="static/js/priceCalculator.js"></script>
-  <script type="module" src="static/js/map.js"></script>
-  <script type="module" src="static/js/idealPayment.js"></script>
-  <script type="module" src="static/js/languageSettings.js"></script>
-  <script type="module" src="static/js/formHandler.js"></script>
-  <script type="module" src="static/js/draft-manager.js"></script>
+  <script src="static/js/location.js"></script>
+  <script src="static/js/addressSuggestions.js"></script>
+  <script src="static/js/priceCalculator.js"></script>
+  <script src="static/js/map.js"></script>
+  <script src="static/js/idealPayment.js"></script>
+  <script src="static/js/languageSettings.js"></script>
+  <script src="static/js/formHandler.js"></script>
+  <script src="static/js/draft-manager.js"></script>
   
   <!-- Laad de hoofdapplicatie -->
-  <script type="module" src="static/js/app.js"></script>
-  <script type="module" src="static/js/main.js"></script>
+  <script src="static/js/app.js"></script>
+  <script src="static/js/main.js"></script>
   
+  <!-- Initialisatie script -->
   <script>
-    // Initialiseer de app wanneer alles geladen is
-    window.addEventListener('load', () => {
-      if (window.App) {
-        const app = new window.App();
-        window.app = app;
-        app.initialize().then(() => {
-          console.log('App initialized successfully');
-        }).catch(error => {
-          console.error('Error initializing app:', error);
-        });
-      }
+    // Wacht tot de DOM volledig is geladen
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wacht even om zeker te zijn dat alles geladen is
+      setTimeout(function() {
+        if (window.App) {
+          try {
+            const app = new window.App();
+            window.app = app;
+            app.initialize().then(() => {
+              console.log('Applicatie succesvol geïnitialiseerd');
+            }).catch(error => {
+              console.error('Fout bij initialiseren app:', error);
+            });
+          } catch (error) {
+            console.error('Fout bij aanmaken App instantie:', error);
+          }
+        } else {
+          console.error('App klasse niet gevonden in window object');
+        }
+      }, 100);
     });
   </script>
 </head>

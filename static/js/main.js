@@ -3,12 +3,12 @@
  * Hoofdingangspunt van de applicatie
  */
 
-// Importeer benodigde modules
-import { MapManager } from './map.js';
-import AddressSuggestions from './addressSuggestions.js';
-import { PriceCalculator } from './priceCalculator.js';
-import { FormHandler } from './formHandler.js';
-import { LanguageSettings } from './languageSettings.js';
+// Gebruik globale variabelen in plaats van imports
+const MapManager = window.MapManager;
+const AddressSuggestions = window.AddressSuggestions;
+const PriceCalculator = window.PriceCalculator;
+const FormHandler = window.FormHandler;
+const LanguageSettings = window.LanguageSettings;
 
 class App {
   constructor() {
