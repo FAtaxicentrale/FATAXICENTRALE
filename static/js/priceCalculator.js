@@ -337,7 +337,10 @@ class PriceCalculator {
   }
 }
 
-// Maak beschikbaar in globaal bereik
+// Export de klasse voor gebruik in andere modules
+export { PriceCalculator };
+
+// Maak beschikbaar in globaal bereik voor achterwaartse compatibiliteit
 if (typeof window !== 'undefined') {
   window.PriceCalculator = PriceCalculator;
 }
