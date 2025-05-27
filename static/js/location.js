@@ -1,5 +1,5 @@
 // Locatie-gerelateerde functies
-export class LocationService {
+class LocationService {
   constructor() {
     this.currentPosition = null;
     this.watchId = null;
@@ -137,6 +137,10 @@ export class LocationService {
 }
 
 // Maak beschikbaar in het globale bereik
+// Export voor gebruik in modules
+export { LocationService };
+
+// Maak beschikbaar in globaal bereik
 if (typeof window !== 'undefined') {
   window.LocationService = LocationService;
 }

@@ -14,11 +14,17 @@
   
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="static/js/bundle.js"></script>
   <script>
-    // Toon een bericht wanneer het DOM geladen is
+    // Laad het bundel script
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM fully loaded, loading bundle...');
+      console.log('DOM fully loaded, loading scripts...');
+      
+      // Laad eerst het bundel script
+      const script = document.createElement('script');
+      script.src = 'static/js/bundle.js';
+      script.onload = () => console.log('Bundle script loaded successfully');
+      script.onerror = (e) => console.error('Error loading bundle script:', e);
+      document.head.appendChild(script);
     });
   </script>
 </head>
