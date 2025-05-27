@@ -22,7 +22,7 @@ const testData = {
 };
 
 // Voer de tests uit
-function runTests() {
+async function runTests() {
   console.log('=== Testen Prijscalculator ===\n');
   
   // Test 1: Basisprijsberekening
