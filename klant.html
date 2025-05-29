@@ -1,0 +1,3659 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>FA Taxi Boeking</title>
+  
+  <!-- New CSS and JS files for address and location functionality -->
+  <link rel="stylesheet" href="/css/address-styles.css">
+  <style>
+    /* Responsive base */
+    body { padding: 0.5rem; }
+    .container { max-width: 95vw; margin: 1rem auto; padding: 1rem; }
+    input, select, textarea, button { width: 100% !important; box-sizing: border-box; }
+    @media (max-width: 600px) {
+      label, input, button, select, textarea { font-size: 0.9rem !important; }
+      button, input { padding: 0.8rem !important; }
+    }
+    /* --- BASIS STYLING --- */
+    body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+  color: #fff;
+  padding: 1rem;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+body::before {
+  content: "";
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
+  z-index: 0;
+  mix-blend-mode: lighten;
+}
+/* Dubbele body::before verwijderd */
+h1 {
+  text-align: center;
+  margin: 0.7rem 0 0.7rem 0;
+  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 12px #ffd70088) drop-shadow(0 1px 4px #bfa10044);
+  text-shadow: 0 2px 16px #fff7, 0 1px 4px #bfa100;
+  position: relative;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+h1::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 30%; top: 20%;
+  width: 40%; height: 35%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.32) 10%, rgba(255,255,255,0.01) 90%);
+  pointer-events: none;
+  border-radius: 40%;
+  z-index: 1;
+}
+/* Dubbele h1-styling verwijderd */
+.container {
+  max-width: 420px;
+  margin: 1rem auto 0.7rem auto;
+  background: #111;
+  padding: 1.1rem 1rem 1.1rem 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.18);
+  box-sizing: border-box;
+}
+/* Dubbele .container-styling verwijderd */
+    input, button, label, select, textarea {
+      font-family: inherit;
+      display: block;
+      width: 100%;
+      margin: 0.3rem 0;
+      padding: 0.55rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.97rem;
+    }
+    input, select, textarea {
+      background: linear-gradient(120deg, #232526 70%, #191919 100%);
+      color: #ffd700;
+      border: 1.5px solid #ffd70088;
+      box-shadow: 0 1px 6px #ffd70022;
+      outline: none;
+      transition: border 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    /* Dubbele input/select/textarea styling verwijderd */
+input:focus, select:focus, textarea:focus {
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 10px #ffd70099, 0 2px 24px #191919cc;
+  background: linear-gradient(120deg, #232526 40%, #ffd70022 100%);
+  color: #fffbe6;
+}
+
+    button {
+  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 3px 18px 0 #fff8, 0 3px 18px 0 #ffe06699, 0 1px 6px #bfa10055;
+  text-shadow: 0 2px 10px #fff8, 0 1px 4px #bfa10099;
+  transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
+  filter: brightness(1.13) drop-shadow(0 1px 8px #ffd70077);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+button:after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
+  pointer-events: none;
+  border-radius: 8px;
+  z-index: 0;
+}
+button:hover, button:focus {
+  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+  filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
+  outline: none;
+  transform: scale(1.03);
+}
+
+    #resultaat, #adminSpecificaties {
+  background: linear-gradient(120deg, #232526 60%, #191919 100%);
+  border: 2px solid #ffd70077;
+  box-shadow: 0 2px 16px #ffd70033, 0 1px 8px #fff2;
+  color: #fffbe6;
+  font-size: 1.1rem;
+  font-family: inherit;
+  margin-top: 1.2rem;
+  padding: 1.1rem 1rem;
+  border-radius: 10px;
+  word-break: break-word;
+  transition: box-shadow 0.18s, border 0.18s;
+}
+
+    #datumContainer {
+      display: none;
+    }
+    #flag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      cursor: pointer;
+    }
+    #adminContainer {
+  background: linear-gradient(135deg, #232526 60%, #ffd70044 100%);
+  border: 2px solid #ffd700cc;
+  box-shadow: 0 0 10px #ffd70044, 0 1px 8px #fff2;
+  color: #ffd700;
+  font-weight: bold;
+  transition: box-shadow 0.18s, border 0.18s, background 0.18s;
+}
+#adminContainer:hover, #adminContainer:focus {
+  box-shadow: 0 0 18px #ffd70099, 0 2px 16px #232526cc;
+  background: linear-gradient(135deg, #ffd70033 0%, #232526 100%);
+  color: #fffbe6;
+  outline: none;
+}
+
+    /* Switch toggle styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #888;
+      transition: .4s;
+      border-radius: 28px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    .switch input:checked + .slider {
+      background-color: gold;
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    /* Kosten-sectie container */
+    .feature-section {
+      background: #111;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .feature-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #fff;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .feature-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: gold;
+      margin-bottom: 0.3rem;
+    }
+    .feature-desc {
+      font-size: 0.98rem;
+      color: #ccc;
+    }
+  .taxi-animation-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: visible;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  margin: 0;
+  height: 60px;
+  position: static;
+  background: transparent;
+  box-sizing: border-box;
+  z-index: 10;
+}
+.taxi-svg {
+  height: 60px;
+  width: auto;
+  display: block;
+  margin: 0;
+  overflow: visible;
+  z-index: 10;
+}
+@media (min-width: 700px) {
+  .taxi-animation-container {
+    height: 80px;
+  }
+  .taxi-svg {
+    height: 80px;
+  }
+}
+@media (orientation: landscape) and (max-width: 900px) {
+  .taxi-animation-container {
+    height: 90px;
+  }
+}
+.taxi-svg {
+  animation: taxi-move-loop 7s linear infinite;
+  will-change: transform;
+  position: relative;
+}
+@keyframes taxi-move-loop {
+  0%   { transform: translateX(-30vw); }
+  100% { transform: translateX(100vw); }
+}
+@keyframes taxi-move {
+  0%   { transform: translateX(-220px); }
+  100% { transform: translateX(calc(100vw + 220px)); }
+}
+.smoke1 {
+  animation: smoke1-move 2.8s linear infinite;
+}
+@keyframes smoke1-move {
+  0% { opacity: 0.7; transform: translateX(0) scale(1,1); }
+  10% { opacity: 0.6; transform: translateX(-7px) scale(1.1,1.1); }
+  30% { opacity: 0.3; transform: translateX(-18px) scale(1.3,1.2); }
+  50% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+  100% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+}
+.smoke2 {
+  animation: smoke2-move 2.8s linear infinite;
+}
+@keyframes smoke2-move {
+  0% { opacity: 0.5; transform: translateX(0) scale(1,1); }
+  15% { opacity: 0.4; transform: translateX(-10px) scale(1.1,1.1); }
+  35% { opacity: 0.15; transform: translateX(-21px) scale(1.3,1.2); }
+  55% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
+  100% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
+}
+.adres-suggesties {
+  position: absolute;
+  background: #222;
+  color: #fff;
+  z-index: 10;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  margin-top: -0.5rem;
+  left: 0;
+  right: 0;
+  font-size: 1rem;
+  display: none;
+}
+.adres-suggesties.active {
+  display: block;
+}
+.adres-suggestie-item {
+  background: none;
+  color: #ffd700;
+  transition: background 0.18s, color 0.18s;
+  border-bottom: 1px solid #ffd70022;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.adres-suggestie-item:hover, .adres-suggestie-item:focus {
+  background: linear-gradient(90deg, #ffd70022 0%, #232526 100%);
+  color: #fffbe6;
+  outline: none;
+}
+.adres-suggestie-item:last-child {
+  border-bottom: none;
+}
+@media (max-width: 600px) {
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  body {
+    min-height: 100vh;
+    background: #111;
+    padding: 0.2rem 0 0.7rem 0;
+    overflow-x: hidden;
+  }
+  .container {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0.7rem 0 1.2rem 0;
+    border-radius: 11px;
+    padding: 1.1rem 1vw 1.5rem 1vw;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin: 1.2rem 0 1.3rem 0;
+    letter-spacing: 1px;
+    font-weight: 900;
+    text-align: center;
+    color: gold;
+    text-shadow: 0 2px 16px rgba(255,215,0,0.08), 0 1px 6px rgba(0,0,0,0.2), 0 0px 30px rgba(255,215,0,0.08);
+    filter: none;
+  }
+  input, select, textarea {
+    font-size: 1.08rem;
+    padding: 0.95rem 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.7rem;
+  }
+  button {
+    font-size: 1.08rem;
+    padding: 1rem 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.8rem;
+    width: 100%;
+    font-weight: bold;
+    background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+    color: #222;
+    border: none;
+    box-shadow: 0 3px 14px rgba(255,215,0,0.09), 0 3px 14px rgba(255,215,0,0.09), 0 1px 4px rgba(0,0,0,0.1);
+    text-shadow: 0 2px 8px rgba(255,215,0,0.08), 0 1px 2px rgba(0,0,0,0.1);
+    transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
+    filter: brightness(1.08) drop-shadow(0 1px 6px rgba(255,215,0,0.08));
+  }
+  button:hover, button:focus {
+    background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+    filter: brightness(1.18) drop-shadow(0 2px 8px rgba(255,215,0,0.18));
+    outline: none;
+  }
+  .taxi-animation-container {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: 60px;
+    margin-bottom: 1.1rem;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .adres-suggesties {
+    font-size: 1.03rem;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    top: 100%;
+    border-radius: 0 0 13px 13px;
+    max-width: 100vw;
+  }
+}
+  body {
+    min-height: 100vh;
+    background: #111;
+    padding: 0.2rem 0 0.7rem 0;
+    overflow-x: hidden;
+  }
+  .container {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0.7rem 0.1rem;
+    border-radius: 11px;
+    padding: 1.1rem 0.15rem 1.8rem 0.15rem;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 1.55rem;
+    margin: 1.2rem 0 1.2rem 0;
+    text-align: center;
+    color: gold;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px rgba(0,0,0,0.1);
+  }
+  input, select, textarea {
+    font-size: 1.12rem;
+    padding: 1.05rem 0.9rem;
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+  }
+  button {
+    font-size: 1.17rem;
+    padding: 1.2rem 0.9rem;
+    border-radius: 12px;
+    margin-bottom: 1.1rem;
+    width: 100%;
+    font-weight: bold;
+    background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+    color: #222;
+    border: none;
+    box-shadow: 0 3px 12px rgba(255,215,0,0.09);
+  }
+  .taxi-animation-container {
+    height: 60px;
+    margin-bottom: 1.2rem;
+  }
+  .adres-suggesties {
+    font-size: 1.08rem;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    top: 100%;
+    border-radius: 0 0 13px 13px;
+    max-width: 100vw;
+    
+  }
+  body {
+    padding: 0.2rem;
+    min-width: 0;
+  }
+  .container {
+    max-width: 100vw;
+    margin: 1rem 0.2rem;
+    border-radius: 10px;
+    padding: 1rem 0.5rem 1.3rem 0.5rem;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.24);
+  }
+  h1 {
+    font-size: 1.35rem;
+    margin: 0.5rem 0 0.7rem 0;
+  }
+  label, select, input, textarea, button {
+    font-size: 1rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1rem;
+    padding: 0.8rem 0.7rem;
+    margin-bottom: 0.7rem;
+    border-radius: 8px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.08rem;
+    padding: 1rem 0.7rem;
+    margin-bottom: 0.8rem;
+    border-radius: 8px;
+  }
+  .taxi-animation-container {
+    height: 42px;
+    margin-bottom: 0.1rem;
+  }
+  .taxi-svg {
+    width: 130px !important;
+    height: 52px !important;
+  }
+  .adres-suggesties {
+    max-width: 100vw;
+    font-size: 0.97rem;
+    left: 0;
+    right: 0;
+  }
+  .adres-suggesties {
+    max-width: 100vw;
+    font-size: 0.97rem;
+    left: 0;
+    right: 0;
+}
+@media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
+  body {
+    padding: 0.5rem 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+  }
+  .taxi-animation-container {
+    height: 90px;
+    margin-bottom: 2.2rem;
+    justify-content: center;
+  }
+  .taxi-svg {
+    width: 320px !important;
+    height: 128px !important;
+  }
+  .container {
+    max-width: 850px;
+    width: 98vw;
+    margin: 2.2rem auto 2rem auto;
+    border-radius: 22px;
+    padding: 2.8rem 2.7rem 2.6rem 2.7rem;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.10);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw 2vw;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .container > div, .container > form, .container > section {
+    min-width: 260px;
+    margin-bottom: 1.5rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.17rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.17rem;
+    padding: 1.25rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 15px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.18rem;
+    padding: 1.45rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(255,215,0,0.10);
+  }
+  h1 {
+    font-size: 1.55rem;
+    margin: 1.2rem 0 1.7rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.13rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .taxi-svg {
+    width: 260px !important;
+    height: 104px !important;
+  }
+  .container {
+    max-width: 750px;
+    width: 96vw;
+    margin: 1.5rem auto 1.2rem auto;
+    border-radius: 18px;
+    padding: 2.4rem 2.2rem 2.3rem 2.2rem;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.09);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2.5vw;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .container > div, .container > form, .container > section {
+    flex: 1 1 44%;
+    min-width: 260px;
+    margin-bottom: 1.2rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.09rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.09rem;
+    padding: 1.1rem 1.1rem;
+    margin-bottom: 1.1rem;
+    border-radius: 12px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.13rem;
+    padding: 1.25rem 1.1rem;
+    margin-bottom: 1.1rem;
+    border-radius: 14px;
+    box-shadow: 0 3px 16px rgba(255,215,0,0.09);
+  }
+  h1 {
+    font-size: 1.35rem;
+    margin: 0.7rem 0 1.1rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.05rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 14px 14px;
+  }
+@media (max-width: 900px) and (orientation: landscape) {
+  body {
+    padding: 0.1rem;
+    min-width: 0;
+  }
+  .container {
+    max-width: 95vw;
+    margin: 0.7rem auto;
+    border-radius: 12px;
+    padding: 0.7rem 1.2rem 1.1rem 1.2rem;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2vw;
+  }
+  .container > * {
+    flex: 1 1 44%;
+    min-width: 170px;
+    margin-bottom: 0.7rem;
+  }
+  .taxi-animation-container {
+    height: 56px;
+    margin-bottom: 0.1rem;
+  }
+  .taxi-svg {
+    width: 180px !important;
+    height: 72px !important;
+  }
+  h1 {
+  font-size: 2.2rem;
+  margin: 1.2rem 0 1.3rem 0;
+  letter-spacing: 1px;
+  }
+  label, select, input, textarea, button {
+    font-size: 0.97rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 0.97rem;
+    padding: 0.6rem 0.6rem;
+    margin-bottom: 0.5rem;
+    border-radius: 7px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1rem;
+    padding: 0.8rem 0.5rem;
+    margin-bottom: 0.6rem;
+    border-radius: 7px;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 0.92rem;
+    left: 0;
+    right: 0;
+  }
+}
+}
+
+body {
+  padding: 0.2rem;
+  min-width: 0;
+}
+.container {
+  max-width: 100vw;
+  margin: 1rem 0.2rem;
+  border-radius: 10px;
+  padding: 1rem 0.5rem 1.3rem 0.5rem;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.24);
+}
+h1 {
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.7rem 0;
+}
+label, select, input, textarea, button {
+  font-size: 1rem !important;
+}
+input[type="text"],
+input[type="datetime-local"],
+select, textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1rem;
+  padding: 0.8rem 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 8px;
+}
+button {
+  width: 100%;
+  min-width: 0;
+  font-size: 1.08rem;
+  padding: 1rem 0.7rem;
+  margin-bottom: 0.8rem;
+  border-radius: 8px;
+}
+.taxi-animation-container {
+  height: 42px;
+  margin-bottom: 0.1rem;
+}
+.taxi-svg {
+  width: 130px !important;
+  height: 52px !important;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
+@media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
+  body {
+    padding: 0.5rem 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+  }
+  .taxi-animation-container {
+    height: 90px;
+    margin-bottom: 2.2rem;
+    justify-content: center;
+  }
+  .taxi-svg {
+    width: 320px !important;
+    height: 128px !important;
+  }
+  .container {
+    max-width: 850px;
+    width: 98vw;
+    margin: 2.2rem auto 2rem auto;
+    border-radius: 22px;
+    padding: 2.8rem 2.7rem 2.6rem 2.7rem;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.10);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw 2vw;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .container > div, .container > form, .container > section {
+    min-width: 260px;
+    margin-bottom: 1.5rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.17rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.17rem;
+    padding: 1.25rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 15px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.18rem;
+    padding: 1.45rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(255,215,0,0.10);
+  }
+  h1 {
+    font-size: 1.55rem;
+    margin: 1.2rem 0 1.7rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.13rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .taxi-svg {
+    width: 260px !important;
+    height: 104px !important;
+  }
+  .container {
+    max-width: 750px;
+    width: 96vw;
+    margin: 1.5rem auto 1.2rem auto;
+    border-radius: 18px;
+    padding: 2.4rem 2.2rem 2.3rem 2.2rem;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.09);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2.5vw;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .container > div, .container > form, .container > section {
+    flex: 1 1 44%;
+    min-width: 260px;
+    margin-bottom: 1.2rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.09rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.09rem;
+    padding: 1.1rem 1.1rem;
+    margin-bottom: 1.1rem;
+    border-radius: 12px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.13rem;
+    padding: 1.25rem 1.1rem;
+    margin-bottom: 1.1rem;
+    border-radius: 14px;
+    box-shadow: 0 3px 16px rgba(255,215,0,0.09);
+  }
+  h1 {
+    font-size: 1.35rem;
+    margin: 0.7rem 0 1.1rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.05rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 14px 14px;
+  }
+@media (max-width: 900px) and (orientation: landscape) {
+  body {
+    padding: 0.1rem;
+    min-width: 0;
+  }
+  .container {
+    max-width: 95vw;
+    margin: 0.7rem auto;
+    border-radius: 12px;
+    padding: 0.7rem 1.2rem 1.1rem 1.2rem;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2vw;
+  }
+  .container > * {
+    flex: 1 1 44%;
+    min-width: 170px;
+    margin-bottom: 0.7rem;
+  }
+  .taxi-animation-container {
+    height: 56px;
+    margin-bottom: 0.1rem;
+  }
+  .taxi-svg {
+    width: 180px !important;
+    height: 72px !important;
+  }
+  h1 {
+  font-size: 2.2rem;
+  margin: 1.2rem 0 1.3rem 0;
+  letter-spacing: 1px;
+  }
+  label, select, input, textarea, button {
+    font-size: 0.97rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 0.97rem;
+    padding: 0.6rem 0.6rem;
+    margin-bottom: 0.5rem;
+    border-radius: 7px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1rem;
+    padding: 0.8rem 0.5rem;
+    margin-bottom: 0.6rem;
+    border-radius: 7px;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 0.92rem;
+    left: 0;
+    right: 0;
+  }
+}
+}
+
+body {
+  padding: 0.2rem;
+  min-width: 0;
+}
+.container {
+  max-width: 100vw;
+  margin: 1rem 0.2rem;
+  border-radius: 10px;
+  padding: 1rem 0.5rem 1.3rem 0.5rem;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.24);
+}
+h1 {
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.7rem 0;
+}
+label, select, input, textarea, button {
+  font-size: 1rem !important;
+}
+input[type="text"],
+input[type="datetime-local"],
+select, textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1rem;
+  padding: 0.8rem 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 8px;
+}
+button {
+  width: 100%;
+  min-width: 0;
+  font-size: 1.08rem;
+  padding: 1rem 0.7rem;
+  margin-bottom: 0.8rem;
+  border-radius: 8px;
+}
+.taxi-animation-container {
+  height: 42px;
+  margin-bottom: 0.1rem;
+}
+.taxi-svg {
+  width: 130px !important;
+  height: 52px !important;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
+@media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
+  body {
+    padding: 0.5rem 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+  }
+  .taxi-animation-container {
+    height: 90px;
+    margin-bottom: 2.2rem;
+    justify-content: center;
+  }
+  .taxi-svg {
+    width: 320px !important;
+    height: 128px !important;
+  }
+  .container {
+    max-width: 850px;
+    width: 98vw;
+    margin: 2.2rem auto 2rem auto;
+    border-radius: 22px;
+    padding: 2.8rem 2.7rem 2.6rem 2.7rem;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.10);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw 2vw;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .container > div, .container > form, .container > section {
+    min-width: 260px;
+    margin-bottom: 1.5rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.17rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.17rem;
+    padding: 1.25rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 15px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.18rem;
+    padding: 1.45rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(255,215,0,0.10);
+  }
+  h1 {
+    font-size: 1.55rem;
+    margin: 1.2rem 0 1.7rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.13rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .taxi-svg {
+    width: 260px !important;
+    height: 104px !important;
+  }
+  .container {
+    max-width: 750px;
+    width: 96vw;
+    margin: 1.5rem auto 1.2rem auto;
+    border-radius: 18px;
+    padding: 2.4rem 2.2rem 2.3rem 2.2rem;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.09);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2.5vw;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .container > div, .container > form, .container > section {
+    flex: 1 1 44%;
+    min-width: 260px;
+    margin-bottom: 1.2rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.09rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.09rem;
+    padding: 1.1rem 1.1rem;
+    margin-bottom: 1.1rem;
+    border-radius: 12px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.13rem;
+    padding: 1.25rem 1.1rem;
+    margin-bottom: 1.1rem;
+    border-radius: 14px;
+    box-shadow: 0 3px 16px rgba(255,215,0,0.09);
+  }
+  h1 {
+    font-size: 1.35rem;
+    margin: 0.7rem 0 1.1rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.05rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 14px 14px;
+  }
+@media (max-width: 900px) and (orientation: landscape) {
+  body {
+    padding: 0.1rem;
+    min-width: 0;
+  }
+  .container {
+    max-width: 95vw;
+    margin: 0.7rem auto;
+    border-radius: 12px;
+    padding: 0.7rem 1.2rem 1.1rem 1.2rem;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2vw;
+  }
+  .container > * {
+    flex: 1 1 44%;
+    min-width: 170px;
+    margin-bottom: 0.7rem;
+  }
+  .taxi-animation-container {
+    height: 56px;
+    margin-bottom: 0.1rem;
+  }
+  .taxi-svg {
+    width: 180px !important;
+    height: 72px !important;
+  }
+  h1 {
+  font-size: 2.2rem;
+  margin: 1.2rem 0 1.3rem 0;
+  letter-spacing: 1px;
+  }
+  label, select, input, textarea, button {
+    font-size: 0.97rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 0.97rem;
+    padding: 0.6rem 0.6rem;
+    margin-bottom: 0.5rem;
+    border-radius: 7px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1rem;
+    padding: 0.8rem 0.5rem;
+    margin-bottom: 0.6rem;
+    border-radius: 7px;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 0.92rem;
+    left: 0;
+    right: 0;
+  }
+}
+}
+
+body {
+  padding: 0.2rem;
+  min-width: 0;
+}
+.container {
+  max-width: 100vw;
+  margin: 1rem 0.2rem;
+  border-radius: 10px;
+  padding: 1rem 0.5rem 1.3rem 0.5rem;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.24);
+}
+h1 {
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.7rem 0;
+}
+label, select, input, textarea, button {
+  font-size: 1rem !important;
+}
+input[type="text"],
+input[type="datetime-local"],
+select, textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1rem;
+  padding: 0.8rem 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 8px;
+}
+button {
+  width: 100%;
+  min-width: 0;
+  font-size: 1.08rem;
+  padding: 1rem 0.7rem;
+  margin-bottom: 0.8rem;
+  border-radius: 8px;
+}
+.taxi-animation-container {
+  height: 42px;
+  margin-bottom: 0.1rem;
+}
+.taxi-svg {
+  width: 130px !important;
+  height: 52px !important;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
+</style>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+</head>
+
+<body>
+
+<div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
+  <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
+</div>
+
+<!-- Language selector dropdown -->
+<div id="langSelector" style="position: fixed; top: 16px; right: 16px; z-index: 100;">
+  <button id="langToggle" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌏</button>
+  <div id="langMenu" style="display:none; position:absolute; top:2.5rem; right:0; background:#fff; padding:0.5rem; border-radius:4px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+    <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;margin:0.2rem;">
+  </div>
+</div>
+
+<h1>FA TAXI Service</h1>
+<h2 style="text-align:center; margin-top:-0.7rem; color:gold; font-size:1.1rem; letter-spacing:1px;">TAXI 4 Personen</h2>
+<div class="taxi-animation-container">
+  <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
+    <!-- Rookpluimpjes -->
+    <ellipse class="smoke smoke1" cx="28" cy="55" rx="14" ry="6" fill="#bbb" opacity="0.7"/>
+    <ellipse class="smoke smoke2" cx="12" cy="62" rx="10" ry="4" fill="#ccc" opacity="0.5"/>
+    <!-- Taxi body -->
+    <rect x="30" y="30" width="60" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
+    <!-- Taxi cabin -->
+    <rect x="55" y="20" width="25" height="15" rx="5" fill="#FFD600" stroke="#333" stroke-width="2"/>
+    <!-- Ramen -->
+    <rect x="58" y="23" width="8" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+    <rect x="68" y="23" width="10" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+    <!-- Taxi-bord -->
+    <rect x="67" y="16" width="12" height="7" rx="2" fill="#fff" stroke="#333" stroke-width="1"/>
+    <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD700" text-anchor="middle" font-weight="bold">TAXI</text>
+    <!-- Wielen -->
+    <ellipse cx="40" cy="52" rx="7" ry="7" fill="#222"/>
+    <ellipse cx="80" cy="52" rx="7" ry="7" fill="#222"/>
+    <ellipse cx="40" cy="52" rx="3" ry="3" fill="#888"/>
+    <ellipse cx="80" cy="52" rx="3" ry="3" fill="#888"/>
+    <!-- Koplampen -->
+    <ellipse cx="32" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+    <ellipse cx="90" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+  </svg>
+</div>
+<!-- Hoekknoppen -->
+  <!-- Address Inputs with Location Buttons -->
+  <div class="form-group">
+    <div class="address-input-wrapper">
+      <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍</label>
+      <input 
+        type="text" 
+        id="ophaaladres" 
+        name="ophaaladres" 
+        placeholder="Vul ophaaladres in" 
+        autocomplete="off" 
+        required
+        aria-label="Ophaaladres"
+        data-suggestions="ophaaladres-suggestions">
+      <button type="button" class="location-button" title="Mijn huidige locatie gebruiken" aria-label="Mijn huidige locatie gebruiken" onclick="gebruikLocatie(this)">📍</button>
+      <div id="ophaaladres-suggestions" class="address-suggestions" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- Tussenstops container wordt dynamisch toegevoegd -->
+  <div id="tussenstops-container" style="margin: 10px 0;"></div>
+  
+  <!-- Knop om tussenstop toe te voegen -->
+  <button type="button" id="tussenstopBtn" class="btn" style="background-color: #4a4a4a; color: #fff; margin: 10px 0; width: 100%;">
+    ➕ Tussenstop toevoegen
+  </button>
+
+  <div class="form-group">
+    <div class="address-input-wrapper">
+      <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
+      <input 
+        type="text" 
+        id="afzetadres" 
+        name="afzetadres" 
+        placeholder="Vul afzetadres in" 
+        autocomplete="off" 
+        required
+        aria-label="Afzetadres"
+        data-suggestions="afzetadres-suggestions">
+      <button type="button" class="location-button" title="Mijn huidige locatie gebruiken" aria-label="Mijn huidige locatie gebruiken" onclick="gebruikLocatie(this)">📍</button>
+      <div id="afzetadres-suggestions" class="address-suggestions" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- Kaart met route -->
+  <div id="kaart-container" style="background: #181818ee; border-radius: 18px; box-shadow: 0 6px 32px #000a, 0 1.5px 8px #ffd70055; margin: 1.2em 0 1.6em 0; padding: 1.1em 1em 1.3em 1em; max-width: 100vw;">
+    <div style="font-weight: 700; color: gold; font-size: 1.13rem; margin-bottom: 0.6em; letter-spacing: 0.03em; text-shadow: 0 2px 8px #ffd70044;">🚗 Route op de kaart</div>
+    <div id="map" style="height: 330px; width: 100%; border-radius: 13px; overflow: hidden; box-shadow: 0 2px 12px #0005;"></div>
+  </div>
+
+  <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
+
+  <div id="datumContainer">
+    <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒</label>
+    <input type="datetime-local" id="tijdstip" aria-label="Gewenst tijdstip" />
+  </div>
+
+  <label for="betaalmethode" id="labelBetaal">💳 Kies een betaalmethode 💳</label>
+  <select id="betaalmethode" aria-label="Betaalmethode" required>
+    <option value="IDEAL Online-Betaal-Link">🌐 IDEAL Online-Betaal-Link</option>
+    <option value="Tikkie">🔗 Tikkie</option>
+    <option value="Pin bij chauffeur">💳 Pin bij chauffeur</option>
+    <option value="Contant">💶 Contant</option>
+  </select>
+
+  <label for="kortingscode" id="labelKorting">💰 Kortingscode 💰</label>
+  <input 
+    type="text" 
+    id="kortingscode" 
+    placeholder="Voer uw kortingscode in" 
+    aria-label="Kortingscode" 
+  />
+
+  <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen ✏️</label>
+  <textarea 
+    id="opmerkingen" 
+    placeholder="Bijvoorbeeld: helpen met bagage, bijzonderheden, etc." 
+    rows="2"
+    style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"
+  ></textarea>
+
+  <button type="button" onclick="toggleHuisdier()" id="huisdierBtn">🐶 Huisdieren €5,- 🐶</button>
+  <input type="hidden" id="huisdieren" value="0">
+
+  <button type="button" onclick="toggleSpoed()" id="spoedBtn">🚀 Spoedrit €10 🚀</button>
+
+  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Annuleringskosten €10,- 🚨</button>
+  <input type="hidden" id="akkoord" value="0">
+
+  <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
+
+  <div id="resultaat"></div>
+
+
+  <button id="idealPayBtn" style="width:100%; margin:0.5rem 0; display:none; align-items:center; justify-content:center; gap:0.5em;" onclick="window.startIdealPay()">
+  <span style="height:1.5em; display:inline-block; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" width="28" height="18" style="display:block;">
+      <rect width="50" height="32" rx="8" fill="#fff"/>
+      <path d="M8 4h15a11 11 0 1 1 0 24H8z" fill="#c06"/>
+      <path d="M13.2 8.8v14.4h2.9c2.5 0 4.1-1.5 4.1-3.7 0-1.5-0.8-2.6-2.2-3.1 1.1-0.4 1.8-1.3 1.8-2.6 0-2-1.4-3-3.8-3h-2.8zm2.1 2h0.7c1.1 0 1.7 0.5 1.7 1.5 0 1-0.6 1.5-1.7 1.5h-0.7zm0 5.1h0.9c1.2 0 1.9 0.6 1.9 1.6 0 1-0.7 1.6-1.9 1.6h-0.9z" fill="#fff"/>
+      <text x="32" y="22" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#000">iDEAL</text>
+    </svg>
+  </span>
+  Direct betalen via iDEAL
+</button>
+
+  <div id="adminSpecificaties" style="display:none;"></div>
+
+  <div id="bevestigContainer" style="display:none;">
+    <a id="whatsappKnop" href="https://wa.me/message/WPXHSY3TEYVPA1" target="_blank">
+      <button disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;">📩 Bevestig & Verstuur naar WhatsApp 📩</button>
+    </a>
+  </div>
+</div>
+
+<!-- Zet ALLE scripts vlak voor </body> -->
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    
+  <!-- New JS files for address and location functionality -->
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/location.js"></script>
+  <script src="/js/addressSuggestions.js"></script>
+<script>
+// Kaart object globaal zodat we hem kunnen hergebruiken
+let map, routeLayer, startMarker, endMarker;
+
+// Initieer kaart direct bij laden op Nederland
+window.addEventListener('DOMContentLoaded', () => {
+  if (!map) {
+    map = L.map('map').setView([52.2, 5.3], 7); // Nederland
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+  }
+  // Probeer automatisch de locatie op te halen
+  probeerAutoLocatie();
+});
+
+// Probeer automatisch de locatie op te halen en vul het ophaaladres in
+async function probeerAutoLocatie() {
+  if (!navigator.geolocation) return;
+  try {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        // Zoom en marker op kaart
+        if (map) {
+          map.setView([lat, lon], 16);
+          if (window.autoLocMarker) map.removeLayer(window.autoLocMarker);
+          window.autoLocMarker = L.marker([lat, lon], {title: 'Uw locatie', icon: L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png', shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41]})}).addTo(map).bindPopup('Uw locatie').openPopup();
+        }
+        // Haal adres op via OpenCage
+        const url = `https://api.tomtom.com/search/2/reverseGeocode/${lat},${lon}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results && data.results[0]) {
+          const ophaalInput = document.getElementById("ophaaladres");
+          if (ophaalInput) ophaalInput.value = data.results[0].formatted;
+        }
+      } catch (err) {
+        // geen alert, fallback naar handmatige knop
+      }
+    }, err => {
+      // geen alert, fallback naar handmatige knop
+    });
+  } catch (err) {
+    // geen alert, fallback naar handmatige knop
+  }
+}
+
+
+// Subtiele foutmelding helper
+function showSubtleError(message, targetId) {
+  let target = document.getElementById(targetId) || document.getElementById('ritprijs') || document.body;
+  let errDiv = document.createElement('div');
+  errDiv.innerText = message;
+  errDiv.style = 'background:#ffd700;color:#111;padding:6px 12px;border-radius:7px;margin:8px 0;text-align:center;font-size:1.02rem;box-shadow:0 2px 10px #ffd70044;z-index:9999;';
+  errDiv.className = 'subtle-error-msg';
+  target.parentNode.insertBefore(errDiv, target);
+  setTimeout(()=>{ errDiv.remove(); }, 4000);
+}
+
+// Functie om de afstand van een route te berekenen in kilometers
+function calculateRouteDistance(coords) {
+  if (!coords || coords.length < 2) return 0;
+  
+  // Haversine formule om afstand tussen twee punten te berekenen
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Aarde radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+  
+  // Bereken totale afstand door alle segmenten bij elkaar op te tellen
+  let totalDistance = 0;
+  for (let i = 0; i < coords.length - 1; i++) {
+    totalDistance += haversineDistance(
+      coords[i][0], coords[i][1],
+      coords[i+1][0], coords[i+1][1]
+    );
+  }
+  
+  return totalDistance;
+}
+
+async function showRouteOnMap(ophaaladres, afzetadres) {
+  // Haal coördinaten op van ophaaladres, tussenstops en afzetadres
+  const adressen = [ophaaladres];
+  for (let i = 1; i <= 3; i++) {
+    const ts = document.getElementById(`tussenstop${i}`);
+    if (ts && ts.value && ts.value.trim()) {
+      adressen.push(ts.value.trim());
+    }
+  }
+  adressen.push(afzetadres);
+  // Haal alle coördinaten op (async)
+  let coordsArr = [];
+  for (let adres of adressen) {
+    const coord = await getCoordinates(adres);
+    if (coord) {
+      coordsArr.push(coord);
+    } else {
+      // Sla fout adres over, maar ga door met de rest
+      continue;
+    }
+  }
+  if (coordsArr.length < 2) {
+    showSubtleError('Te weinig geldige adressen voor een route.', 'map');
+    return;
+  }
+  // Initieer kaart indien nog niet gedaan
+  if (!map) {
+    map = L.map('map').setView([coordsArr[0][1], coordsArr[0][0]], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+  } else {
+    map.setView([coordsArr[0][1], coordsArr[0][0]], 11);
+    if (routeLayer) map.removeLayer(routeLayer);
+    if (startMarker) map.removeLayer(startMarker);
+    if (endMarker) map.removeLayer(endMarker);
+  }
+  // OpenRouteService API call (multi-waypoint)
+  const apiKey = '';
+  const url = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
+  const body = {
+    coordinates: coordsArr.map(c => [c[0], c[1]])
+  };
+  let data;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(body)
+    });
+    data = await res.json();
+    if (!data.features || !data.features[0]) {
+      showSubtleError('Route niet gevonden.', 'map');
+      return;
+    }
+  } catch (err) {
+    showSubtleError('Kan route niet ophalen (netwerkfout).', 'map');
+    return;
+  }
+  const coords = data.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
+  // Teken route met verbeterde zichtbaarheid
+  routeLayer = L.polyline(coords, {color: 'gold', weight: 6, opacity: 0.9}).addTo(map);
+  
+  // Bereken optimale padding op basis van schermgrootte
+  const mapElement = document.getElementById('map');
+  const isSmallScreen = window.innerWidth < 768;
+  const padding = isSmallScreen ? [30, 30] : [80, 80];
+  
+  // Bereken optimale zoom op basis van routelengte
+  const routeDistance = calculateRouteDistance(coords);
+  let maxZoom = 15; // Standaard max zoom
+  
+  // Pas zoom aan op basis van afstand
+  if (routeDistance < 5) maxZoom = 14; // Korte routes (< 5 km)
+  else if (routeDistance < 20) maxZoom = 13; // Middellange routes (5-20 km)
+  else if (routeDistance < 50) maxZoom = 12; // Langere routes (20-50 km)
+  else maxZoom = 11; // Zeer lange routes (> 50 km)
+  
+  // Fit de kaart perfect rond de route
+  map.fitBounds(routeLayer.getBounds(), {
+    padding: padding,
+    maxZoom: maxZoom,
+    animate: true,
+    duration: 0.5 // Soepele animatie
+  });
+  
+  // Plaats markers voor start, tussenstops en einde
+  startMarker = L.marker([coordsArr[0][1], coordsArr[0][0]], {
+    title: 'Ophaaladres',
+    icon: L.divIcon({
+      className: 'custom-div-icon',
+      html: '<div style="background-color:#4CAF50;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>',
+      iconSize: [15, 15],
+      iconAnchor: [7, 7]
+    })
+  }).addTo(map);
+  
+  // Voeg markers toe voor tussenstops
+  if (coordsArr.length > 2) {
+    for (let i = 1; i < coordsArr.length - 1; i++) {
+      L.marker([coordsArr[i][1], coordsArr[i][0]], {
+        title: `Tussenstop ${i}`,
+        icon: L.divIcon({
+          className: 'custom-div-icon',
+          html: '<div style="background-color:#FFC107;width:10px;height:10px;border-radius:50%;border:2px solid white;"></div>',
+          iconSize: [15, 15],
+          iconAnchor: [7, 7]
+        })
+      }).addTo(map);
+    }
+  }
+  
+  // Eindmarker
+  endMarker = L.marker([coordsArr[coordsArr.length-1][1], coordsArr[coordsArr.length-1][0]], {
+    title: 'Afzetadres',
+    icon: L.divIcon({
+      className: 'custom-div-icon',
+      html: '<div style="background-color:#F44336;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>',
+      iconSize: [15, 15],
+      iconAnchor: [7, 7]
+    })
+  }).addTo(map);
+  
+  // Zorg dat de kaart zich aanpast bij schermformaat wijzigingen
+  window.addEventListener('resize', () => {
+    if (routeLayer) {
+      const newPadding = window.innerWidth < 768 ? [30, 30] : [80, 80];
+      map.invalidateSize();
+      map.fitBounds(routeLayer.getBounds(), {padding: newPadding, maxZoom: maxZoom});
+    }
+  });
+}
+
+
+
+</script>
+<script>
+// --- FA Taxi Boeking | Modern, robuust & foutloos script ---
+
+// --- Tussenstop functionaliteit ---
+let tussenstopAantal = 0;
+const MAX_TUSSENSTOPS = 3;
+
+// Zorg dat verwijderen van een tussenstop ook autoBereken triggert
+window.verwijderTussenstop = function(idx) {
+  const el = document.getElementById(`tussenstop${idx}`);
+  if (el && el.parentNode) {
+    el.parentNode.remove();
+    tussenstopAantal--;
+    if (typeof autoBereken === 'function') autoBereken();
+    // Heractiveer knop als nodig
+    if (tussenstopAantal < MAX_TUSSENSTOPS) {
+      const btn = document.getElementById('tussenstopBtn');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = '➕ Tussenstop toevoegen';
+      }
+    }
+  }
+};
+
+function toonTussenstopVeld() {
+  const container = document.getElementById('tussenstopContainer');
+  if (tussenstopAantal < MAX_TUSSENSTOPS) {
+    tussenstopAantal++;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'tussenstop-input';
+    input.placeholder = `Tussenstop ${tussenstopAantal} (adres)`;
+    input.setAttribute('autocomplete', 'off');
+    input.style.marginBottom = '0.3rem';
+    input.oninput = function() { zoekAdresSuggesties(this, `tussenstop-suggesties-${tussenstopAantal}`); };
+    input.setAttribute('aria-label', `Tussenstop ${tussenstopAantal}`);
+    input.id = `tussenstop${tussenstopAantal}`;
+    // Suggestie container
+    const suggestDiv = document.createElement('div');
+    suggestDiv.id = `tussenstop-suggesties-${tussenstopAantal}`;
+    suggestDiv.className = 'adres-suggesties';
+    suggestDiv.style.cssText = 'position:absolute; top:100%; left:0; width:100%; z-index:10;';
+    // Wrapper
+    const wrapper = document.createElement('div');
+    wrapper.className = 'input-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.appendChild(input);
+    wrapper.appendChild(suggestDiv);
+    container.appendChild(wrapper);
+    container.style.display = '';
+    if (tussenstopAantal === MAX_TUSSENSTOPS) {
+      document.getElementById('tussenstopBtn').disabled = true;
+      document.getElementById('tussenstopBtn').innerText = 'Maximaal 3 tussenstops bereikt';
+    }
+  }
+  // Na toevoegen van een tussenstop: prijs automatisch herberekenen
+  if (typeof autoBereken === 'function') {
+    autoBereken();
+  }
+}
+
+// --- Prijsberekening uitbreiden voor tussenstops ---
+const orig_berekenRitprijs = window.berekenRitprijs;
+window.berekenRitprijs = function(afstand, duur, weer) {
+  let prijs = orig_berekenRitprijs(afstand, duur, weer);
+  // Simpel: voor elke tussenstop +€5,- optellen (pas evt. aan naar wens)
+  let extra = 0;
+  for (let i = 1; i <= MAX_TUSSENSTOPS; i++) {
+    const val = document.getElementById(`tussenstop${i}`)?.value?.trim();
+    if (val) extra += 5; // Of bereken op basis van extra afstand
+  }
+  prijs += extra;
+  return prijs;
+};
+
+'use strict';
+
+// --- DraftRit automatisch terugzetten bij laden pagina ---
+// Hulpfunctie voor snelle ID-selectie
+function $id(id) { return document.getElementById(id); }
+
+// WhatsApp-knop tonen/verbergen (herbruikbaar)
+function updateWhatsappKnopVisibility() {
+  // Toon/verberg iDEAL-betaalknop altijd correct
+  const idealBtn = $id('idealPayBtn');
+  const betaalmethode = $id('betaalmethode')?.value;
+  if (idealBtn) {
+    if (betaalmethode === 'IDEAL Online-Betaal-Link') {
+      idealBtn.style.display = '';
+    } else {
+      idealBtn.style.display = 'none';
+    }
+  }
+  const bevestigContainer = $id('bevestigContainer');
+  if (bevestigContainer) {
+    const hide = (betaalmethode === 'IDEAL Online-Betaal-Link');
+    bevestigContainer.style.setProperty('display', hide ? 'none' : '', 'important');
+  }
+}
+
+// Eenvoudige WhatsApp-link functie
+function sendWhatsApp(bericht) {
+  const phoneNumber = '31612345678'; // Vervang dit met je eigen WhatsApp nummer
+  const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(bericht)}`;
+  window.open(url, '_blank');
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Reset betalingGeslaagd als iDEAL geselecteerd bij laden
+  if ($id('betaalmethode')?.value === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1') {
+    localStorage.setItem('betalingGeslaagd','0');
+  }
+  $id('betaalmethode')?.addEventListener('change', function() {
+    if ($id('betaalmethode')?.value === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1') {
+      localStorage.setItem('betalingGeslaagd','0');
+    }
+    updateWhatsappKnopVisibility();
+  });
+  updateWhatsappKnopVisibility();
+  window.updateWhatsappKnopVisibility = updateWhatsappKnopVisibility;
+});
+
+try {
+  const draft = JSON.parse(localStorage.getItem('draftRit'));
+  if (draft) {
+    Object.keys(draft).forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (id === 'huisdieren') {
+        el.value = draft[id] || '0';
+        // Eventueel ook de knop visueel aanpassen
+        const btn = document.getElementById('huisdierBtn');
+        if (btn) {
+          if (el.value === '1') {
+            btn.innerText = '✅ Huisdier toegevoegd €5,-';
+            btn.style.background = 'gold';
+            btn.style.color = 'black';
+          } else {
+            btn.innerText = '🐶 Huisdieren €5,- 🐶';
+            btn.style.background = '';
+            btn.style.color = '';
+          }
+        }
+      } else if (id === 'opmerkingen') {
+        el.value = draft[id] || '';
+      } else {
+        el.value = draft[id] || '';
+      }
+    });
+  }
+} catch (e) { }
+
+let spoedToeslag = 0;
+let lastPrice = 0; // voor iDEAL betaling
+const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+// WhatsApp-knop activeert boekRit
+window.addEventListener('DOMContentLoaded', function() {
+  var whatsappKnop = document.getElementById('whatsappKnop');
+  if (whatsappKnop) {
+    whatsappKnop.addEventListener('click', function() {
+      boekRit();
+    });
+  }
+});
+</script>
+<script>
+let huisdierenToeslag = 5; // Kosten voor huisdieren
+let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
+let adminData = {};
+const weatherApiKey = "9d1afafb80f94518850212856252004";
+const TRAFFIC_API_KEY = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
+
+function toggleSpoed() {
+  spoedToeslag = spoedToeslag === 0 ? 10 : 0;
+  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚀 Voeg €10 spoedrit toe 🚀" : "✅ Spoedrit toegevoegd (€10)";
+}
+
+function toggleDatum() {
+  const datumContainer = document.getElementById('datumContainer');
+  const toggleBtn = document.getElementById('toggleDatumBtn');
+  datumContainer.style.display = datumContainer.style.display === 'none' ? 'block' : 'none';
+  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €17.50,- 📅" : "➖ Verberg datum/tijd";
+}
+
+async function gebruikLocatie() {
+  if (!navigator.geolocation) return alert("Locatie niet ondersteund.");
+  try {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        const url = `https://api.tomtom.com/search/2/reverseGeocode/${lat},${lon}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results && data.results[0]) {
+          const ophaalInput = document.getElementById("ophaaladres");
+          if (ophaalInput) ophaalInput.value = data.results[0].formatted;
+        } else {
+          alert("Adres niet gevonden.");
+        }
+      } catch (err) {
+        alert("Locatie ophalen mislukt: " + (err.message || err));
+      }
+    }, err => {
+      let extra = '';
+      if (err.code === 1) extra = '\nGeef toestemming voor locatie in je browser.';
+      else if (err.code === 2) extra = '\nLocatie niet gevonden. Controleer je GPS of netwerk.';
+      else if (err.code === 3) extra = '\nLocatie ophalen duurde te lang. Probeer opnieuw.';
+      else extra = '\nGeef toestemming en controleer je verbinding.';
+      alert("Locatie ophalen mislukt: " + err.message + extra);
+    });
+  } catch (err) {
+    alert("Locatie ophalen mislukt: " + (err.message || err));
+  }
+}
+
+async function getCoordinates(adres) {
+  try {
+    // Verwijder speciale tekens en vervang spaties
+    const cleanedAdres = adres.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '%20');
+    const url = `https://api.tomtom.com/search/2/geocode/${cleanedAdres}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
+    console.log('TomTom Geocoding URL:', url);
+    
+    const res = await fetch(url);
+    console.log('Geocoding Response Status:', res.status);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Geocoding API Error:', errorText);
+      showSubtleError(`API-fout bij geocoding: ${errorText}`, 'map');
+      return null;
+    }
+    
+    const data = await res.json();
+    console.log('Geocoding Response Data:', data);
+    
+    if (!data.results || data.results.length === 0) {
+      showSubtleError(`Geen resultaten voor adres: ${adres}`, 'map');
+      return null;
+    }
+    
+    const { position } = data.results[0];
+    console.log('Gevonden coördinaten:', position);
+    
+    return [position.lon, position.lat];
+  } catch (err) {
+    console.error('Volledige fout bij geocoding:', err);
+    showSubtleError(`Locatie ophalen mislukt: ${adres}. Fout: ${err.message}`, 'map');
+    return null;
+  }
+}
+
+
+async function getWeer(lat, lon) {
+  try {
+    const url = `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${lat},${lon}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data && data.current && data.current.condition && data.current.condition.text) {
+      return data.current.condition.text;
+    }
+    return "";
+  } catch (err) {
+    console.error("Weer ophalen mislukt:", err);
+    return "";
+  }
+}
+
+function bepaalDrukteToeslag() {
+  const u = new Date().getHours();
+  const d = new Date().getDay();
+  return ((u >= 7 && u <= 9) || (u >= 16 && u <= 18) || d === 0 || d === 6) ? 1.15 : 1;
+}
+
+function bepaalNachttoeslag() {
+  const u = new Date().getHours();
+  return (u >= 23 || u < 7) ? 1.3 : 1;
+}
+
+function generateRitID() {
+  // Simpel: tijdstempel + 4 random letters
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `RIT-${Date.now()}-${random}`;
+}
+
+function berekenRitprijs(afstand, duur, weer) {
+  let basis = 0;
+  if (afstand <= 3) basis = 10;
+  else if (afstand <= 4) basis = 11.5;
+  else if (afstand <= 5) basis = 13;
+  else if (afstand <= 6) basis = 14.5;
+  else if (afstand <= 7) basis = 16;
+  else if (afstand <= 8) basis = 17.5;
+  else if (afstand <= 9) basis = 19;
+  else basis = 2.5 + (afstand * 1.5) + (duur * 0.5);
+
+  let weerToeslag = 1;
+  if (weer.toLowerCase().includes("patchy rain")) weerToeslag = 1.05;
+  else if (weer.toLowerCase().includes("light rain")) weerToeslag = 1.10;
+  else if (weer.toLowerCase().includes("moderate rain")) weerToeslag = 1.15;
+  else if (weer.toLowerCase().includes("heavy rain")) weerToeslag = 1.20;
+  else if (weer.toLowerCase().includes("torrential rain")) weerToeslag = 1.25;
+  else if (weer.toLowerCase().includes("thunderstorm")) weerToeslag = 1.25;
+  else if (weer.toLowerCase().includes("snow")) weerToeslag = 1.25;
+
+  const drukte = bepaalDrukteToeslag();
+  const nacht = bepaalNachttoeslag();
+
+  const prijsNaToeslagen = basis * weerToeslag * drukte * nacht;
+
+  // Bepaal uitleg van het basistarief
+  let basisUitleg = '';
+  if (afstand <= 3) basisUitleg = 'Afstand ≤ 3 km: vast tarief €10';
+  else if (afstand <= 4) basisUitleg = 'Afstand ≤ 4 km: vast tarief €11,50';
+  else if (afstand <= 5) basisUitleg = 'Afstand ≤ 5 km: vast tarief €13';
+  else if (afstand <= 6) basisUitleg = 'Afstand ≤ 6 km: vast tarief €14,50';
+  else if (afstand <= 7) basisUitleg = 'Afstand ≤ 7 km: vast tarief €16';
+  else if (afstand <= 8) basisUitleg = 'Afstand ≤ 8 km: vast tarief €17,50';
+  else if (afstand <= 9) basisUitleg = 'Afstand ≤ 9 km: vast tarief €19';
+  else basisUitleg = `Afstand > 9 km: 2,50 + (afstand × 1,50) + (duur × 0,50) = €${basis.toFixed(2)}`;
+
+  adminData = {
+    basis,
+    basisUitleg,
+    afstand,
+    duur,
+    weerProcent: ((weerToeslag - 1) * 100).toFixed(0),
+    weerEuro: (basis * (weerToeslag - 1)).toFixed(2),
+    drukteProcent: ((drukte - 1) * 100).toFixed(0),
+    drukteEuro: (basis * (drukte - 1)).toFixed(2),
+    nachtProcent: ((nacht - 1) * 100).toFixed(0),
+    nachtEuro: (basis * (nacht - 1)).toFixed(2),
+    spoed: spoedToeslag,
+    korting: 0,
+    kortingBedrag: 0,
+    tussenstops: [], // Wordt later ingevuld
+    tussenstopDetails: [], // Wordt later ingevuld
+    extraKmDoorTussenstops: 0,
+    extraTijdDoorTussenstops: 0,
+    extraKostenTussenstops: 0,
+    tussenstopToeslag: 0
+  };
+
+  let totalePrijs = prijsNaToeslagen + spoedToeslag;
+
+  // Instaptarief altijd toevoegen
+  totalePrijs += 2.5;
+  adminData.instaptarief = 2.5;
+
+  // Extra kosten voor huisdieren
+  if (document.getElementById("huisdieren").value === "1") {
+    totalePrijs += huisdierenToeslag;
+    adminData.huisdieren = "🚨 LET OP HUISDIEREN MEE 🚨";
+  } else {
+    adminData.huisdieren = "";
+  }
+
+  // Kosten voor geplande rit
+  if (document.getElementById("tijdstip").value) {
+    totalePrijs += 17.5;
+    adminData.geplandeRit = "📅 LET OP GEPLANDE RIT 📅";
+  } else {
+    adminData.geplandeRit = "";
+  }
+
+  return totalePrijs;
+}
+
+// Function to convert latitude and longitude to tile coordinates (TMS/Slippy Map)
+function deg2tile(lat_deg, lon_deg, zoom) {
+  const lat_rad = Math.PI * lat_deg / 180;
+  const n = Math.pow(2.0, zoom);
+  const xtile = Math.floor((lon_deg + 180.0) / 360.0 * n);
+  const ytile = Math.floor((1.0 - Math.log(Math.tan(lat_rad) + (1 / Math.cos(lat_rad))) / Math.PI) / 2.0 * n);
+  return { x: xtile, y: ytile, zoom: zoom };
+}
+
+async function getTrafficToeslag(start, end) {
+  try {
+  const midLat = (start[1] + end[1]) / 2;
+  const midLon = (start[0] + end[0]) / 2;
+  // Flow data
+  const flowUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=${midLat},${midLon}&unit=KMPH&key=${TRAFFIC_API_KEY}`;
+  let surcharge = 1;
+  let flow = null;
+  try {
+    flow = await fetch(flowUrl).then(r=>r.json());
+  } catch (e) {
+    // Geen flowdata beschikbaar, geen toeslag
+    flow = null;
+  }
+  if (flow && flow.flowSegmentData) {
+    const { freeFlowSpeed, currentSpeed } = flow.flowSegmentData;
+    const ratio = currentSpeed / freeFlowSpeed;
+    if (ratio > 0.9) surcharge = 1;
+    else if (ratio > 0.7) surcharge = 1.05;
+    else if (ratio > 0.4) surcharge = 1.15;
+    else surcharge = 1.5;
+  }
+  // Incidenten via NDW Open Data (gratis, Nederland)
+  // NDW fileinformatie: https://opendata.ndw.nu/files_ndw.csv.gz (CSV) of https://opendata.ndw.nu/trafficspeed.xml.gz (XML)
+  // Voorbeeld: we gebruiken de NDW actuele files als JSON via een proxy (of backend), want CORS blokkeert directe fetch naar .gz
+    const ndwUrl = 'http://localhost:3001/api/ndwfiles';
+    const ndwResp = await fetch(ndwUrl);
+
+    if (!ndwResp || !ndwResp.ok) {
+      console.warn('NDW incidenten niet beschikbaar');
+      return surcharge;
+    }
+
+    // Haal NDW data op
+    const ndwData = await ndwResp.json();
+
+    // Hulpfuncties voor afstandsberekening
+    const toRad = deg => deg * Math.PI / 180;
+    const haversine = (lat1, lon1, lat2, lon2) => {
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    };
+
+    const pointToSegmentDistance = (lat, lon, lat1, lon1, lat2, lon2) => {
+      const t = Math.max(0, Math.min(1, ((lat-lat1)*(lat2-lat1)+(lon-lon1)*(lon2-lon1)) / ((lat2-lat1)**2 + (lon2-lon1)**2)));
+      const projLat = lat1 + t*(lat2-lat1);
+      const projLon = lon1 + t*(lon2-lon1);
+      return haversine(lat, lon, projLat, projLon);
+    };
+
+    // Route buffer in kilometers
+    const routeBufferKm = 10;
+    const [startLon, startLat] = start;
+    const [endLon, endLat] = end;
+
+    // Zoek files nabij de route
+    const filesNearby = (ndwData || []).filter(f => {
+      if (!f.latitude || !f.longitude) return false;
+      const flat = parseFloat(f.latitude);
+      const flon = parseFloat(f.longitude);
+      return pointToSegmentDistance(flat, flon, startLat, startLon, endLat, endLon) <= routeBufferKm;
+    });
+
+    // Bereken toeslag op basis van aantal files
+    if (filesNearby.length > 0) {
+      surcharge *= 1 + (0.10 * filesNearby.length);
+      console.log(`Aantal NDW files dichtbij route: ${filesNearby.length}, Nieuwe toeslag: ${surcharge}`);
+    }
+
+    return surcharge;
+  } catch (err) {
+    console.warn('Verkeersinformatie ophalen mislukt', err);
+    alert('Let op: verkeersinformatie kon niet worden opgehaald. De ritprijs wordt zonder verkeersopslag berekend.');
+    return 1;
+  }
+}
+
+function pasKortingscodeToe(ritprijs) {
+  const code = document.getElementById("kortingscode").value.trim();
+  let perc = 0;
+  if (code === "KORTING10") perc = 10;
+  else if (code === "FATS20") perc = 20;
+  else if (code === "FATS25") perc = 25;
+  else if (code === "FATS30") perc = 30;
+
+  adminData.korting = perc;
+  adminData.kortingBedrag = (ritprijs * (perc / 100)).toFixed(2);
+  return ritprijs * (1 - perc / 100);
+}
+
+async function berekenRit() {
+  let ritprijs = 0;
+  // Genereer een uniek rit-ID bij elke berekening
+  window.currentRitID = generateRitID();
+  try {
+  const ophalen = document.getElementById("ophaaladres").value;
+  const afzetten = document.getElementById("afzetadres").value;
+  const tijd = document.getElementById("tijdstip").value;
+  const betaalmethode = document.getElementById("betaalmethode").value;
+  const opmerkingen = document.getElementById("opmerkingen").value;
+
+  if (!ophalen || !afzetten) {
+    showSubtleError("Vul alles correct in en ga akkoord met de voorwaarden.", 'ritprijs');
+    return;
+  }
+  if (document.getElementById("akkoord").value !== "1") {
+    showSubtleError("U dient akkoord te gaan met de annuleringskosten. Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht. Let op: Bij schade wordt de verzekering ingeschakeld. Reinigingskosten €450,-.", 'ritprijs');
+    return;
+  }
+
+  // Verzamel tussenstops
+  const tussenstops = [];
+  for (let i = 1; i <= 3; i++) {
+    const val = document.getElementById(`tussenstop${i}`)?.value?.trim();
+    if (val) tussenstops.push(val);
+  }
+  
+  // Bereken eerst de directe route (zonder tussenstops)
+  let basisPrijs = 0;
+  let basisAfstand = 0;
+  let basisDuur = 0;
+  let weer = null;
+  let trafficTot = 1;
+  let segmentDetails = [];
+  let directeRouteDetails = {};
+  
+  try {
+    // Coördinaten ophalen en afzet
+    const coordOphaal = await getCoordinates(ophalen);
+    const coordAfzet = await getCoordinates(afzetten);
+    
+    if (!coordOphaal || !coordAfzet) {
+      showSubtleError("Kon één of meer adressen niet vinden", 'ritprijs');
+      return;
+    }
+    
+    // Weer ophalen (alleen nodig bij start)
+    weer = await getWeer(coordOphaal[1], coordOphaal[0]);
+    
+    // Directe route berekenen
+    const directeRouteURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordOphaal[0]},${coordOphaal[1]}&end=${coordAfzet[0]},${coordAfzet[1]}`;
+    const directeRes = await fetch(directeRouteURL);
+    const directeData = await directeRes.json();
+    
+    if (!directeData.features || !directeData.features[0]) {
+      showSubtleError("Kon geen route berekenen tussen ophaal- en afzetadres", 'ritprijs');
+      return;
+    }
+    
+    // Basis afstand en duur
+    basisAfstand = directeData.features[0].properties.summary.distance / 1000;
+    basisDuur = directeData.features[0].properties.summary.duration / 60;
+    
+    // Verkeersfactor
+    const trafficMul = await getTrafficToeslag(coordOphaal, coordAfzet);
+    trafficTot = trafficMul;
+    
+    // Basis prijs berekenen
+    basisPrijs = berekenRitprijs(basisAfstand, basisDuur, weer) * trafficMul;
+    
+    directeRouteDetails = {
+      afstand: basisAfstand,
+      duur: basisDuur,
+      prijs: basisPrijs
+    };
+    
+    segmentDetails.push(`Directe route: ${ophalen} → ${afzetten}: €${basisPrijs.toFixed(2)}, ${basisAfstand.toFixed(1)} km, ${basisDuur.toFixed(0)} min`);
+  } catch (err) {
+    showSubtleError("Fout bij berekenen directe route", 'ritprijs');
+    return;
+  }
+  
+  // Als er tussenstops zijn, bereken de extra kosten
+  let extraPrijs = 0;
+  let extraAfstand = 0;
+  let extraDuur = 0;
+  let metTussenstopsAfstand = 0;
+  let metTussenstopsDuur = 0;
+  
+  if (tussenstops.length > 0) {
+    try {
+      // Bereken route met tussenstops
+      const alleAdressen = [ophalen, ...tussenstops, afzetten];
+      let totaalAfstandMetTussenstops = 0;
+      let totaalDuurMetTussenstops = 0;
+      
+      // Per segment berekenen
+      for (let i = 0; i < alleAdressen.length - 1; i++) {
+        const start = alleAdressen[i];
+        const end = alleAdressen[i + 1];
+        const coordStart = await getCoordinates(start);
+        const coordEnd = await getCoordinates(end);
+        
+        if (!coordStart || !coordEnd) {
+          showSubtleError(`Kon adres niet vinden: ${!coordStart ? start : end}`, 'ritprijs');
+          continue;
+        }
+        
+        const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordStart[0]},${coordStart[1]}&end=${coordEnd[0]},${coordEnd[1]}`;
+        const res = await fetch(routeURL);
+        const data = await res.json();
+        
+        if (!data.features || !data.features[0]) {
+          showSubtleError(`Kon geen route berekenen voor segment ${i+1}`, 'ritprijs');
+          continue;
+        }
+        
+        const segmentAfstand = data.features[0].properties.summary.distance / 1000;
+        const segmentDuur = data.features[0].properties.summary.duration / 60;
+        
+        totaalAfstandMetTussenstops += segmentAfstand;
+        totaalDuurMetTussenstops += segmentDuur;
+        
+        // Alleen voor tussenstops details toevoegen
+        if (i > 0 || i < alleAdressen.length - 2) {
+          segmentDetails.push(`Segment ${i+1}: ${start} → ${end}: ${segmentAfstand.toFixed(1)} km, ${segmentDuur.toFixed(0)} min`);
+        }
+      }
+      
+      // Extra berekenen t.o.v. directe route
+      metTussenstopsAfstand = totaalAfstandMetTussenstops;
+      metTussenstopsDuur = totaalDuurMetTussenstops;
+      extraAfstand = totaalAfstandMetTussenstops - basisAfstand;
+      extraDuur = totaalDuurMetTussenstops - basisDuur;
+      
+      // Gebruik dezelfde tarieven als in berekenRitprijs functie
+      // Voor afstanden > 9km: basis = 2.5 + (afstand * 1.5) + (duur * 0.5)
+      const kmPrijs = 1.5;  // Uit de berekenRitprijs functie
+      const minuutPrijs = 0.5;  // Uit de berekenRitprijs functie
+      const basisToeslag = 2.5; // Uit de berekenRitprijs functie
+      
+      // Bereken extra kosten volgens dezelfde formule als de basis ritprijs
+      extraPrijs = (basisToeslag + (extraAfstand * kmPrijs) + (extraDuur * minuutPrijs)) * trafficTot;
+      
+      // Toeslag per tussenstop (vaste kosten voor stoppen/wachten)
+      const toeslagPerStop = 2.75; // Aangepast naar jouw tarief
+      const tussenstopToeslag = tussenstops.length * toeslagPerStop;
+      
+      extraPrijs += tussenstopToeslag;
+      
+      segmentDetails.push(`Extra door tussenstops: +${extraAfstand.toFixed(1)} km, +${extraDuur.toFixed(0)} min, €${extraPrijs.toFixed(2)}`);
+      segmentDetails.push(`Tussenstop toeslag: ${tussenstops.length} × €${toeslagPerStop.toFixed(2)} = €${tussenstopToeslag.toFixed(2)}`);
+      
+      // Voeg tussenstop details toe aan adminData
+      adminData.tussenstops = tussenstops;
+      adminData.tussenstopDetails = segmentDetails;
+      adminData.extraKmDoorTussenstops = extraAfstand;
+      adminData.extraTijdDoorTussenstops = extraDuur;
+      adminData.extraKostenTussenstops = extraPrijs - tussenstopToeslag;
+      adminData.tussenstopToeslag = tussenstopToeslag;
+    } catch (err) {
+      showSubtleError("Fout bij berekenen tussenstops", 'ritprijs');
+      // Ga door met alleen de basisprijs
+    }
+  }
+  
+  // Totalen berekenen
+  let totaalPrijs = basisPrijs + extraPrijs;
+  let totaalAfstand = tussenstops.length > 0 ? metTussenstopsAfstand : basisAfstand;
+  let totaalDuur = tussenstops.length > 0 ? metTussenstopsDuur : basisDuur;
+  totaalPrijs = pasKortingscodeToe(totaalPrijs);
+
+  // Pin bij chauffeur kosten 2.25%
+  if (betaalmethode === 'Pin bij chauffeur') {
+    adminData.pinProcent = 2.25;
+    adminData.pinEuro = (totaalPrijs * 0.0225).toFixed(2);
+    totaalPrijs *= 1.0225;
+  } else {
+    adminData.pinProcent = 0;
+    adminData.pinEuro = 0;
+  }
+
+  // Toon spoedrit informatie aan klant
+  let spoedInfo = "";
+  if (spoedToeslag > 0) {
+    spoedInfo = "🚨 SPOEDRIT - PRIORITEIT 🚨\n";
+  }
+
+  const tijdstipWeergave = tijd ? tijd : 'On-Demand';
+  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${totaalPrijs.toFixed(2)}\n🛣️ Afstand totaal: ${totaalAfstand.toFixed(1)} km\n🕒 Duur totaal: ${totaalDuur.toFixed(0)} min\n${segmentDetails.join('\n')}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n💳 Pin-kosten: ${adminData.pinProcent}% (€${adminData.pinEuro})\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
+
+  // Sla de rit op in LocalStorage
+  try {
+    const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
+    const nieuweRit = {
+      ...adminData,
+      timestamp: new Date().toLocaleString(),
+      ritId: window.currentRitID,
+      ophaaladres: ophalen,
+      afzetadres: afzetten,
+      tijdstip: tijdstipWeergave,
+      betaalmethode: betaalmethode,
+      kortingscode: document.getElementById('kortingscode').value.trim() || 'Geen',
+      huisdieren: document.getElementById('huisdieren')?.value || 'Nee',
+      spoedrit: spoedToeslag > 0 ? 'Ja' : 'Nee',
+      geplandeRit: tijd ? 'Ja' : 'Nee',
+      pinProcent: adminData.pinProcent,
+      pinEuro: adminData.pinEuro,
+      verkeerProcent: adminData.verkeerProcent,
+      verkeerEuro: adminData.verkeerEuro,
+      ritprijs: (typeof ritprijs === 'number' ? ritprijs.toFixed(2) : '0.00'),
+      opmerkingen: opmerkingen || 'Geen'
+    };
+    ritten.push(nieuweRit);
+    localStorage.setItem('ritten', JSON.stringify(ritten));
+    // Zet lastPrice voor iDEAL altijd na berekening als float
+    if (typeof ritprijs === 'number' && !isNaN(ritprijs)) {
+      window.lastPrice = parseFloat(ritprijs);
+    } else {
+      window.lastPrice = 0;
+    }
+  } catch(e) {
+    alert('Rit kon niet worden opgeslagen. Probeer het later opnieuw.');
+    //console.error('Rit niet opgeslagen:', e);
+  }
+
+  // Voeg spoedrit informatie toe aan WhatsApp bericht voor chauffeur
+  let spoedBericht = "";
+  if (spoedToeslag > 0) {
+    spoedBericht = "🚨🚨🚨 SPOEDRIT - PRIORITEIT AUB DIRECT AFHANDELEN 🚨🚨🚨\n";
+  }
+
+  const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
+  document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
+  // WhatsApp-knop zichtbaarheid ALLEEN via updateWhatsappKnopVisibility()
+  if (typeof updateWhatsappKnopVisibility === 'function') updateWhatsappKnopVisibility();
+
+  // iDEAL knop wordt altijd via updateWhatsappKnopVisibility geregeld
+  lastPrice = ritprijs;
+
+  } catch (err) {
+    alert("Er is een fout opgetreden bij het berekenen van de rit: " + (err.message || err));
+  }
+}
+
+async function toonAdmin() {
+  let ritprijs = (typeof window.lastPrice === 'number') ? window.lastPrice : 0;
+  // Toon altijd de laatst berekende rit-ID
+  if (window.currentRitID) {
+    adminData.ritID = window.currentRitID;
+  }
+
+  const raw = prompt("Voer wachtwoord in:");
+  if (raw === null) return;
+  const pw = raw.trim();
+  const hash = await sha256(pw);
+  if (hash !== ADMIN_WACHTWOORD_HASH) return alert("Onjuist wachtwoord!");
+
+  const ophaaladres = document.getElementById("ophaaladres").value;
+  const afzetadres = document.getElementById("afzetadres").value;
+  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
+  const betaalmethode = document.getElementById("betaalmethode").value;
+  const kortingscode = document.getElementById("kortingscode").value || "Geen";
+  const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee";
+  const spoedrit = spoedToeslag > 0 ? "Ja +€10" : "Nee";
+  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee";
+  const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
+
+  const huisdierenToeslagLine = `- Huisdieren toeslag: +€${document.getElementById("huisdieren").value === "1" ? "5,00" : "0,00"}`;
+  const spoedToeslagLine = `- Spoedrit toeslag: +€${spoedToeslag > 0 ? "10,00" : "0,00"}`;
+  const geplandeRitToeslagLine = `- Geplande rit toeslag: +€${document.getElementById("tijdstip").value ? "17,50" : "0,00"}`;
+
+  const spec = `📊 BEHEERDER OVERZICHT 📊
+📍 Ophaaladres: ${ophaaladres}
+📍 Afzetadres: ${afzetadres}
+🕒 Tijdstip: ${tijdstip}
+💳 Betaalmethode: ${betaalmethode}
+💰 Kortingscode: ${kortingscode}
+✏️ Opmerkingen: ${opmerkingen}
+🐶 Huisdieren: ${huisdieren}
+🚀 Spoedrit: ${spoedrit}
+📅 Geplande rit: ${geplandeRit}
+
+📈 BEREKENINGEN:
+- Afstand: ${adminData.afstand.toFixed(2)} km
+- Duur: ${adminData.duur.toFixed(0)} min
+- Basistarief: €${adminData.basis} (${adminData.basisUitleg})
+- Instaptarief: €2,50
+- Weer: ${adminData.weerProcent}% toeslag (+€${adminData.weerEuro})
+- Drukte: ${adminData.drukteProcent}% toeslag (+€${adminData.drukteEuro})
+- Nacht: ${adminData.nachtProcent}% toeslag (+€${adminData.nachtEuro})
+${huisdierenToeslagLine}
+${spoedToeslagLine}
+${geplandeRitToeslagLine}
+- Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})`;
+
+  // Voeg tussenstop details toe aan admin overzicht als die er zijn
+  if (adminData.tussenstops && adminData.tussenstops.length > 0) {
+    spec += `\n\n🚩 TUSSENSTOPS (${adminData.tussenstops.length}):\n`;
+    adminData.tussenstops.forEach((stop, index) => {
+      spec += `- Tussenstop ${index+1}: ${stop}\n`;
+    });
+    spec += `\n- Extra afstand: +${adminData.extraKmDoorTussenstops.toFixed(1)} km\n`;
+    spec += `- Extra tijd: +${adminData.extraTijdDoorTussenstops.toFixed(0)} min\n`;
+    spec += `- Tussenstop toeslag: €${adminData.tussenstopToeslag.toFixed(2)}\n`;
+    spec += `- Extra kosten: €${adminData.extraKostenTussenstops.toFixed(2)}`;
+  }
+
+  spec += `\n\n💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
+
+  document.getElementById("adminSpecificaties").innerText = spec;
+  document.getElementById("adminSpecificaties").style.display = "block";
+  
+  // Toon iDEAL knop als er een geldige prijs is
+  const idealBtn = document.getElementById('idealPayBtn');
+  if (idealBtn && ritprijs > 0) {
+    idealBtn.style.display = 'flex';
+  }
+}
+
+function switchLanguage(lang) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('lang', lang);
+  window.location.href = url.toString();
+}
+
+// Toggle huisdier button
+function toggleHuisdier() {
+  const btn = document.getElementById('huisdierBtn');
+  const input = document.getElementById('huisdieren');
+  if (!btn || !input) return;
+  if (input.value === "0") {
+    input.value = "1";
+    btn.innerText = "✅ Huisdier toegevoegd €5,-";
+    btn.style.background = "gold";
+    btn.style.color = "black";
+  } else {
+    input.value = "0";
+    btn.innerText = "🐶 Voeg huisdier toe €5,- 🐶";
+    btn.style.background = "";
+    btn.style.color = "";
+  }
+}
+// Toggle akkoord button
+function toggleAkkoord() {
+  const btn = document.getElementById('akkoordBtn');
+  const input = document.getElementById('akkoord');
+  if (!btn || !input) return;
+  if (input.value === "0") {
+    input.value = "1";
+    btn.innerText = "✅ Akkoord met annuleringskosten €10,-";
+    btn.style.background = "gold";
+    btn.style.color = "black";
+  } else {
+    input.value = "0";
+    btn.innerText = "🚨 Ga akkoord met annuleringskosten €10,- 🚨";
+    btn.style.background = "";
+    btn.style.color = "";
+  }
+}
+// --- Boekingsopslag met rit-id ---
+function boekRit() {
+  // Reset betaalstatus voor nieuwe rit
+  localStorage.setItem('betalingGeslaagd', '0');
+  // Forceer update van WhatsApp-knop zichtbaarheid
+  if (typeof updateWhatsappKnopVisibility === 'function') updateWhatsappKnopVisibility();
+  // Gegevens ophalen
+  const ophaaladres = document.getElementById("ophaaladres").value;
+  const afzetadres = document.getElementById("afzetadres").value;
+  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
+  const betaalmethode = document.getElementById("betaalmethode").value;
+  const kortingscode = document.getElementById("kortingscode").value || "Geen";
+  const huisdieren = document.getElementById("huisdieren")?.value === "1" ? "Ja +€5" : "Nee";
+  const spoedrit = typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee";
+  const geplandeRit = tijdstip !== "On-Demand" ? "Ja +€17,50" : "Nee";
+  const opmerkingen = document.getElementById("opmerkingen")?.value || "Geen";
+  // Unieke rit-id genereren (timestamp + random)
+  const ritId = 'RIT-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+  // Ritobject
+  const timestamp = new Date().toLocaleString();
+  const rit = { timestamp, ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
+  // Huidige ritten ophalen en toevoegen
+  let ritten = [];
+  try { ritten = JSON.parse(localStorage.getItem('ritten')) || []; } catch {}
+  ritten.push(rit);
+  localStorage.setItem('ritten', JSON.stringify(ritten));
+}
+// Alles in één object, geen dubbele variabelen meer.
+
+// --- Draft saving met timestamp voor oningevulde gegevens ---
+(function() {
+  const fields = ['ophaaladres','afzetadres','tijdstip','betaalmethode','kortingscode','huisdieren','opmerkingen'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      const draft = { timestamp: new Date().toLocaleString() };
+      fields.forEach(fid => draft[fid] = document.getElementById(fid)?.value || '');
+      localStorage.setItem('draftRit', JSON.stringify(draft));
+    });
+  });
+})();
+
+// --- Adres autocomplete ---
+async function zoekAdresSuggesties(inputElem, suggestieDivId) {
+  const waarde = inputElem.value.trim();
+  const suggestieDiv = document.getElementById(suggestieDivId);
+  if (waarde.length < 3) {
+    suggestieDiv.innerHTML = '';
+    suggestieDiv.classList.remove('active');
+    return;
+  }
+  const apiKey = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
+  const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(waarde)}.json?key=${apiKey}&limit=5&countrySet=NL`;
+  try {
+    console.log('Suggestie URL:', url);
+    const res = await fetch(url);
+    console.log('Suggestie Response Status:', res.status);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Suggestie API Error:', errorText);
+      suggestieDiv.innerHTML = '';
+      suggestieDiv.classList.remove('active');
+      return;
+    }
+    
+    const data = await res.json();
+    console.log('Suggestie Response Data:', data);
+    
+    if (!data.results || data.results.length === 0) {
+      suggestieDiv.innerHTML = '';
+      suggestieDiv.classList.remove('active');
+      return;
+    }
+    
+    const shownResults = data.results.map(r => ({
+      formatted: r.address.freeformAddress
+    })).filter(r => r.formatted);
+    
+    console.log('Suggestie Resultaten:', shownResults);
+    
+    const escapeHtmlAttr = (str) => str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\r/g, " ")
+        .replace(/"/g, '&quot;');
+    
+    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${escapeHtmlAttr(r.formatted)}')"}>${r.formatted}</div>`).join('');
+    suggestieDiv.classList.add('active');
+  } catch (error) {
+    console.error('Fout bij ophalen adressuggesties:', error);
+    suggestieDiv.innerHTML = '';
+    suggestieDiv.classList.remove('active');
+  }
+}
+function kiesAdresSuggestie(inputId, suggestieDivId, waarde) {
+  document.getElementById(inputId).value = waarde;
+  document.getElementById(suggestieDivId).innerHTML = '';
+  document.getElementById(suggestieDivId).classList.remove('active');
+}
+// Suggesties sluiten bij klik buiten veld
+window.addEventListener('click', e => {
+  ['ophaaladres-suggesties','afzetadres-suggesties'].forEach(id => {
+    const box = document.getElementById(id);
+    if (box && !box.contains(e.target) && e.target.id !== id.replace('-suggesties','')) {
+      box.innerHTML = '';
+      box.classList.remove('active');
+    }
+  });
+});
+
+// Event listeners voor adres suggesties
+document.getElementById('ophaaladres').addEventListener('input', function() {
+  zoekAdresSuggesties(this, 'ophaaladres-suggesties');
+});
+
+document.getElementById('afzetadres').addEventListener('input', function() {
+  zoekAdresSuggesties(this, 'afzetadres-suggesties');
+});
+// Geen dubbele listeners meer.
+
+// Ontbrekende functies hersteld
+function toggleHuisdier() {
+  const huisdierBtn = document.getElementById('huisdierToggle');
+  const huisdierInput = document.getElementById('huisdieren');
+  
+  if (huisdierInput.value === 'nee') {
+    huisdierInput.value = 'ja';
+    huisdierBtn.textContent = '🐶 Huisdier: Ja';
+    huisdierBtn.classList.add('active');
+  } else {
+    huisdierInput.value = 'nee';
+    huisdierBtn.textContent = '🐶 Huisdier: Nee';
+    huisdierBtn.classList.remove('active');
+  }
+}
+
+function toggleSpoed() {
+  const spoedBtn = document.getElementById('spoedToggle');
+  const spoedInput = document.getElementById('spoed');
+  
+  if (spoedInput.value === 'nee') {
+    spoedInput.value = 'ja';
+    spoedBtn.textContent = '⚡ Spoed: Ja';
+    spoedBtn.classList.add('active');
+  } else {
+    spoedInput.value = 'nee';
+    spoedBtn.textContent = '⚡ Spoed: Nee';
+    spoedBtn.classList.remove('active');
+  }
+}
+
+function toggleAkkoord() {
+  const akkoordBtn = document.getElementById('akkoordToggle');
+  const akkoordInput = document.getElementById('akkoord');
+  
+  if (akkoordInput.value === 'nee') {
+    akkoordInput.value = 'ja';
+    akkoordBtn.textContent = '✅ Akkoord: Ja';
+    akkoordBtn.classList.add('active');
+  } else {
+    akkoordInput.value = 'nee';
+    akkoordBtn.textContent = '✅ Akkoord: Nee';
+    akkoordBtn.classList.remove('active');
+  }
+}
+
+function berekenRit() {
+  // Roep de bestaande berekenRit functie aan
+  if (typeof window.berekenRit === 'function') {
+    window.berekenRit();
+  } else {
+    console.error('berekenRit functie niet gevonden');
+    alert('Kan rit niet berekenen. Neem contact op met ondersteuning.');
+  }
+}
+</script>
+
+<script>
+// Initialize address suggestions and location functionality
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    // Initialize address suggestions for pickup and dropoff fields
+    const pickupInput = document.getElementById('ophaaladres');
+    const dropoffInput = document.getElementById('afzetadres');
+    
+    if (pickupInput) {
+      window.AddressSuggestions.init(pickupInput, {
+        onSelect: (address) => {
+          console.log('Selected pickup address:', address);
+          // Update map if coordinates are available
+          if (address.position) {
+            updateMapWithAddress('pickup', address);
+          }
+        }
+      });
+    }
+    
+    if (dropoffInput) {
+      window.AddressSuggestions.init(dropoffInput, {
+        onSelect: (address) => {
+          console.log('Selected dropoff address:', address);
+          // Update map if coordinates are available
+          if (address.position) {
+            updateMapWithAddress('dropoff', address);
+          }
+        }
+      });
+    }
+    
+    // Initialize location buttons
+    document.querySelectorAll('.location-button').forEach(button => {
+      button.addEventListener('click', async function() {
+        const inputField = this.previousElementSibling;
+        if (!inputField || inputField.tagName !== 'INPUT') return;
+        
+        try {
+          // Show loading state
+          const originalText = this.innerHTML;
+          this.innerHTML = '⏳';
+          this.disabled = true;
+          
+          // Get current location and address
+          const position = await window.LocationService.getCurrentPosition();
+          const address = await window.utils.getAddressFromCoordinates(
+            position.lat, 
+            position.lon
+          );
+          
+          // Update input field
+          inputField.value = address.formatted;
+          inputField.dispatchEvent(new Event('input', { bubbles: true }));
+          
+          // Update map
+          updateMapWithAddress(
+            inputField.id === 'ophaaladres' ? 'pickup' : 'dropoff',
+            { ...address, position: { lat: position.lat, lon: position.lon } }
+          );
+          
+        } catch (error) {
+          console.error('Error getting location:', error);
+          window.showSubtleError(
+            'Kon locatie niet ophalen. Controleer uw toestemmingen of voer handmatig in.',
+            inputField.id
+          );
+        } finally {
+          // Reset button
+          this.innerHTML = '📍';
+          this.disabled = false;
+        }
+      });
+    });
+    
+    console.log('Address suggestions and location services initialized');
+  } catch (error) {
+    console.error('Error initializing address suggestions:', error);
+  }
+});
+
+// Function to update map with address
+function updateMapWithAddress(type, address) {
+  if (!window.map) return;
+  
+  const coords = [address.position.lat, address.position.lon];
+  
+  // Update the appropriate marker based on type
+  if (type === 'pickup') {
+    if (window.pickupMarker) {
+      window.map.removeLayer(window.pickupMarker);
+    }
+    window.pickupMarker = L.marker(coords, {
+      icon: L.icon({
+        iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
+    }).addTo(window.map).bindPopup('Ophaalpunt').openPopup();
+  } else if (type === 'dropoff') {
+    if (window.dropoffMarker) {
+      window.map.removeLayer(window.dropoffMarker);
+    }
+    window.dropoffMarker = L.marker(coords, {
+      icon: L.icon({
+        iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-red.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
+    }).addTo(window.map).bindPopup('Afzetpunt').openPopup();
+  }
+  
+  // If both markers exist, fit bounds to show both
+  if (window.pickupMarker && window.dropoffMarker) {
+    const bounds = L.latLngBounds([
+      window.pickupMarker.getLatLng(),
+      window.dropoffMarker.getLatLng()
+    ]);
+    window.map.fitBounds(bounds, { padding: [50, 50] });
+  } else if (window.pickupMarker) {
+    window.map.setView(coords, 14);
+  } else if (window.dropoffMarker) {
+    window.map.setView(coords, 14);
+  }
+  
+  // Calculate route if both addresses are set
+  if (window.pickupMarker && window.dropoffMarker) {
+    calculateRoute(
+      window.pickupMarker.getLatLng(),
+      window.dropoffMarker.getLatLng()
+    );
+  }
+}
+
+// Function to calculate route between two points
+function calculateRoute(start, end) {
+  if (!window.L || !window.L.Routing) return;
+  
+  // Remove existing routing control if any
+  if (window.routingControl) {
+    window.map.removeControl(window.routingControl);
+  }
+  
+  // Create new routing control
+  window.routingControl = L.Routing.control({
+    waypoints: [
+      L.latLng(start.lat, start.lng),
+      L.latLng(end.lat, end.lng)
+    ],
+    routeWhileDragging: true,
+    show: false, // Hide the default UI
+    lineOptions: {
+      styles: [{ color: '#3b82f6', opacity: 0.7, weight: 5 }]
+    },
+    createMarker: function() { return null; } // Don't add extra markers
+  }).addTo(window.map);
+  
+  // Handle route calculation complete
+  window.routingControl.on('routesfound', function(e) {
+    const routes = e.routes;
+    if (routes && routes[0]) {
+      const route = routes[0];
+      const distance = (route.summary.totalDistance / 1000).toFixed(1); // km
+      const duration = Math.ceil(route.summary.totalTime / 60); // minutes
+      
+      // Update UI with distance and duration
+      const routeInfo = document.getElementById('route-info');
+      if (routeInfo) {
+        routeInfo.innerHTML = `Afstand: ${distance} km • Duur: ${duration} min`;
+      }
+      
+      // Update price based on distance and duration
+      updatePrice(distance, duration);
+    }
+  });
+}
+
+// Function to update price based on distance and duration
+function updatePrice(distance, duration) {
+  // Base price
+  let price = 7.50; // Starting price
+  
+  // Price per km (after first 2 km)
+  const kmPrice = 2.50;
+  const freeKm = 2;
+  
+  // Calculate price
+  if (distance > freeKm) {
+    price += (distance - freeKm) * kmPrice;
+  }
+  
+  // Minimum fare
+  price = Math.max(price, 10);
+  
+  // Show the price
+  const priceElement = document.getElementById('ritprijs');
+  if (priceElement) {
+    priceElement.textContent = `€${price.toFixed(2)}`;
+  }
+}
+
+// Show subtle error message
+window.showSubtleError = function(message, targetId) {
+  let target = document.getElementById(targetId) || document.body;
+  let errDiv = document.createElement('div');
+  errDiv.innerText = message;
+  errDiv.style = 'background:#ffd700;color:#111;padding:6px 12px;border-radius:7px;margin:8px 0;text-align:center;font-size:1.02rem;box-shadow:0 2px 10px #ffd70044;z-index:9999;';
+  errDiv.className = 'subtle-error-msg';
+  target.parentNode.insertBefore(errDiv, target);
+  setTimeout(()=>{ errDiv.remove(); }, 4000);
+};
+
+// Apply translations based on lang param
+document.addEventListener('DOMContentLoaded', ()=>{
+  const lang = new URLSearchParams(location.search).get('lang') || 'nl';
+  console.log('Selected language for index:', lang);
+  const dict = {
+    nl: {
+      h1: 'FA TAXI Service',
+      h2: 'TAXI 4 Personen',
+      tussenstopBtn: '➕ Tussenstop toevoegen',
+      labelTijdstip: '🕒 Gewenst tijdstip 🕒',
+      labelBetaal: '💳 Kies een betaalmethode 💳',
+      labelKorting: '💰 Kortingscode 💰',
+      labelOpmerkingen: '✏️ Opmerkingen ✏️',
+      idealPayBtn: 'Direct betalen via iDEAL',
+      textareaPH: 'Bijvoorbeeld: helpen met bagage, bijzonderheden, etc.',
+      adminSpecificaties: 'Admin specificaties',
+      selectIdeal: '🌐 IDEAL Online-Betaal-Link',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Pin bij chauffeur',
+      selectCash: '💶 Contant',
+      ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam', locatieBtn:'📍 Mijn locatie'
+    },
+    en: {
+      h1: 'FA TAXI Service',
+      h2: 'TAXI 4 Persons',
+      tussenstopBtn: '➕ Add stopover',
+      labelTijdstip: '🕒 Desired time 🕒',
+      labelBetaal: '💳 Choose a payment method 💳',
+      labelKorting: '💰 Discount code 💰',
+      labelOpmerkingen: '✏️ Comments ✏️',
+      idealPayBtn: 'Pay directly via iDEAL',
+      textareaPH: 'For example: help with luggage, special requests, etc.',
+      adminSpecificaties: 'Admin specifications',
+      selectIdeal: '🌐 IDEAL Online Payment Link',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Card at driver',
+      selectCash: '💶 Cash',
+      ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? €17,50 📅', huisdieren:'🐶 Pets €5,- 🐶', spoed:'🚀 Rush €10 🚀', akkoord:'🚨 Cancel fee €10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam', locatieBtn:'📍 My location'
+    },
+    es: {
+      h1: 'FA TAXI Servicio',
+      h2: 'TAXI 4 Personas',
+      tussenstopBtn: '➕ Añadir parada',
+      labelTijdstip: '🕒 Hora deseada 🕒',
+      labelBetaal: '💳 Elija un método de pago 💳',
+      labelKorting: '💰 Código de descuento 💰',
+      labelOpmerkingen: '✏️ Comentarios ✏️',
+      idealPayBtn: 'Pagar directamente con iDEAL',
+      textareaPH: 'Por ejemplo: ayuda con equipaje, detalles especiales, etc.',
+      adminSpecificaties: 'Especificaciones admin',
+      selectIdeal: '🌐 Enlace de pago IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Tarjeta al conductor',
+      selectCash: '💶 Efectivo',
+      ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam', locatieBtn:'📍 Mi ubicación'
+    },
+    ar: {
+      h1: 'خدمة تاكسي FA',
+      h2: 'تاكسي ٤ أشخاص',
+      tussenstopBtn: '➕ إضافة محطة',
+      labelTijdstip: '🕒 الوقت المطلوب 🕒',
+      labelBetaal: '💳 اختر طريقة الدفع 💳',
+      labelKorting: '💰 رمز الخصم 💰',
+      labelOpmerkingen: '✏️ ملاحظات ✏️',
+      idealPayBtn: 'الدفع مباشرة عبر iDEAL',
+      textareaPH: 'مثال: المساعدة في الأمتعة، تفاصيل خاصة، إلخ.',
+      adminSpecificaties: 'مواصفات المشرف',
+      selectIdeal: '🌐 رابط دفع iDEAL',
+      selectTikkie: '🔗 تيكي',
+      selectPin: '💳 بطاقة عند السائق',
+      selectCash: '💶 نقداً',
+      ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam', locatieBtn:'📍 موقعي'
+    },
+    pt: {
+      h1: 'Serviço FA TAXI',
+      h2: 'TÁXI 4 Pessoas',
+      tussenstopBtn: '➕ Adicionar parada',
+      labelTijdstip: '🕒 Horário desejado 🕒',
+      labelBetaal: '💳 Escolha um método de pagamento 💳',
+      labelKorting: '💰 Código de desconto 💰',
+      labelOpmerkingen: '✏️ Comentários ✏️',
+      idealPayBtn: 'Pagar diretamente via iDEAL',
+      textareaPH: 'Por exemplo: ajuda com bagagem, detalhes especiais, etc.',
+      adminSpecificaties: 'Especificações admin',
+      selectIdeal: '🌐 Link de pagamento IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Cartão com motorista',
+      selectCash: '💶 Dinheiro',
+      ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã', locatieBtn:'📍 Minha localização'
+    },
+    tr: {
+      h1: 'FA TAKSİ Servisi',
+      h2: 'TAKSİ 4 Kişi',
+      tussenstopBtn: '➕ Ara durak ekle',
+      labelTijdstip: '🕒 İstenen zaman 🕒',
+      labelBetaal: '💳 Ödeme yöntemi seçin 💳',
+      labelKorting: '💰 İndirim kodu 💰',
+      labelOpmerkingen: '✏️ Yorumlar ✏️',
+      idealPayBtn: 'iDEAL ile hemen öde',
+      textareaPH: 'Örneğin: bagaj yardımı, özel notlar, vb.',
+      adminSpecificaties: 'Yönetici özellikleri',
+      selectIdeal: '🌐 IDEAL Online Ödeme Linki',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Şoförde kart',
+      selectCash: '💶 Nakit',
+      ophaal:'📍 Alış Noktası 📍', afzet:'📍 Bırakma Noktası 📍', reserveren:'📅 Rezervasyon? €17,50 📅', huisdieren:'🐶 Evcil Hayvan €5,- 🐶', spoed:'🚀 Acele Hizmet €10 🚀', akkoord:'🚨 İptal Ücreti €10,- 🚨', bereken:'🚖 Ücret Hesapla 🚖', ph:'Örn: Stationsplein 1, Amsterdam', dh:'Örn: Damrak 50, Amsterdam', locatieBtn:'📍 Konumum'
+    },
+    fr: {
+      h1: 'Service FA TAXI',
+      h2: 'TAXI 4 Personnes',
+      tussenstopBtn: '➕ Ajouter une étape',
+      labelTijdstip: '🕒 Heure souhaitée 🕒',
+      labelBetaal: '💳 Choisissez un mode de paiement 💳',
+      labelKorting: '💰 Code promo 💰',
+      labelOpmerkingen: '✏️ Commentaires ✏️',
+      idealPayBtn: 'Payer directement via iDEAL',
+      textareaPH: 'Par exemple : aide pour les bagages, remarques, etc.',
+      adminSpecificaties: 'Spécifications admin',
+      selectIdeal: '🌐 Lien de paiement IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Carte au chauffeur',
+      selectCash: '💶 Espèces',
+      ophaal:'📍 Adresse de départ 📍', afzet:'📍 Adresse d’arrivée 📍', reserveren:'📅 Réserver? €17,50 📅', huisdieren:'🐶 Animaux €5,- 🐶', spoed:'🚀 Service urgent €10 🚀', akkoord:'🚨 Frais d’annulation €10,- 🚨', bereken:'🚖 Calculer Tarif 🚖', ph:'Ex: Stationsplein 1, Amsterdam', dh:'Ex: Damrak 50, Amsterdam', locatieBtn:'📍 Ma position'
+    },
+    it: {
+      h1: 'Servizio FA TAXI',
+      h2: 'TAXI 4 Persone',
+      tussenstopBtn: '➕ Aggiungi fermata',
+      labelTijdstip: '🕒 Orario desiderato 🕒',
+      labelBetaal: '💳 Scegli un metodo di pagamento 💳',
+      labelKorting: '💰 Codice sconto 💰',
+      labelOpmerkingen: '✏️ Commenti ✏️',
+      idealPayBtn: 'Paga direttamente con iDEAL',
+      textareaPH: 'Ad esempio: aiuto con i bagagli, dettagli particolari, ecc.',
+      adminSpecificaties: 'Specifiche admin',
+      selectIdeal: '🌐 Link pagamento IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Carta al conducente',
+      selectCash: '💶 Contanti',
+      ophaal:'📍 Indirizzo di partenza 📍', afzet:'📍 Indirizzo di arrivo 📍', reserveren:'📅 Prenota? €17,50 📅', huisdieren:'🐶 Animali €5,- 🐶', spoed:'🚀 Servizio Urgente €10 🚀', akkoord:'🚨 Tariffa cancellazione €10,- 🚨', bereken:'🚖 Calcola Tariffa 🚖', ph:'Es: Stationsplein 1, Amsterdam', dh:'Es: Damrak 50, Amsterdam', locatieBtn:'📍 La mia posizione'
+    },
+    de: {
+      h1: 'FA TAXI Service',
+      h2: 'TAXI 4 Personen',
+      tussenstopBtn: '➕ Zwischenstopp hinzufügen',
+      labelTijdstip: '🕒 Gewünschte Zeit 🕒',
+      labelBetaal: '💳 Zahlungsmethode wählen 💳',
+      labelKorting: '💰 Rabattcode 💰',
+      labelOpmerkingen: '✏️ Bemerkungen ✏️',
+      idealPayBtn: 'Direkt mit iDEAL bezahlen',
+      textareaPH: 'Zum Beispiel: Hilfe mit Gepäck, Besonderheiten, etc.',
+      adminSpecificaties: 'Admin-Spezifikationen',
+      selectIdeal: '🌐 IDEAL Online-Zahlungslink',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Karte beim Fahrer',
+      selectCash: '💶 Barzahlung',
+      ophaal:'📍 Abholadresse 📍', afzet:'📍 Zieladresse 📍', reserveren:'📅 Reservieren? €17,50 📅', huisdieren:'🐶 Haustiere €5,- 🐶', spoed:'🚀 Eilfahrt €10 🚀', akkoord:'🚨 Stornogebühr €10,- 🚨', bereken:'🚖 Fahrtpreis berechnen 🚖', ph:'z.B. Stationsplein 1, Amsterdam', dh:'z.B. Damrak 50, Amsterdam', locatieBtn:'📍 Mein Standort'
+    },
+    pl: {
+      h1: 'FA TAXI Usługa',
+      h2: 'TAXI 4 Osoby',
+      tussenstopBtn: '➕ Dodaj przystanek',
+      labelTijdstip: '🕒 Pożądany czas 🕒',
+      labelBetaal: '💳 Wybierz metodę płatności 💳',
+      labelKorting: '💰 Kod rabatowy 💰',
+      labelOpmerkingen: '✏️ Uwagi ✏️',
+      idealPayBtn: 'Zapłać bezpośrednio przez iDEAL',
+      textareaPH: 'Na przykład: pomoc z bagażem, szczegóły, itp.',
+      adminSpecificaties: 'Specyfikacje admina',
+      selectIdeal: '🌐 IDEAL Link płatności',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Karta u kierowcy',
+      selectCash: '💶 Gotówka',
+      ophaal:'📍 Adres odbioru 📍', afzet:'📍 Adres dostawy 📍', reserveren:'📅 Rezerwować? €17,50 📅', huisdieren:'🐶 Zwierzęta 🐶 5€', spoed:'🚀 Pilna usługa €10 🚀', akkoord:'🚨 Opłata za anulowanie €10,- 🚨', bereken:'🚖 Oblicz cenę 🚖', ph:'np. Stationsplein 1, Amsterdam', dh:'np. Damrak 50, Amsterdam', locatieBtn:'📍 Moja lokalizacja'
+    }
+  };
+
+  console.log('Index translation object for', lang, dict[lang]);
+  const t = dict[lang] || dict.nl;
+  console.log('Index using translation:', t);
+  document.getElementById('labelOphaal').innerText = t.ophaal;
+  document.getElementById('labelAfzet').innerText = t.afzet;
+  document.getElementById('toggleDatumBtn').innerText = t.reserveren;
+  document.getElementById('huisdierBtn').innerText = t.huisdieren;
+  document.getElementById('spoedBtn').innerText = t.spoed;
+  document.getElementById('akkoordBtn').innerText = t.akkoord;
+  document.getElementById('btnBereken').innerText = t.bereken;
+  document.getElementById('ophaaladres').placeholder = t.ph;
+  document.getElementById('afzetadres').placeholder = t.dh;
+  document.getElementById('locatieBtn').innerText = t.locatieBtn;
+
+  // Extra vertalingen voor volledige pagina
+  if(document.getElementById('h1Title')) document.getElementById('h1Title').innerText = t.h1 || dict.nl.h1;
+  if(document.getElementById('h2Subtitle')) document.getElementById('h2Subtitle').innerText = t.h2 || dict.nl.h2;
+  if(document.getElementById('tussenstopBtn')) document.getElementById('tussenstopBtn').innerText = t.tussenstopBtn || dict.nl.tussenstopBtn;
+  if(document.getElementById('labelTijdstip')) document.getElementById('labelTijdstip').innerText = t.labelTijdstip || dict.nl.labelTijdstip;
+  if(document.getElementById('labelBetaal')) document.getElementById('labelBetaal').innerText = t.labelBetaal || dict.nl.labelBetaal;
+  if(document.getElementById('labelKorting')) document.getElementById('labelKorting').innerText = t.labelKorting || dict.nl.labelKorting;
+  if(document.getElementById('labelOpmerkingen')) document.getElementById('labelOpmerkingen').innerText = t.labelOpmerkingen || dict.nl.labelOpmerkingen;
+  if(document.getElementById('opmerkingen')) document.getElementById('opmerkingen').placeholder = t.textareaPH || dict.nl.textareaPH;
+  if(document.getElementById('idealPayBtn')) document.getElementById('idealPayBtn').lastChild.textContent = ' ' + (t.idealPayBtn || dict.nl.idealPayBtn);
+  if(document.getElementById('adminSpecificaties')) document.getElementById('adminSpecificaties').innerText = t.adminSpecificaties || dict.nl.adminSpecificaties;
+  // Select opties betaalmethode
+  const betaalSelect = document.getElementById('betaalmethode');
+  if(betaalSelect && betaalSelect.options.length >= 4) {
+    betaalSelect.options[0].text = t.selectIdeal || dict.nl.selectIdeal;
+    betaalSelect.options[1].text = t.selectTikkie || dict.nl.selectTikkie;
+    betaalSelect.options[2].text = t.selectPin || dict.nl.selectPin;
+    betaalSelect.options[3].text = t.selectCash || dict.nl.selectCash;
+  }
+});
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('langToggle');
+  const menu = document.getElementById('langMenu');
+  if (!toggle || !menu) return;
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', () => { menu.style.display = 'none'; });
+});
+</script>
+
+<script>
+  // Maak een globale functie zodat deze direct aangeroepen kan worden
+  window.startIdealPay = async function() {
+    // Check eerst of we een geldige prijs hebben
+    if (!window.lastPrice || isNaN(window.lastPrice) || parseFloat(window.lastPrice) <= 0) {
+      // Probeer de prijs uit het prijsveld te halen als fallback
+      const prijsEl = document.getElementById('ritprijs');
+      if (prijsEl && prijsEl.innerText) {
+        const prijsText = prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.');
+        const prijs = parseFloat(prijsText);
+        if (!isNaN(prijs) && prijs > 0) {
+          window.lastPrice = prijs;
+        } else {
+          showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
+          return;
+        }
+      } else {
+        showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
+        return;
+      }
+    }
+    
+    // Toon loader tijdens betaalproces
+    const betaalBtn = document.querySelector('button[onclick="startIdealPay()"]');
+    const origText = betaalBtn ? betaalBtn.innerText : '';
+    if (betaalBtn) {
+      betaalBtn.innerHTML = '<span class="loader" style="display:inline-block;width:16px;height:16px;border:2px solid #232526;border-top:2px solid #ffd700;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px;"></span>Betaling starten...';
+      betaalBtn.disabled = true;
+    }
+    
+    const description = `Taxi rit ${window.currentRitID || 'FA' + Date.now()}`;
+    try {
+      const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: window.lastPrice, description })
+      });
+      const data = await res.json();
+      if (data.checkoutUrl) window.location.href = data.checkoutUrl;
+      else throw new Error(data.error || 'Geen checkoutURL');
+    } catch (err) {
+      showSubtleError('Betaling kon niet worden gestart.', 'ritprijs');
+      // Herstel knop
+      if (betaalBtn) {
+        betaalBtn.innerHTML = origText;
+        betaalBtn.disabled = false;
+      }
+    }
+  };
+</script>
+<script>
+// OVERRIDE BEREKENRIT NA ALLES ANDERS!
+window.addEventListener('DOMContentLoaded', function() {
+  if (typeof berekenRit === 'function') {
+    const origBerekenRit = berekenRit;
+    berekenRit = async function() {
+      await origBerekenRit.apply(this, arguments);
+      const ophalen = document.getElementById('ophaaladres').value;
+      const afzetten = document.getElementById('afzetadres').value;
+      if (ophalen && afzetten) {
+        showRouteOnMap(ophalen, afzetten);
+      }
+    };
+  }
+});
+</script>
+<script>
+// --- Automatische prijsberekening bij wijzigen invoervelden ---
+(function() {
+  // Loader helpers
+  function showPriceLoader() {
+    let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
+    if (prijsEl) {
+      prijsEl.dataset.origText = prijsEl.innerText;
+      prijsEl.innerHTML = '<span class="loader" style="display:inline-block;width:18px;height:18px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px;"></span>Bezig met berekenen...';
+    }
+  }
+  function hidePriceLoader() {
+    let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
+    if (prijsEl && prijsEl.dataset.origText) {
+      prijsEl.innerText = prijsEl.dataset.origText;
+      delete prijsEl.dataset.origText;
+    }
+  }
+  // Debounce met async/await support
+  function debounceAsync(fn, ms = 350) {
+    let timer;
+    return function(...args) {
+      return new Promise((resolve) => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+          showPriceLoader();
+          try {
+            const result = await fn.apply(this, args);
+            resolve(result);
+          } catch (err) {
+            // Toon subtiele melding in prijsveld
+            showSubtleError('Prijs niet beschikbaar', 'ritprijs');
+            resolve(null);
+          } finally {
+            hidePriceLoader();
+          }
+        }, ms);
+      });
+    };
+
+    // Maak de gebruikLocatie functie direct beschikbaar
+    window.gebruikLocatie = async function(button) {
+      const inputField = button.parentElement.querySelector('input[type="text"]');
+      
+      if (!inputField) {
+        console.warn('Geen invoerveld gevonden om locatie in te vullen');
+        return;
+      }
+
+      // Toon bezig-bericht
+      const oorspronkelijkeWaarde = inputField.value;
+      inputField.value = 'Locatie ophalen...';
+      inputField.disabled = true;
+      button.disabled = true;
+
+      try {
+        // Controleer of geolocatie beschikbaar is
+        if (!navigator.geolocation) {
+          throw new Error('Geolocatie wordt niet ondersteund door deze browser');
+        }
+
+        // Vraag locatie aan gebruiker
+        const positie = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            resolve, 
+            (error) => {
+              let foutmelding = 'Locatie kan niet worden bepaald';
+              
+              switch(error.code) {
+                case error.PERMISSION_DENIED:
+                  foutmelding = 'Locatietoegang is geweigerd. Controleer je browserinstellingen.';
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  foutmelding = 'Locatie-informatie is niet beschikbaar';
+                  break;
+                case error.TIMEOUT:
+                  foutmelding = 'Het ophalen van de locatie duurde te lang';
+                  break;
+                default:
+                  foutmelding = `Fout bij ophalen locatie: ${error.message}`;
+              }
+              reject(new Error(foutmelding));
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            }
+          );
+        });
+
+        // Haal adres op basis van coördinaten op
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?` +
+          `format=json&` +
+          `lat=${positie.coords.latitude}&` +
+          `lon=${positie.coords.longitude}&` +
+          `accept-language=nl&` +
+          `zoom=18&` +
+          `addressdetails=1`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Fout bij ophalen adres: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.display_name) {
+          throw new Error('Geen adresgegevens beschikbaar voor deze locatie');
+        }
+
+        // Vul het adres in
+        inputField.value = data.display_name;
+        // Activeer input event voor validatie
+        inputField.dispatchEvent(new Event('input', { bubbles: true }));
+        
+      } catch (error) {
+        console.error('Fout bij ophalen locatie:', error);
+        inputField.value = oorspronkelijkeWaarde;
+        
+        // Toon foutmelding in een duidelijke melding
+        const foutmelding = document.createElement('div');
+        foutmelding.style.cssText = 'color: #ff6b6b; margin-top: 5px; font-size: 0.9em;';
+        foutmelding.textContent = error.message;
+        foutmelding.className = 'locatie-fout';
+        
+        // Verwijder eventuele eerdere foutmeldingen
+        const bestaandeFout = inputField.nextElementSibling;
+        if (bestaandeFout && bestaandeFout.className === 'locatie-fout') {
+          bestaandeFout.remove();
+        }
+        
+        inputField.parentNode.insertBefore(foutmelding, inputField.nextSibling);
+        
+        // Verwijder de foutmelding na 5 seconden
+        setTimeout(() => {
+          if (foutmelding.parentNode) {
+            foutmelding.remove();
+          }
+        }, 5000);
+      } finally {
+        inputField.disabled = false;
+        button.disabled = false;
+        inputField.focus();
+      }
+    };
+
+  // Globale variabele voor berekenstatus
+  let isCalculating = false;
+  
+  // Functie om automatisch de ritprijs te berekenen
+  const autoBereken = debounceAsync(async () => {
+    if (isCalculating) return null;
+    isCalculating = true;
+    try {
+      if (typeof berekenRit === 'function') {
+        await berekenRit();
+        // Zorg dat lastPrice altijd beschikbaar is
+        if (window.lastPrice === undefined || window.lastPrice === null) {
+          const prijsEl = document.getElementById('ritprijs');
+          if (prijsEl && prijsEl.innerText) {
+            const prijsText = prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.');
+            const prijs = parseFloat(prijsText);
+            if (!isNaN(prijs)) window.lastPrice = prijs;
+          }
+        }
+      }
+      return window.lastPrice;
+    } finally {
+      isCalculating = false;
+    }
+  });
+  
+  // Lijst met velden die automatisch moeten worden bijgewerkt
+  const autoFields = [
+    'ophaaladres', 'afzetadres', 'tijdstip', 'betaalmethode', 'kortingscode', 'opmerkingen',
+    'huisdieren', 'spoed', 'akkoord'
+  ];
+  
+  // Voeg event listeners toe na het laden van de pagina
+  document.addEventListener('DOMContentLoaded', function() {
+    // Voeg event listeners toe aan de formuliervelden
+    autoFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', autoBereken);
+        el.addEventListener('change', autoBereken);
+      }
+    });
+    
+    // Voeg event listener toe aan de locatieknop
+    const locatieBtn = document.getElementById('locatieBtn');
+    if (locatieBtn) {
+      locatieBtn.addEventListener('click', function() {
+        gebruikLocatie(this);
+        autoBereken();
+      });
+    }
+  });
+  
+  // Voeg event listeners toe aan de locatieknop
+  const locatieBtn = document.getElementById('locatieBtn');
+  if (locatieBtn) {
+    locatieBtn.addEventListener('click', function() {
+      gebruikLocatie(this);
+      autoBereken();
+    });
+  }
+  
+  // Voeg event listeners toe aan de betaalmethode
+  const betaalmethode = document.getElementById('betaalmethode');
+  if (betaalmethode) {
+    betaalmethode.addEventListener('change', function() {
+      updateWhatsappKnopVisibility();
+    });
+  }
+  
+  // Initialiseer de zichtbaarheid van de WhatsApp-knop
+  updateWhatsappKnopVisibility();
+  
+  // Voeg event listeners toe aan de akkoord checkbox
+  const akkoordCheckbox = document.getElementById('akkoord');
+  if (akkoordCheckbox) {
+    akkoordCheckbox.addEventListener('change', function() {
+      updateWhatsappKnopVisibility();
+    });
+  }
+  
+  // Voeg event listeners toe aan de spoed checkbox
+  const spoedCheckbox = document.getElementById('spoed');
+  if (spoedCheckbox) {
+    spoedCheckbox.addEventListener('change', function() {
+      updateWhatsappKnopVisibility();
+    });
+  }
+  
+  // Voeg event listeners toe aan de huisdieren checkbox
+  const huisdierenCheckbox = document.getElementById('huisdieren');
+  if (huisdierenCheckbox) {
+    huisdierenCheckbox.addEventListener('change', function() {
+      updateWhatsappKnopVisibility();
+    });
+  }
+  
+  // Voeg event listeners toe aan de tussenstop knop
+  const tussenstopBtn = document.getElementById('tussenstopBtn');
+  if (tussenstopBtn) {
+    tussenstopBtn.addEventListener('click', toonTussenstopVeld);
+  }
+  
+  // Voeg event listeners toe aan de verwijder tussenstop knoppen
+  document.querySelectorAll('.verwijder-tussenstop').forEach(button => {
+    button.addEventListener('click', function() {
+      const index = this.getAttribute('data-index');
+      if (index !== null) {
+        verwijderTussenstop(parseInt(index));
+      }
+    });
+  });
+  
+  // Initialiseer de prijsberekening
+  autoBereken();
+  
+  // Voeg event listeners toe aan de betaalknoppen
+  document.querySelectorAll('.betaal-knop').forEach(button => {
+    button.addEventListener('click', function() {
+      const betaalmethode = this.getAttribute('data-betaalmethode');
+      if (betaalmethode === 'IDEAL') {
+        startIdealPay();
+      } else if (betaalmethode === 'CONTANT') {
+        boekRit();
+      }
+    });
+  });
+  
+  // Dynamisch toegevoegde tussenstops
+  // Vertraagde verwerking voor tussenstops
+  let tussenstopTimer = null;
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('tussenstop-input')) {
+      // Verwijder eerst alle oude loaders
+      document.querySelectorAll('.tussenstop-loader').forEach(l => l.remove());
+      
+      // Alleen herberekenen als het een volledig adres lijkt
+      const val = e.target.value.trim();
+      
+      // Check of het een volledig adres lijkt (straatnaam + huisnummer + evt. plaatsnaam)
+      // Patroon: tekst + spatie + cijfer (evt. gevolgd door letter) + evt. komma en plaatsnaam
+      const isCompleteAddress = (
+        val.length > 8 && // Minimaal 8 tekens
+        /\s\d+/.test(val) && // Bevat spatie gevolgd door cijfer (huisnummer)
+        /^[^\d]+\s\d+[a-zA-Z]*(,\s*[^\d,]+)?$/.test(val) // Straat + nummer + evt. plaats
+      );
+      
+      if (isCompleteAddress) {
+        // Loader tonen
+        const loader = document.createElement('span');
+        loader.className = 'tussenstop-loader';
+        loader.style = 'display:inline-block;width:16px;height:16px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-left:6px;position:absolute;right:10px;top:50%;transform:translateY(-50%);';
+        e.target.parentNode.style.position = 'relative';
+        e.target.parentNode.appendChild(loader);
+        
+        // Vertraag de berekening om te voorkomen dat we bij elke toetsaanslag herberekenen
+        clearTimeout(tussenstopTimer);
+        tussenstopTimer = setTimeout(() => {
+          autoBereken().finally(() => {
+            // Verwijder alle loaders na berekening
+            document.querySelectorAll('.tussenstop-loader').forEach(l => l.remove());
+          });
+        }, 2000); // Wacht 2 seconden na laatste toetsaanslag voor een betrouwbare berekening
+      }
+    }
+  });
+  // CSS voor loader animatie
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}`;
+  document.head.appendChild(style);
+})();
+</script>
+<script>
+window.startIdealPay = async function() {
+  const button = event?.target || document.querySelector('#idealPayBtn');
+  const originalButtonText = button?.innerHTML || '';
+  
+  try {
+    // Toon laadstatus
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = 'Bezig met voorbereiden... <span class="spinner"></span>';
+    }
+
+    // Valideer en haal prijs op
+    const prijsEl = document.getElementById('ritprijs');
+    if (!prijsEl) {
+      throw new Error('Kan de ritprijs niet vinden');
+    }
+    
+    const prijs = prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.');
+    const amount = parseFloat(prijs);
+    
+    if (isNaN(amount) || amount <= 0) {
+      throw new Error('Ongeldig bedrag');
+    }
+
+    const description = 'Taxi rit via FA TAXI';
+    const apiBase = (window.location.hostname === 'fataxi.github.io') ? 'https://yolo-n9xa.onrender.com' : '';
+    
+    // Toon laadstatus voor API-aanroep
+    if (button) button.innerHTML = 'Bezig met betalingssessie... <span class="spinner"></span>';
+    
+    const response = await fetch(`${apiBase}/api/pay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        amount: amount.toFixed(2),
+        description,
+        metadata: {
+          referrer: document.referrer,
+          timestamp: new Date().toISOString()
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data?.checkoutUrl) {
+      throw new Error('Geen geldige betaallink ontvangen');
+    }
+
+    // Toon doorsturen naar betalingsprovider
+    if (button) button.innerHTML = 'Doorsturen naar iDEAL... <span class="spinner"></span>';
+    
+    // Kleine vertraging voor betere gebruikerservaring
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Doorsturen naar de betaalpagina
+    window.location.href = data.checkoutUrl;
+    
+  } catch (error) {
+    console.error('Betalingsfout:', error);
+    
+    // Toon gebruiksvriendelijke foutmelding
+    const errorMessage = {
+      'NetworkError': 'Kon geen verbinding maken met de betaalservice. Controleer uw internetverbinding.',
+      'InvalidAmount': 'Ongeldig bedrag voor betaling',
+      'default': 'Er is een fout opgetreden bij het starten van de betaling. Probeer het later opnieuw.'
+    }[error.name] || error.message || errorMessage.default;
+    
+    alert(errorMessage);
+    
+  } finally {
+    // Herstel de knop
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = originalButtonText;
+    }
+  }
+};
+
+// Voeg CSS toe voor de laadindicator
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border-top-color: #000;
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

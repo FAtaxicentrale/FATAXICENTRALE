@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+  <title>FA Taxi Service</title>
+  <style>
+    /* Reset en basis styling */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Responsive base */
+    :root {
+      --base-font-size: 16px;
+      --spacing-unit: 0.5rem;
+      --color-primary: #000000;
+      --color-primary-dark: #1d1d1d;
+      --color-primary-light: #ffffff;
+      --color-text: #000000;
+      --color-text-light: #ffffff;
+      --color-bg: #ffffff;
+      --color-bg-dark: #1d1d1d;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    html {
+      font-size: var(--base-font-size);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--color-bg-dark);
+      color: var(--color-text-light);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1rem;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4rem;
+      background: var(--color-bg);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+    }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+    }
+    
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      color: var(--color-primary-dark);
+    }
+    
+    .header h2 {
+      font-size: 1.25rem;
+      color: var(--color-primary);
+      line-height: 1.4;
+      margin-bottom: 2rem;
+    }
+    
+    /* Taxi icon */
+    .taxi-icon {
+      width: 150px;
+      height: 150px;
+      margin: 2rem 0;
+    }
+    
+    /* Button group */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    
+    /* Buttons */
+    button {
+      background: var(--color-primary-dark);
+      color: var(--color-text-light);
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.2s ease;
+    }
+    
+    button span {
+      font-size: 1.5rem;
+    }
+    
+    button:hover {
+      background: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    
+    /* Responsive aanpassingen */
+    @media (max-width: 900px) {
+      .container {
+        padding: 2rem 1rem;
+      }
+      
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .header h2 {
+        font-size: 1.1rem;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .header h2 {
+        font-size: 1rem;
+      }
+      
+      .taxi-icon {
+        width: 120px;
+        height: 120px;
+      }
+      
+      button {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+      }
+      
+      button span {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>FA Taxi Service</h1>
+      <h2>24/7 Taxi & Minibus Service</h2>
+    </div>
+    <img src="https://cdn-icons-png.flaticon.com/512/296/296216.png" alt="Taxi" class="taxi-icon" />
+    <div class="button-group">
+      <button onclick="window.location.href='klant.html'">
+        <span>🚖</span> Taxi 4 Personen 🚖
+      </button>
+      <button onclick="window.location.href='busjexxl.html'">
+        <span>🚍</span> Busje XXL 6 Personen 🚍
+      </button>
+    </div>
+  </div>
+</body>
+</html>
